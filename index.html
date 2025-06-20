@@ -220,6 +220,7 @@
           const [notifications, setNotifications] = useState([]);
           const [showAddTask, setShowAddTask] = useState(false);
           const [showColorLegend, setShowColorLegend] = useState(false); // Estado para el menú hamburguesa
+          const [highlightedCalendarDates, setHighlightedCalendarDates] = useState([]); // Nuevo estado para resaltar fechas
 
           // Efecto para guardar tareas cuando cambien
           useEffect(() => {
@@ -454,8 +455,43 @@
             return `${diffDays} días restantes`;
           };
 
+          // Manejar el clic en Alertas Activas
+          const handleAlertsClick = () => {
+              // Limpiar cualquier timeout existente para prevenir animaciones superpuestas
+              if (window._highlightTimeout) {
+                  clearTimeout(window._highlightTimeout);
+                  window._highlightTimeout = null;
+              }
+              // Limpiar resaltados existentes inmediatamente
+              setHighlightedCalendarDates([]);
+
+              if (view === 'list') { // Si la vista actual es la lista, cambiar a calendario y animar
+                  setView('calendar');
+                  const alertDates = [...new Set(notifications.map(n => n.dueDate))].sort(); // Obtener fechas únicas y ordenadas de las alertas
+
+                  let delay = 0;
+                  alertDates.forEach((dateString) => {
+                      // Iluminar la fecha
+                      window._highlightTimeout = setTimeout(() => {
+                          setHighlightedCalendarDates([dateString]);
+                      }, delay);
+                      delay += 1000; // Duración de la iluminación (1 segundo)
+
+                      // Apagar la iluminación
+                      window._highlightTimeout = setTimeout(() => {
+                          setHighlightedCalendarDates([]);
+                      }, delay);
+                      delay += 500; // Pausa antes de la siguiente iluminación (0.5 segundos)
+                  });
+
+              } else if (view === 'calendar') { // Si la vista actual es el calendario, cambiar a lista
+                  setView('list');
+                  setHighlightedCalendarDates([]); // Asegurarse de que se limpien los resaltados
+              }
+          };
+
           // Vista de calendario simplificada
-          const CalendarView = () => {
+          const CalendarView = ({ highlightedDates }) => { // Recibe highlightedDates como prop
             const groupedTasks = tasks.reduce((acc, task) => {
               const date = task.dueDate;
               if (!acc[date]) acc[date] = [];
@@ -466,7 +502,7 @@
             return (
               <div className="space-y-8">
                 {/* Calendario Mensual */}
-                <MonthlyCalendar tasks={tasks} />
+                <MonthlyCalendar tasks={tasks} highlightedDates={highlightedDates} /> {/* Pasa highlightedDates */}
 
                 {/* Vista de tarjetas por día */}
                 <div>
@@ -537,7 +573,7 @@
           };
 
           // Componente de Calendario Mensual
-          const MonthlyCalendar = ({ tasks }) => {
+          const MonthlyCalendar = ({ tasks, highlightedDates }) => { // Recibe highlightedDates
             const [currentDate, setCurrentDate] = useState(new Date());
 
             const today = new Date();
@@ -643,6 +679,11 @@
                                    today.getMonth() === month &&
                                    today.getFullYear() === year;
 
+                    // Formatear la fecha del día actual para la comparación con highlightedDates
+                    const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                    const isHighlighted = highlightedDates.includes(currentDayFormatted);
+
+
                     // Contar tareas por estado
                     const taskCounts = dayTasks.reduce((acc, task) => {
                       const status = getTaskStatus(task.dueDate, task.completed);
@@ -653,9 +694,9 @@
                     return (
                       <div
                         key={day}
-                        className={`h-20 sm:h-24 border border-gray-200 p-1 sm:p-2 hover:border-2 hover:border-red-500 hover:shadow-lg hover:shadow-red-200 transition-all duration-300 cursor-pointer ${
+                        className={`h-20 sm:h-24 border border-gray-200 p-1 sm:p-2 transition-all duration-300 ease-in-out ${
                           isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50'
-                        }`}
+                        } ${isHighlighted ? 'bg-blue-200 border-blue-500 shadow-md' : ''}`}
                       >
                         <div className={`text-sm sm:text-base font-medium ${
                           isToday ? 'text-blue-700' : 'text-gray-800'
@@ -677,17 +718,17 @@
                           )}
                           {taskCounts['due-tomorrow'] > 0 && (
                             <div className="w-full h-1.5 bg-orange-400 rounded text-xs text-white text-center leading-none" title={`${taskCounts['due-tomorrow']} vence(n) mañana`}>
-                              {/*taskCounts['due-tomorrow']*/}
+                              {/*taskCounts.due-tomorrow*/}
                             </div>
                           )}
                           {taskCounts['due-soon'] > 0 && (
                             <div className="w-full h-1.5 bg-yellow-400 rounded text-xs text-white text-center leading-none" title={`${taskCounts['due-soon']} por vencer`}>
-                              {/*taskCounts['due-soon']*/}
+                              {/*taskCounts.due-soon*/}
                             </div>
                           )}
                           {taskCounts['on-time'] > 0 && (
                             <div className="w-full h-1.5 bg-green-400 rounded text-xs text-white text-center leading-none" title={`${taskCounts['on-time']} a tiempo`}>
-                              {/*taskCounts['on-time']*/}
+                              {/*taskCounts.on-time*/}
                             </div>
                           )}
                           {taskCounts.completed > 0 && (
@@ -721,10 +762,10 @@
                                 <IconBook />
                             </div>
                             <div>
-                                <h1 className="text-2xl sm:text-4xl font-bold text-gray-900">
+                                <h1 className="text-xl sm:text-4xl font-bold text-gray-900"> {/* Reducido a text-xl en móvil */}
                                     Gestor Académico
                                 </h1>
-                                <p className="text-base sm:text-lg text-gray-600">
+                                <p className="text-sm sm:text-lg text-gray-600"> {/* Reducido a text-sm en móvil */}
                                     Organiza tus tareas académicas
                                 </p>
                             </div>
@@ -883,7 +924,7 @@
                 {/* Alertas de notificaciones */}
                 {notifications.length > 0 && (
                   <div
-                    onClick={() => setView(prevView => prevView === 'calendar' ? 'list' : 'calendar')} // Alternar vista
+                    onClick={handleAlertsClick} // Ahora usa la función que gestiona la alternancia y el resaltado
                     className="bg-orange-50 border border-orange-200 rounded-lg shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 cursor-pointer"
                   >
                     <div className="flex items-center space-x-3 mb-3">
@@ -1022,7 +1063,7 @@
                     })}
                   </div>
                 ) : (
-                  <CalendarView />
+                  <CalendarView highlightedDates={highlightedCalendarDates} />
                 )}
 
                 {/* Footer con información */}
@@ -1058,4 +1099,3 @@
     </script>
 </body>
 </html>
-
