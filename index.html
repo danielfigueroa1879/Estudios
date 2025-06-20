@@ -231,17 +231,24 @@
             saveSettingsToStorage(emailNotifications, view);
           }, [emailNotifications, view]);
 
+          // Helper para crear una fecha a medianoche local desde YYYY-MM-DD
+          const createLocalDate = (dateString) => {
+              const parts = dateString.split('-').map(Number);
+              // Month is 0-indexed in Date constructor
+              return new Date(parts[0], parts[1] - 1, parts[2]);
+          };
+
           // Función para calcular el estado automático basado en la fecha
           const getTaskStatus = (dueDate, completed) => {
             if (completed) return 'completed';
 
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // Normalizar a inicio del día
-            const due = new Date(dueDate);
-            due.setHours(0, 0, 0, 0); // Normalizar a inicio del día
+            const todayMidnight = new Date();
+            todayMidnight.setHours(0, 0, 0, 0); // Medianoche de *hoy* en hora local
 
-            const diffTime = due.getTime() - today.getTime();
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const dueMidnight = createLocalDate(dueDate); // Medianoche de *la fecha de vencimiento* en hora local
+
+            const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Redondea hacia arriba para capturar cualquier parte de día
 
             if (diffDays < 0) return 'overdue'; // Rojo - Vencido
             if (diffDays === 0) return 'due-today'; // Rojo - Vence hoy
@@ -408,7 +415,7 @@
           };
 
           const formatDate = (dateString) => {
-            const date = new Date(dateString + 'T00:00:00'); // Asegurarse de que la fecha se interprete en UTC para evitar desfases
+            const date = createLocalDate(dateString); // Usar la función helper para crear la fecha
             return date.toLocaleDateString('es-ES', {
               weekday: 'short',
               year: 'numeric',
@@ -418,12 +425,12 @@
           };
 
           const getDaysUntilDue = (dueDate) => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // Normalizar a inicio del día
-            const due = new Date(dueDate + 'T00:00:00'); // Asegurarse de que la fecha se interprete en UTC para evitar desfases
-            due.setHours(0, 0, 0, 0); // Normalizar a inicio del día
+            const todayMidnight = new Date();
+            todayMidnight.setHours(0, 0, 0, 0); // Medianoche de hoy
 
-            const diffTime = due.getTime() - today.getTime();
+            const dueMidnight = createLocalDate(dueDate); // Medianoche de la fecha de vencimiento
+
+            const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
             if (diffDays < 0) return `${Math.abs(diffDays)} días atrasado`;
@@ -544,7 +551,7 @@
 
             // Agrupar tareas por fecha
             const tasksByDate = tasks.reduce((acc, task) => {
-              const taskDate = new Date(task.dueDate + 'T00:00:00'); // Asegurarse de que la fecha se interprete en UTC para evitar desfases
+              const taskDate = createLocalDate(task.dueDate); // Usar la función helper
               if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
                 const day = taskDate.getDate();
                 if (!acc[day]) acc[day] = [];
@@ -691,7 +698,7 @@
               <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
+                  <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
                     <div className="flex items-center space-x-3 sm:space-x-4">
                       <div className="text-blue-600">
                         <IconBook />
@@ -706,7 +713,7 @@
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-4 sm:space-x-6">
+                    <div className="flex items-center space-x-4 sm:space-x-6 w-full sm:w-auto justify-end">
                       {/* Hamburger icon to toggle color legend */}
                       <button
                           onClick={() => setShowColorLegend(!showColorLegend)}
@@ -749,7 +756,7 @@
 
                   {/* Leyenda de colores automáticos - Conditionally rendered */}
                   {showColorLegend && (
-                      <div className="mt-6 pt-4 border-t border-gray-200"> {/* Added border-t for visual separation */}
+                      <div className="mt-6 pt-4 border-t border-gray-200">
                           <h3 className="font-semibold text-gray-800 text-lg sm:text-xl mb-4">Sistema de Etiquetado Automático</h3>
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
                               <div className="flex items-center space-x-3">
@@ -775,7 +782,7 @@
                           </div>
                       </div>
                   )}
-                </div> {/* End Header */}
+                </div>
 
                 {/* Formulario para agregar/editar tarea - Moved here */}
                 <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
