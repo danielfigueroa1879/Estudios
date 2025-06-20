@@ -462,7 +462,7 @@
 
           const getDaysUntilDue = (dueDate) => {
             const todayMidnight = new Date();
-            todayMidnight.setHours(0, 0, 0, 0); // Medianoche de hoy
+            todayMidnight.setHours(0, 0, 0, 0); // Medianoche de *hoy* en hora local
 
             const dueMidnight = createLocalDate(dueDate); // Medianoche de *la fecha de vencimiento* en hora local
 
@@ -783,10 +783,10 @@
                     <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 flex-grow justify-start"> {/* Ajustado space-y para móvil */}
                         <div className="flex items-center space-x-2 sm:space-x-4">
                             <div className="text-blue-600">
-                                <IconBook />
+                                <IconBook width="20" height="20" /> {/* Ajustado tamaño de IconBook */}
                             </div>
                             <div>
-                                <h1 className="text-lg sm:text-4xl font-bold text-gray-900"> {/* Reducido a text-lg en móvil */}
+                                <h1 className="text-lg sm:text-4xl font-bold text-gray-900 leading-tight sm:leading-none"> {/* Reducido a text-lg en móvil */}
                                     Gestor Académico
                                 </h1>
                                 <p className="text-xs sm:text-lg text-gray-600"> {/* Reducido a text-xs en móvil */}
@@ -841,6 +841,24 @@
                       <div className="mt-6 pt-4 border-t border-gray-200">
                           <h3 className="font-semibold text-gray-800 text-lg sm:text-xl mb-4">Acceso Rápido a Tareas</h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                              {/* Nueva opción "Tareas" */}
+                              <button
+                                  onClick={() => {
+                                      setView('list'); // Redirige a la vista de lista de tareas
+                                      setShowColorLegend(false); // Cierra el menú hamburguesa
+                                      // Desplazarse a la sección de la lista de tareas
+                                      setTimeout(() => {
+                                          const taskListSection = document.getElementById('taskListSection');
+                                          if (taskListSection) {
+                                              taskListSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                          }
+                                      }, 0); // Pequeño retardo para asegurar que la vista cambie
+                                  }}
+                                  className="block w-full text-left p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
+                              >
+                                  <IconBook size={20} /> {/* Icono para la opción Tareas */}
+                                  <span>Tareas</span>
+                              </button>
                               {tasks.map(task => (
                                   <button
                                       key={task.id}
@@ -1011,7 +1029,7 @@
 
                 {/* Vista principal */}
                 {view === 'list' ? (
-                  <div className="space-y-6">
+                  <div id="taskListSection" className="space-y-6"> {/* Añadido ID para desplazamiento */}
                     {tasks.map(task => {
                       const status = getTaskStatus(task.dueDate, task.completed); // Todavía útil para getDaysUntilDue y el label
                       const cardStyle = getTaskCardStyle(status, task.completed); // Estilo para el fondo y borde
