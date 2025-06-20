@@ -464,7 +464,7 @@
             const todayMidnight = new Date();
             todayMidnight.setHours(0, 0, 0, 0); // Medianoche de hoy
 
-            const dueMidnight = createLocalDate(dueDate); // Medianoche de la fecha de vencimiento
+            const dueMidnight = createLocalDate(dueDate); // Medianoche de *la fecha de vencimiento* en hora local
 
             const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -780,8 +780,8 @@
                 <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
                   <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
                     {/* Contenido Izquierdo: Título, Notificaciones, Email */}
-                    <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 flex-grow justify-center sm:justify-start">
-                        <div className="flex items-center space-x-2 sm:space-x-4"> {/* Ajustado space-x para móvil */}
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 flex-grow justify-start"> {/* Ajustado space-y para móvil */}
+                        <div className="flex items-center space-x-2 sm:space-x-4">
                             <div className="text-blue-600">
                                 <IconBook />
                             </div>
@@ -794,8 +794,8 @@
                                 </p>
                             </div>
                         </div>
-                        {/* Notificaciones y Toggle de email - Movidos a la izquierda, debajo del título en móvil */}
-                        <div className="flex items-center space-x-3 sm:space-x-6 mt-4 sm:mt-0 sm:ml-6"> {/* Ajustado space-x y mt/ml para móvil */}
+                        {/* Notificaciones y Toggle de email - Alineados a la izquierda, debajo del título en móvil */}
+                        <div className="flex items-center space-x-3 sm:space-x-6 mt-2 sm:mt-0 sm:ml-6"> {/* Ajustado space-x y mt/ml para móvil */}
                             {notifications.length > 0 && (
                                 <div className="relative">
                                     <div className="text-orange-500">
@@ -806,7 +806,7 @@
                                     </span>
                                 </div>
                             )}
-                            <div className="flex items-center space-x-1 sm:space-x-3"> {/* Ajustado space-x */}
+                            <div className="flex items-center space-x-1 sm:space-x-3">
                                 <div className={emailNotifications ? 'text-blue-500' : 'text-gray-400'}>
                                     <IconMail width="18" height="18" /> {/* Ajustado tamaño */}
                                 </div>
@@ -825,7 +825,7 @@
                     </div>
 
                     {/* Contenido Derecho: Menú Hamburguesa */}
-                    <div className="flex-shrink-0 ml-auto sm:ml-0 flex items-center"> {/* Agregado items-center */}
+                    <div className="flex-shrink-0 ml-auto sm:ml-0 flex items-center self-center sm:self-auto"> {/* Añadido self-center para móvil, self-auto para desktop */}
                         <button
                             onClick={() => setShowColorLegend(!showColorLegend)}
                             className="text-gray-600 hover:text-blue-600 p-2 rounded-full hover:bg-gray-100 transition-colors"
