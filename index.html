@@ -479,4 +479,515 @@
                                   <p className="text-base sm:text-lg text-gray-600 mt-1">{task.title}</p>
                                   <p className="text-base text-gray-500 mt-2">{task.type}</p>
                                 </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          };
+
+          // Componente de Calendario Mensual
+          const MonthlyCalendar = ({ tasks }) => {
+            const [currentDate, setCurrentDate] = useState(new Date());
+            
+            const today = new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // Obtener el primer día del mes y cuántos días tiene
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+            
+            // Crear array de días del mes
+            const daysArray = [];
+            
+            // Días vacíos del mes anterior (ajustado para que lunes sea el primer día)
+            const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
+            for (let i = 0; i < adjustedStartingDay; i++) {
+              daysArray.push(null);
+            }
+            
+            // Días del mes actual
+            for (let day = 1; day <= daysInMonth; day++) {
+              daysArray.push(day);
+            }
+            
+            // Agrupar tareas por fecha
+            const tasksByDate = tasks.reduce((acc, task) => {
+              const taskDate = new Date(task.dueDate);
+              if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
+                const day = taskDate.getDate();
+                if (!acc[day]) acc[day] = [];
+                acc[day].push(task);
+              }
+              return acc;
+            }, {});
+            
+            const monthNames = [
+              'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            
+            const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+            
+            const goToPreviousMonth = () => {
+              setCurrentDate(new Date(year, month - 1, 1));
+            };
+            
+            const goToNextMonth = () => {
+              setCurrentDate(new Date(year, month + 1, 1));
+            };
+            
+            const goToToday = () => {
+              setCurrentDate(new Date());
+            };
+            
+            return (
+              <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
+                    {monthNames[month]} {year}
+                  </h2>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={goToPreviousMonth}
+                      className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-base"
+                    >
+                      ←
+                    </button>
+                    <button
+                      onClick={goToToday}
+                      className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-base"
+                    >
+                      Hoy
+                    </button>
+                    <button
+                      onClick={goToNextMonth}
+                      className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-base"
+                    >
+                      →
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Nombres de los días */}
+                <div className="grid grid-cols-7 gap-1 mb-2">
+                  {dayNames.map(day => (
+                    <div key={day} className="text-center font-semibold text-gray-600 py-2 text-base">
+                      {day}
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Días del calendario */}
+                <div className="grid grid-cols-7 gap-1">
+                  {daysArray.map((day, index) => {
+                    if (!day) {
+                      return <div key={index} className="h-20 sm:h-24"></div>;
+                    }
+                    
+                    const dayTasks = tasksByDate[day] || [];
+                    const isToday = today.getDate() === day && 
+                                   today.getMonth() === month && 
+                                   today.getFullYear() === year;
+                    
+                    // Contar tareas por estado
+                    const taskCounts = dayTasks.reduce((acc, task) => {
+                      const status = getTaskStatus(task.dueDate, task.completed);
+                      acc[status] = (acc[status] || 0) + 1;
+                      return acc;
+                    }, {});
+                    
+                    return (
+                      <div
+                        key={day}
+                        className={`h-20 sm:h-24 border border-gray-200 p-1 sm:p-2 hover:border-2 hover:border-red-500 hover:shadow-lg hover:shadow-red-200 transition-all duration-300 cursor-pointer ${
+                          isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className={`text-sm sm:text-base font-medium ${
+                          isToday ? 'text-blue-700' : 'text-gray-800'
+                        }`}>
+                          {day}
+                        </div>
+                        
+                        {/* Indicadores de tareas */}
+                        <div className="mt-1 space-y-0.5">
+                          {taskCounts.overdue > 0 && (
+                            <div className="w-full h-1.5 bg-red-500 rounded text-xs text-white text-center leading-none">
+                              {taskCounts.overdue}
+                            </div>
+                          )}
+                          {taskCounts['due-today'] > 0 && (
+                            <div className="w-full h-1.5 bg-red-400 rounded text-xs text-white text-center leading-none">
+                              {taskCounts['due-today']}
+                            </div>
+                          )}
+                          {taskCounts['due-tomorrow'] > 0 && (
+                            <div className="w-full h-1.5 bg-orange-400 rounded text-xs text-white text-center leading-none">
+                              {taskCounts['due-tomorrow']}
+                            </div>
+                          )}
+                          {taskCounts['due-soon'] > 0 && (
+                            <div className="w-full h-1.5 bg-yellow-400 rounded text-xs text-white text-center leading-none">
+                              {taskCounts['due-soon']}
+                            </div>
+                          )}
+                          {taskCounts['on-time'] > 0 && (
+                            <div className="w-full h-1.5 bg-green-400 rounded text-xs text-white text-center leading-none">
+                              {taskCounts['on-time']}
+                            </div>
+                          )}
+                          {taskCounts.completed > 0 && (
+                            <div className="w-full h-1.5 bg-gray-400 rounded text-xs text-white text-center leading-none">
+                              {taskCounts.completed}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                <div className="mt-4 text-sm text-gray-600 text-center">
+                  Las barras de colores indican el número y estado de las tareas de cada día
+                </div>
+              </div>
+            );
+          };
+
+          return (
+            <div className="min-h-screen bg-gray-200 p-3 sm:p-6">
+              <div className="max-w-7xl mx-auto">
+                {/* Header */}
+                <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
+                    <div className="flex items-center space-x-3 sm:space-x-4">
+                      <div className="text-blue-600">
+                        <IconBook />
+                      </div>
+                      <div>
+                        <h1 className="text-2xl sm:text-4xl font-bold text-gray-900">
+                          Gestor Académico
+                        </h1>
+                        <p className="text-base sm:text-lg text-gray-600">
+                          Etiquetado automático por colores
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-4 sm:space-x-6">
+                      {/* Notificaciones */}
+                      {notifications.length > 0 && (
+                        <div className="relative">
+                          <div className="text-orange-500">
+                            <IconBell />
+                          </div>
+                          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center">
+                            {notifications.length}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Toggle de email */}
+                      <div className="flex items-center space-x-2 sm:space-x-3">
+                        <div className={emailNotifications ? 'text-blue-500' : 'text-gray-400'}>
+                          <IconMail />
+                        </div>
+                        <button
+                          onClick={() => setEmailNotifications(!emailNotifications)}
+                          className={`w-12 h-6 sm:w-14 sm:h-7 rounded-full transition-colors ${
+                            emailNotifications ? 'bg-blue-500' : 'bg-gray-300'
+                          }`}
+                        >
+                          <div className={`w-5 h-5 sm:w-6 sm:h-6 bg-white rounded-full transition-transform ${
+                            emailNotifications ? 'translate-x-6 sm:translate-x-7' : 'translate-x-0.5 sm:translate-x-1'
+                          }`} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Leyenda de colores automáticos - Colapsable */}
+                <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
+                  <button
+                    onClick={() => setShowColorLegend(!showColorLegend)}
+                    className="w-full flex items-center justify-between text-left"
+                  >
+                    <h3 className="font-semibold text-gray-800 text-lg sm:text-xl">Sistema de Etiquetado Automático</h3>
+                    {showColorLegend ? <IconChevronUp /> : <IconChevronDown />}
+                  </button>
+                  
+                  {showColorLegend && (
+                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 bg-green-400 rounded"></div>
+                        <span className="text-base sm:text-lg">A tiempo (+4 días)</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 bg-yellow-400 rounded"></div>
+                        <span className="text-base sm:text-lg">Por vencer (2-3 días)</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-400 rounded"></div>
+                        <span className="text-base sm:text-lg">Vence mañana</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 bg-red-400 rounded"></div>
+                        <span className="text-base sm:text-lg">Vence hoy / Vencido</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gray-400 rounded"></div>
+                        <span className="text-base sm:text-lg">Completado</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Alertas de notificaciones */}
+                {notifications.length > 0 && (
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="text-orange-600">
+                        <IconAlert />
+                      </div>
+                      <h3 className="font-semibold text-orange-800 text-lg sm:text-xl">Alertas Activas</h3>
+                    </div>
+                    <div className="space-y-2">
+                      {notifications.slice(0, 3).map((notif, index) => (
+                        <p key={index} className="text-base sm:text-lg text-orange-700">
+                          • {notif.message}
+                        </p>
+                      ))}
+                      {notifications.length > 3 && (
+                        <p className="text-base sm:text-lg text-orange-600">
+                          ... y {notifications.length - 3} alertas más
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Navegación */}
+                <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                    <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-6">
+                      <button
+                        onClick={() => setView('list')}
+                        className={`px-4 py-3 rounded-lg flex items-center justify-center space-x-3 text-lg ${
+                          view === 'list' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
+                        }`}
+                      >
+                        <IconBook />
+                        <span>Lista de Tareas</span>
+                      </button>
+                      <button
+                        onClick={() => setView('calendar')}
+                        className={`px-4 py-3 rounded-lg flex items-center justify-center space-x-3 text-lg ${
+                          view === 'calendar' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
+                        }`}
+                      >
+                        <IconCalendar />
+                        <span>Vista de Calendario</span>
+                      </button>
+                    </div>
+                    
+                    {/* Botón para eliminar tareas completadas */}
+                    {tasks.filter(task => task.completed).length > 0 && (
+                      <button
+                        onClick={deleteAllCompleted}
+                        className="px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center space-x-2 text-base font-medium transition-colors"
+                      >
+                        <IconTrash />
+                        <span>Eliminar Completadas ({tasks.filter(task => task.completed).length})</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Formulario para agregar tarea - Colapsable */}
+                <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
+                  <button
+                    onClick={() => setShowAddTask(!showAddTask)}
+                    className="w-full flex items-center justify-between text-left mb-4"
+                  >
+                    <h3 className="font-semibold text-gray-800 text-lg sm:text-xl">Agregar Nueva Tarea</h3>
+                    {showAddTask ? <IconChevronUp /> : <IconChevronDown />}
+                  </button>
+                  
+                  {showAddTask && (
+                    <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-5 sm:gap-4">
+                      <input
+                        type="text"
+                        placeholder="Asignatura"
+                        value={newTask.subject}
+                        onChange={(e) => setNewTask({...newTask, subject: e.target.value})}
+                        className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Título de la tarea"
+                        value={newTask.title}
+                        onChange={(e) => setNewTask({...newTask, title: e.target.value})}
+                        className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <select
+                        value={newTask.type}
+                        onChange={(e) => setNewTask({...newTask, type: e.target.value})}
+                        className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="Tarea">Tarea</option>
+                        <option value="Examen">Examen</option>
+                        <option value="Ensayo">Ensayo</option>
+                        <option value="Proyecto">Proyecto</option>
+                        <option value="Laboratorio">Laboratorio</option>
+                      </select>
+                      <input
+                        type="date"
+                        value={newTask.dueDate}
+                        onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                        className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <button
+                        onClick={addTask}
+                        className="w-full bg-blue-600 text-white rounded-lg px-4 py-3 hover:bg-blue-700 flex items-center justify-center space-x-2 text-lg font-medium"
+                      >
+                        <IconPlus />
+                        <span>Agregar</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Vista principal */}
+                {view === 'list' ? (
+                  <div className="space-y-6">
+                    {tasks.map(task => {
+                      const status = getTaskStatus(task.dueDate, task.completed);
+                      const style = getStatusStyle(status);
+                      
+                      return (
+                        <div
+                          key={task.id}
+                          className={`bg-white rounded-lg shadow-lg border-l-4 ${style.border} p-4 sm:p-8 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer`}
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
+                            <div className="flex items-start space-x-4 sm:space-x-6 flex-1">
+                              <button
+                                onClick={() => toggleTask(task.id)}
+                                className={`mt-1 w-6 h-6 sm:w-7 sm:h-7 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                                  task.completed 
+                                    ? 'bg-green-500 border-green-500 text-white' 
+                                    : 'border-gray-300 hover:border-gray-400'
+                                }`}
+                              >
+                                {task.completed && <IconCheck size={16} />}
+                              </button>
+                              
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-3">
+                                  <h3 className={`font-semibold text-lg sm:text-xl ${task.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                                    {task.subject}: {task.title}
+                                  </h3>
+                                  <div className="flex items-center space-x-3">
+                                    <span className={`px-3 py-1 rounded-full text-base font-medium ${style.bg} ${style.text}`}>
+                                      {style.label}
+                                    </span>
+                                    <span className="text-base bg-gray-100 text-gray-600 px-3 py-1 rounded">
+                                      {task.type}
+                                    </span>
+                                  </div>
+                                </div>
+                                
+                                {task.description && (
+                                  <p className="text-gray-600 text-base sm:text-lg mb-3">{task.description}</p>
+                                )}
+                                
+                                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-base sm:text-lg text-gray-500">
+                                  <span>📅 {formatDate(task.dueDate)}</span>
+                                  <span>⏰ {getDaysUntilDue(task.dueDate)}</span>
+                                </div>
+                              </div>
+                            </div>
                             
+                            <div className="flex items-center space-x-3">
+                              <div className="flex items-center justify-end sm:justify-center">
+                                <IconClock />
+                              </div>
+                              
+                              {/* Botón editar tarea - solo para tareas pendientes */}
+                              {!task.completed && (
+                                <button
+                                  onClick={() => startEditing(task)}
+                                  className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                                  title="Editar tarea"
+                                >
+                                  <IconEdit />
+                                </button>
+                              )}
+                              
+                              {/* Botón eliminar tarea individual */}
+                              <button
+                                onClick={() => {
+                                  if (window.confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+                                    deleteTask(task.id);
+                                  }
+                                }}
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                                title="Eliminar tarea"
+                              >
+                                <IconTrash />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <CalendarView />
+                )}
+
+                {/* Footer con información */}
+                <div className="mt-8 sm:mt-10 bg-white rounded-lg shadow-lg p-4 sm:p-6">
+                  <div className="text-center text-base sm:text-lg text-gray-600 space-y-3">
+                    <div className="border-b border-gray-200 pb-3">
+                      <p className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">© Derechos Reservados</p>
+                      <p className="text-base sm:text-lg text-gray-700">
+                        Realizado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span>
+                      </p>
+                      <p className="text-sm sm:text-base text-gray-600 mt-1">Ingeniero en Informática</p>
+                    </div>
+                    <div className="pt-2 space-y-1 text-sm sm:text-base">
+                      <p>✨ Sistema de etiquetado automático activado</p>
+                      <p>🔔 Notificaciones {emailNotifications ? 'activadas' : 'desactivadas'}</p>
+                      <p>📊 {tasks.filter(t => !t.completed).length} tareas pendientes de {tasks.length} totales</p>
+                      <p className="text-xs sm:text-sm text-gray-500">
+                        💾 {localStorage.getItem('academicTasksLastSaved') ? 
+                          `Última actualización: ${new Date(localStorage.getItem('academicTasksLastSaved')).toLocaleString('es-CL')}` : 
+                          'Datos cargados'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        // Usar createRoot para React 18
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<AcademicTaskManager />);
+    </script>
+</body>
+</html>
