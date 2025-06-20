@@ -271,49 +271,229 @@
             }, {});
 
             return (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
-                  <div key={date} className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-                    <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 mb-3 sm:mb-4">
-                      {formatDate(date)}
-                    </h3>
-                    <div className="space-y-3">
-                      {dayTasks.map(task => {
-                        const status = getTaskStatus(task.dueDate, task.completed);
-                        const style = getStatusStyle(status);
-                        
-                        return (
-                          <div
-                            key={task.id}
-                            className={`p-3 sm:p-4 rounded-lg border-l-4 ${style.bg} ${style.border} hover:border-2 hover:border-red-500 hover:shadow-lg hover:shadow-red-200 transition-all duration-300 cursor-pointer`}
-                          >
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex items-center space-x-2">
-                                <IconClock />
-                                <span className={`text-base px-3 py-1 rounded-full ${style.bg} ${style.text} font-medium`}>
-                                  {style.label}
-                                </span>
-                              </div>
-                              <button
-                                onClick={() => toggleTask(task.id)}
-                                className={`w-6 h-6 sm:w-7 sm:h-7 rounded border-2 flex items-center justify-center ${
-                                  task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300'
-                                }`}
+              <div className="space-y-8">
+                {/* Calendario Mensual */}
+                <MonthlyCalendar tasks={tasks} />
+                
+                {/* Vista de tarjetas por día */}
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Tareas por Día</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
+                      <div key={date} className="bg-white rounded-lg shadow-lg p-4 sm:p-6 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer">
+                        <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 mb-3 sm:mb-4">
+                          {formatDate(date)}
+                        </h3>
+                        <div className="space-y-3">
+                          {dayTasks.map(task => {
+                            const status = getTaskStatus(task.dueDate, task.completed);
+                            const style = getStatusStyle(status);
+                            
+                            return (
+                              <div
+                                key={task.id}
+                                className={`p-3 sm:p-4 rounded-lg border-l-4 ${style.bg} ${style.border} hover:border-2 hover:border-red-500 hover:shadow-lg hover:shadow-red-200 transition-all duration-300 cursor-pointer`}
                               >
-                                {task.completed && <IconCheck size={16} />}
-                              </button>
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-800 text-lg sm:text-xl">{task.subject}</p>
-                              <p className="text-base sm:text-lg text-gray-600 mt-1">{task.title}</p>
-                              <p className="text-base text-gray-500 mt-2">{task.type}</p>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                                <div className="flex items-center justify-between mb-3">
+                                  <div className="flex items-center space-x-2">
+                                    <IconClock />
+                                    <span className={`text-base px-3 py-1 rounded-full ${style.bg} ${style.text} font-medium`}>
+                                      {style.label}
+                                    </span>
+                                  </div>
+                                  <button
+                                    onClick={() => toggleTask(task.id)}
+                                    className={`w-6 h-6 sm:w-7 sm:h-7 rounded border-2 flex items-center justify-center ${
+                                      task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300'
+                                    }`}
+                                  >
+                                    {task.completed && <IconCheck size={16} />}
+                                  </button>
+                                </div>
+                                <div>
+                                  <p className="font-medium text-gray-800 text-lg sm:text-xl">{task.subject}</p>
+                                  <p className="text-base sm:text-lg text-gray-600 mt-1">{task.title}</p>
+                                  <p className="text-base text-gray-500 mt-2">{task.type}</p>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+              </div>
+            );
+          };
+
+          // Componente de Calendario Mensual
+          const MonthlyCalendar = ({ tasks }) => {
+            const [currentDate, setCurrentDate] = useState(new Date());
+            
+            const today = new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // Obtener el primer día del mes y cuántos días tiene
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+            
+            // Crear array de días del mes
+            const daysArray = [];
+            
+            // Días vacíos del mes anterior
+            for (let i = 0; i < startingDayOfWeek; i++) {
+              daysArray.push(null);
+            }
+            
+            // Días del mes actual
+            for (let day = 1; day <= daysInMonth; day++) {
+              daysArray.push(day);
+            }
+            
+            // Agrupar tareas por fecha
+            const tasksByDate = tasks.reduce((acc, task) => {
+              const taskDate = new Date(task.dueDate);
+              if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
+                const day = taskDate.getDate();
+                if (!acc[day]) acc[day] = [];
+                acc[day].push(task);
+              }
+              return acc;
+            }, {});
+            
+            const monthNames = [
+              'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            
+            const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            
+            const goToPreviousMonth = () => {
+              setCurrentDate(new Date(year, month - 1, 1));
+            };
+            
+            const goToNextMonth = () => {
+              setCurrentDate(new Date(year, month + 1, 1));
+            };
+            
+            const goToToday = () => {
+              setCurrentDate(new Date());
+            };
+            
+            return (
+              <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
+                    {monthNames[month]} {year}
+                  </h2>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={goToPreviousMonth}
+                      className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-base"
+                    >
+                      ←
+                    </button>
+                    <button
+                      onClick={goToToday}
+                      className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-base"
+                    >
+                      Hoy
+                    </button>
+                    <button
+                      onClick={goToNextMonth}
+                      className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-base"
+                    >
+                      →
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Nombres de los días */}
+                <div className="grid grid-cols-7 gap-1 mb-2">
+                  {dayNames.map(day => (
+                    <div key={day} className="text-center font-semibold text-gray-600 py-2 text-base">
+                      {day}
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Días del calendario */}
+                <div className="grid grid-cols-7 gap-1">
+                  {daysArray.map((day, index) => {
+                    if (!day) {
+                      return <div key={index} className="h-20 sm:h-24"></div>;
+                    }
+                    
+                    const dayTasks = tasksByDate[day] || [];
+                    const isToday = today.getDate() === day && 
+                                   today.getMonth() === month && 
+                                   today.getFullYear() === year;
+                    
+                    // Contar tareas por estado
+                    const taskCounts = dayTasks.reduce((acc, task) => {
+                      const status = getTaskStatus(task.dueDate, task.completed);
+                      acc[status] = (acc[status] || 0) + 1;
+                      return acc;
+                    }, {});
+                    
+                    return (
+                      <div
+                        key={day}
+                        className={`h-20 sm:h-24 border border-gray-200 p-1 sm:p-2 hover:border-2 hover:border-red-500 hover:shadow-lg hover:shadow-red-200 transition-all duration-300 cursor-pointer ${
+                          isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className={`text-sm sm:text-base font-medium ${
+                          isToday ? 'text-blue-700' : 'text-gray-800'
+                        }`}>
+                          {day}
+                        </div>
+                        
+                        {/* Indicadores de tareas */}
+                        <div className="mt-1 space-y-0.5">
+                          {taskCounts.overdue > 0 && (
+                            <div className="w-full h-1.5 bg-red-500 rounded text-xs text-white text-center leading-none">
+                              {taskCounts.overdue}
+                            </div>
+                          )}
+                          {taskCounts['due-today'] > 0 && (
+                            <div className="w-full h-1.5 bg-red-400 rounded text-xs text-white text-center leading-none">
+                              {taskCounts['due-today']}
+                            </div>
+                          )}
+                          {taskCounts['due-tomorrow'] > 0 && (
+                            <div className="w-full h-1.5 bg-orange-400 rounded text-xs text-white text-center leading-none">
+                              {taskCounts['due-tomorrow']}
+                            </div>
+                          )}
+                          {taskCounts['due-soon'] > 0 && (
+                            <div className="w-full h-1.5 bg-yellow-400 rounded text-xs text-white text-center leading-none">
+                              {taskCounts['due-soon']}
+                            </div>
+                          )}
+                          {taskCounts['on-time'] > 0 && (
+                            <div className="w-full h-1.5 bg-green-400 rounded text-xs text-white text-center leading-none">
+                              {taskCounts['on-time']}
+                            </div>
+                          )}
+                          {taskCounts.completed > 0 && (
+                            <div className="w-full h-1.5 bg-gray-400 rounded text-xs text-white text-center leading-none">
+                              {taskCounts.completed}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                <div className="mt-4 text-sm text-gray-600 text-center">
+                  Las barras de colores indican el número y estado de las tareas de cada día
+                </div>
               </div>
             );
           };
