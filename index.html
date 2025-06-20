@@ -715,7 +715,7 @@
                 <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
                   <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
                     {/* Contenido Izquierdo: Título, Notificaciones, Email */}
-                    <div className="flex items-center space-x-3 sm:space-x-4 flex-grow justify-center sm:justify-start">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 flex-grow justify-center sm:justify-start">
                         <div className="flex items-center space-x-3 sm:space-x-4">
                             <div className="text-blue-600">
                                 <IconBook />
@@ -729,37 +729,38 @@
                                 </p>
                             </div>
                         </div>
-                        {/* Notificaciones */}
-                        {notifications.length > 0 && (
-                            <div className="relative ml-4"> {/* Agregado ml-4 para espaciar del título */}
-                                <div className="text-orange-500">
-                                    <IconBell />
+                        {/* Notificaciones y Toggle de email - Movidos a la izquierda, debajo del título en móvil */}
+                        <div className="flex items-center space-x-4 sm:space-x-6 mt-4 sm:mt-0 sm:ml-6">
+                            {notifications.length > 0 && (
+                                <div className="relative">
+                                    <div className="text-orange-500">
+                                        <IconBell />
+                                    </div>
+                                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center">
+                                        {notifications.length}
+                                    </span>
                                 </div>
-                                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center">
-                                    {notifications.length}
-                                </span>
+                            )}
+                            <div className="flex items-center space-x-2 sm:space-x-3">
+                                <div className={emailNotifications ? 'text-blue-500' : 'text-gray-400'}>
+                                    <IconMail />
+                                </div>
+                                <button
+                                    onClick={() => setEmailNotifications(!emailNotifications)}
+                                    className={`w-12 h-6 sm:w-14 sm:h-7 rounded-full transition-colors ${
+                                        emailNotifications ? 'bg-blue-500' : 'bg-gray-300'
+                                    }`}
+                                >
+                                    <div className={`w-5 h-5 sm:w-6 sm:h-6 bg-white rounded-full transition-transform ${
+                                        emailNotifications ? 'translate-x-6 sm:translate-x-7' : 'translate-x-0.5 sm:translate-x-1'
+                                    }`} />
+                                </button>
                             </div>
-                        )}
-                        {/* Toggle de email */}
-                        <div className="flex items-center space-x-2 sm:space-x-3 ml-4"> {/* Agregado ml-4 */}
-                            <div className={emailNotifications ? 'text-blue-500' : 'text-gray-400'}>
-                                <IconMail />
-                            </div>
-                            <button
-                                onClick={() => setEmailNotifications(!emailNotifications)}
-                                className={`w-12 h-6 sm:w-14 sm:h-7 rounded-full transition-colors ${
-                                    emailNotifications ? 'bg-blue-500' : 'bg-gray-300'
-                                }`}
-                            >
-                                <div className={`w-5 h-5 sm:w-6 sm:h-6 bg-white rounded-full transition-transform ${
-                                    emailNotifications ? 'translate-x-6 sm:translate-x-7' : 'translate-x-0.5 sm:translate-x-1'
-                                }`} />
-                            </button>
                         </div>
                     </div>
 
                     {/* Contenido Derecho: Menú Hamburguesa */}
-                    <div className="flex-shrink-0 ml-auto sm:ml-0"> {/* ml-auto en móvil para mover a la derecha */}
+                    <div className="flex-shrink-0 ml-auto sm:ml-0">
                         <button
                             onClick={() => setShowColorLegend(!showColorLegend)}
                             className="text-gray-600 hover:text-blue-600 p-2 rounded-full hover:bg-gray-100 transition-colors"
@@ -882,23 +883,23 @@
                 {/* Alertas de notificaciones */}
                 {notifications.length > 0 && (
                   <div
-                    onClick={() => setView('calendar')} // Navega al calendario
-                    className="bg-orange-50 border border-orange-200 rounded-lg shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 cursor-pointer" // Añadido cursor-pointer
+                    onClick={() => setView(prevView => prevView === 'calendar' ? 'list' : 'calendar')} // Alternar vista
+                    className="bg-orange-50 border border-orange-200 rounded-lg shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 cursor-pointer"
                   >
                     <div className="flex items-center space-x-3 mb-3">
                       <div className="text-orange-600">
                         <IconAlert />
                       </div>
-                      <h3 className="font-semibold text-orange-800 text-base sm:text-lg">Alertas Activas</h3> {/* Tamaño de fuente ajustado */}
+                      <h3 className="font-semibold text-orange-800 text-base sm:text-lg">Alertas Activas</h3>
                     </div>
                     <div className="space-y-2">
                       {notifications.slice(0, 3).map((notif, index) => (
-                        <p key={notif.id || index} className="text-sm text-orange-700"> {/* Tamaño de fuente ajustado */}
+                        <p key={notif.id || index} className="text-sm text-orange-700">
                           • {notif.message}
                         </p>
                       ))}
                       {notifications.length > 3 && (
-                        <p className="text-sm text-orange-600"> {/* Tamaño de fuente ajustado */}
+                        <p className="text-sm text-orange-600">
                           ... y {notifications.length - 3} alertas más
                         </p>
                       )}
@@ -1057,3 +1058,4 @@
     </script>
 </body>
 </html>
+
