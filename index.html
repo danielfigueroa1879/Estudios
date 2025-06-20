@@ -81,45 +81,94 @@
         );
 
         const AcademicTaskManager = () => {
-          const [tasks, setTasks] = useState([
-            {
-              id: 1,
-              subject: 'Matemáticas',
-              title: 'Examen Final',
-              description: 'Cálculo integral y diferencial',
-              dueDate: '2025-06-25',
-              type: 'Examen',
-              completed: false
-            },
-            {
-              id: 2,
-              subject: 'Historia',
-              title: 'Ensayo sobre la Revolución',
-              description: 'Análisis de las causas y consecuencias',
-              dueDate: '2025-06-22',
-              type: 'Ensayo',
-              completed: false
-            },
-            {
-              id: 3,
-              subject: 'Física',
-              title: 'Laboratorio de Óptica',
-              description: 'Informe de experimentos con lentes',
-              dueDate: '2025-06-21',
-              type: 'Laboratorio',
-              completed: false
-            },
-            {
-              id: 4,
-              subject: 'Literatura',
-              title: 'Análisis de "Cien años de soledad"',
-              description: 'Ensayo crítico sobre realismo mágico',
-              dueDate: '2025-06-20',
-              type: 'Ensayo',
-              completed: false
+          // Función para cargar datos del localStorage
+          const loadTasksFromStorage = () => {
+            try {
+              const savedTasks = localStorage.getItem('academicTasks');
+              if (savedTasks) {
+                return JSON.parse(savedTasks);
+              }
+            } catch (error) {
+              console.error('Error loading tasks from storage:', error);
             }
-          ]);
+            // Si no hay datos guardados, retornar las tareas por defecto
+            return [
+              {
+                id: 1,
+                subject: 'Matemáticas',
+                title: 'Examen Final',
+                description: 'Cálculo integral y diferencial',
+                dueDate: '2025-06-25',
+                type: 'Examen',
+                completed: false
+              },
+              {
+                id: 2,
+                subject: 'Historia',
+                title: 'Ensayo sobre la Revolución',
+                description: 'Análisis de las causas y consecuencias',
+                dueDate: '2025-06-22',
+                type: 'Ensayo',
+                completed: false
+              },
+              {
+                id: 3,
+                subject: 'Física',
+                title: 'Laboratorio de Óptica',
+                description: 'Informe de experimentos con lentes',
+                dueDate: '2025-06-21',
+                type: 'Laboratorio',
+                completed: false
+              },
+              {
+                id: 4,
+                subject: 'Literatura',
+                title: 'Análisis de "Cien años de soledad"',
+                description: 'Ensayo crítico sobre realismo mágico',
+                dueDate: '2025-06-20',
+                type: 'Ensayo',
+                completed: false
+              }
+            ];
+          };
 
+          // Función para guardar datos en localStorage
+          const saveTasksToStorage = (tasksToSave) => {
+            try {
+              localStorage.setItem('academicTasks', JSON.stringify(tasksToSave));
+              localStorage.setItem('academicTasksLastSaved', new Date().toISOString());
+            } catch (error) {
+              console.error('Error saving tasks to storage:', error);
+            }
+          };
+
+          // Función para cargar configuraciones
+          const loadSettingsFromStorage = () => {
+            try {
+              const savedEmailNotifications = localStorage.getItem('emailNotifications');
+              const savedView = localStorage.getItem('currentView');
+              return {
+                emailNotifications: savedEmailNotifications ? JSON.parse(savedEmailNotifications) : true,
+                view: savedView || 'list'
+              };
+            } catch (error) {
+              console.error('Error loading settings from storage:', error);
+              return { emailNotifications: true, view: 'list' };
+            }
+          };
+
+          // Función para guardar configuraciones
+          const saveSettingsToStorage = (emailNotif, currentView) => {
+            try {
+              localStorage.setItem('emailNotifications', JSON.stringify(emailNotif));
+              localStorage.setItem('currentView', currentView);
+            } catch (error) {
+              console.error('Error saving settings to storage:', error);
+            }
+          };
+
+          // Inicializar estados con datos guardados
+          const [tasks, setTasks] = useState(() => loadTasksFromStorage());
           const [newTask, setNewTask] = useState({
             subject: '',
             title: '',
@@ -128,9 +177,20 @@
             type: 'Tarea'
           });
 
-          const [view, setView] = useState('list');
-          const [emailNotifications, setEmailNotifications] = useState(true);
+          const savedSettings = loadSettingsFromStorage();
+          const [view, setView] = useState(savedSettings.view);
+          const [emailNotifications, setEmailNotifications] = useState(savedSettings.emailNotifications);
           const [notifications, setNotifications] = useState([]);
+
+          // Efecto para guardar tareas cuando cambien
+          useEffect(() => {
+            saveTasksToStorage(tasks);
+          }, [tasks]);
+
+          // Efecto para guardar configuraciones cuando cambien
+          useEffect(() => {
+            saveSettingsToStorage(emailNotifications, view);
+          }, [emailNotifications, view]);
 
           // Función para calcular el estado automático basado en la fecha
           const getTaskStatus = (dueDate, completed) => {
@@ -740,6 +800,9 @@
                     <p>✨ Sistema de etiquetado automático activado</p>
                     <p>🔔 Notificaciones {emailNotifications ? 'activadas' : 'desactivadas'}</p>
                     <p>📊 {tasks.filter(t => !t.completed).length} tareas pendientes de {tasks.length} totales</p>
+                    <p>💾 Datos guardados automáticamente - {localStorage.getItem('academicTasksLastSaved') ? 
+                      `Última actualización: ${new Date(localStorage.getItem('academicTasksLastSaved')).toLocaleString('es-ES')}` : 
+                      'Datos cargados'}</p>
                   </div>
                 </div>
               </div>
