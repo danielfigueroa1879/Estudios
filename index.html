@@ -504,13 +504,13 @@
                   window._highlightTimeout = setTimeout(() => {
                       setHighlightedCalendarDates([dateString]);
                   }, delay);
-                  delay += 1000; // Duración de la iluminación (1 segundo)
+                  delay += 1500; // Duración de la iluminación (1.5 segundos)
 
                   // Apagar la iluminación
                   window._highlightTimeout = setTimeout(() => {
                       setHighlightedCalendarDates([]);
                   }, delay);
-                  delay += 500; // Pausa antes de la siguiente iluminación (0.5 segundos)
+                  delay += 750; // Pausa antes de la siguiente iluminación (0.75 segundos)
               });
           };
 
@@ -781,43 +781,43 @@
                   <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
                     {/* Contenido Izquierdo: Título, Notificaciones, Email */}
                     <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 flex-grow justify-center sm:justify-start">
-                        <div className="flex items-center space-x-3 sm:space-x-4">
+                        <div className="flex items-center space-x-2 sm:space-x-4"> {/* Ajustado space-x para móvil */}
                             <div className="text-blue-600">
                                 <IconBook />
                             </div>
                             <div>
-                                <h1 className="text-xl sm:text-4xl font-bold text-gray-900"> {/* Reducido a text-xl en móvil */}
+                                <h1 className="text-lg sm:text-4xl font-bold text-gray-900"> {/* Reducido a text-lg en móvil */}
                                     Gestor Académico
                                 </h1>
-                                <p className="text-sm sm:text-lg text-gray-600"> {/* Reducido a text-sm en móvil */}
+                                <p className="text-xs sm:text-lg text-gray-600"> {/* Reducido a text-xs en móvil */}
                                     Organiza tus tareas académicas
                                 </p>
                             </div>
                         </div>
                         {/* Notificaciones y Toggle de email - Movidos a la izquierda, debajo del título en móvil */}
-                        <div className="flex items-center space-x-4 sm:space-x-6 mt-4 sm:mt-0 sm:ml-6">
+                        <div className="flex items-center space-x-3 sm:space-x-6 mt-4 sm:mt-0 sm:ml-6"> {/* Ajustado space-x y mt/ml para móvil */}
                             {notifications.length > 0 && (
                                 <div className="relative">
                                     <div className="text-orange-500">
-                                        <IconBell />
+                                        <IconBell width="18" height="18" /> {/* Ajustado tamaño */}
                                     </div>
-                                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center">
+                                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"> {/* Ajustado tamaño de la burbuja */}
                                         {notifications.length}
                                     </span>
                                 </div>
                             )}
-                            <div className="flex items-center space-x-2 sm:space-x-3">
+                            <div className="flex items-center space-x-1 sm:space-x-3"> {/* Ajustado space-x */}
                                 <div className={emailNotifications ? 'text-blue-500' : 'text-gray-400'}>
-                                    <IconMail />
+                                    <IconMail width="18" height="18" /> {/* Ajustado tamaño */}
                                 </div>
                                 <button
                                     onClick={() => setEmailNotifications(!emailNotifications)}
-                                    className={`w-12 h-6 sm:w-14 sm:h-7 rounded-full transition-colors ${
+                                    className={`w-10 h-5 sm:w-14 sm:h-7 rounded-full transition-colors ${ /* Ajustado tamaño del toggle */
                                         emailNotifications ? 'bg-blue-500' : 'bg-gray-300'
                                     }`}
                                 >
-                                    <div className={`w-5 h-5 sm:w-6 sm:h-6 bg-white rounded-full transition-transform ${
-                                        emailNotifications ? 'translate-x-6 sm:translate-x-7' : 'translate-x-0.5 sm:translate-x-1'
+                                    <div className={`w-4 h-4 sm:w-6 sm:h-6 bg-white rounded-full transition-transform ${ /* Ajustado tamaño del círculo */
+                                        emailNotifications ? 'translate-x-5 sm:translate-x-7' : 'translate-x-0.5 sm:translate-x-1'
                                     }`} />
                                 </button>
                             </div>
@@ -825,7 +825,7 @@
                     </div>
 
                     {/* Contenido Derecho: Menú Hamburguesa */}
-                    <div className="flex-shrink-0 ml-auto sm:ml-0">
+                    <div className="flex-shrink-0 ml-auto sm:ml-0 flex items-center"> {/* Agregado items-center */}
                         <button
                             onClick={() => setShowColorLegend(!showColorLegend)}
                             className="text-gray-600 hover:text-blue-600 p-2 rounded-full hover:bg-gray-100 transition-colors"
