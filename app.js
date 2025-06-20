@@ -188,7 +188,7 @@ const AcademicTaskManager = () => {
     return `${diffDays} días restantes`;
   };
 
-  // Vista de calendario simplificada
+  // Vista de calendario
   const CalendarView = () => {
     const groupedTasks = tasks.reduce((acc, task) => {
       const date = task.dueDate;
@@ -197,85 +197,352 @@ const AcademicTaskManager = () => {
       return acc;
     }, {});
 
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
-          <div key={date} className="bg-white rounded-lg shadow p-3 sm:p-4">
-            <h3 className="font-semibold text-base sm:text-lg text-gray-800 mb-2 sm:mb-3">
-              {formatDate(date)}
-            </h3>
-            <div className="space-y-2">
-              {dayTasks.map(task => {
-                const status = getTaskStatus(task.dueDate, task.completed);
-                const style = getStatusStyle(status);
-                const IconComponent = style.icon;
-                
-                return (
-                  <div
-                    key={task.id}
-                    className={`p-2 sm:p-3 rounded-lg border-l-4 ${style.bg} ${style.border}`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center space-x-2">
-                        <IconComponent size={12} className={style.text} />
-                        <span className={`text-xs px-2 py-1 rounded-full ${style.bg} ${style.text} font-medium`}>
-                          {style.label}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => toggleTask(task.id)}
-                        className={`w-4 h-4 sm:w-5 sm:h-5 rounded border-2 ${
-                          task.completed ? 'bg-green-500 border-green-500' : 'border-gray-300'
-                        }`}
-                      />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-800 text-sm">{task.subject}</p>
-                      <p className="text-xs sm:text-sm text-gray-600 truncate">{task.title}</p>
-                      <p className="text-xs text-gray-500 mt-1">{task.type}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
+    return React.createElement('div', 
+      { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4" },
+      Object.entries(groupedTasks).sort().map(([date, dayTasks]) =>
+        React.createElement('div', 
+          { key: date, className: "bg-white rounded-lg shadow p-3 sm:p-4" },
+          React.createElement('h3', 
+            { className: "font-semibold text-base sm:text-lg text-gray-800 mb-2 sm:mb-3" },
+            formatDate(date)
+          ),
+          React.createElement('div', 
+            { className: "space-y-2" },
+            dayTasks.map(task => {
+              const status = getTaskStatus(task.dueDate, task.completed);
+              const style = getStatusStyle(status);
+              const IconComponent = style.icon;
+              
+              return React.createElement('div',
+                {
+                  key: task.id,
+                  className: `p-2 sm:p-3 rounded-lg border-l-4 ${style.bg} ${style.border}`
+                },
+                React.createElement('div',
+                  { className: "flex items-center justify-between mb-2" },
+                  React.createElement('div',
+                    { className: "flex items-center space-x-2" },
+                    React.createElement(IconComponent, { size: 12, className: style.text }),
+                    React.createElement('span',
+                      { className: `text-xs px-2 py-1 rounded-full ${style.bg} ${style.text} font-medium` },
+                      style.label
+                    )
+                  ),
+                  React.createElement('button',
+                    {
+                      onClick: () => toggleTask(task.id),
+                      className: `w-4 h-4 sm:w-5 sm:h-5 rounded border-2 ${
+                        task.completed ? 'bg-green-500 border-green-500' : 'border-gray-300'
+                      }`
+                    }
+                  )
+                ),
+                React.createElement('div', {},
+                  React.createElement('p', { className: "font-medium text-gray-800 text-sm" }, task.subject),
+                  React.createElement('p', { className: "text-xs sm:text-sm text-gray-600 truncate" }, task.title),
+                  React.createElement('p', { className: "text-xs text-gray-500 mt-1" }, task.type)
+                )
+              );
+            })
+          )
+        )
+      )
     );
   };
 
-  return React.createElement('div', { className: "min-h-screen bg-gray-50 p-2 sm:p-4" },
-    React.createElement('div', { className: "max-w-7xl mx-auto" },
+  return React.createElement('div', 
+    { className: "min-h-screen bg-gray-50 p-2 sm:p-4" },
+    React.createElement('div', 
+      { className: "max-w-7xl mx-auto" },
+      
       // Header
-      React.createElement('div', { className: "bg-white rounded-lg shadow-sm p-3 sm:p-6 mb-4 sm:mb-6" },
-        React.createElement('div', { className: "flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-3 sm:space-y-0" },
-          React.createElement('div', { className: "flex items-center space-x-2 sm:space-x-3" },
+      React.createElement('div', 
+        { className: "bg-white rounded-lg shadow-sm p-3 sm:p-6 mb-4 sm:mb-6" },
+        React.createElement('div', 
+          { className: "flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-3 sm:space-y-0" },
+          React.createElement('div', 
+            { className: "flex items-center space-x-2 sm:space-x-3" },
             React.createElement(BookOpen, { className: "text-blue-600", size: 24 }),
             React.createElement('div', {},
-              React.createElement('h1', { className: "text-lg sm:text-2xl font-bold text-gray-900" }, "Gestor Académico"),
-              React.createElement('p', { className: "text-xs sm:text-sm text-gray-600" }, "Etiquetado automático por colores")
+              React.createElement('h1', 
+                { className: "text-lg sm:text-2xl font-bold text-gray-900" },
+                "Gestor Académico"
+              ),
+              React.createElement('p', 
+                { className: "text-xs sm:text-sm text-gray-600" },
+                "Etiquetado automático por colores"
+              )
             )
           ),
-          React.createElement('div', { className: "flex items-center space-x-3 sm:space-x-4" },
-            notifications.length > 0 && React.createElement('div', { className: "relative" },
+          React.createElement('div', 
+            { className: "flex items-center space-x-3 sm:space-x-4" },
+            notifications.length > 0 && React.createElement('div', 
+              { className: "relative" },
               React.createElement(Bell, { className: "text-orange-500", size: 20 }),
-              React.createElement('span', { className: "absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" }, notifications.length)
+              React.createElement('span', 
+                { className: "absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" },
+                notifications.length
+              )
             ),
-            React.createElement('div', { className: "flex items-center space-x-1 sm:space-x-2" },
-              React.createElement(Mail, { size: 16, className: emailNotifications ? 'text-blue-500' : 'text-gray-400' }),
-              React.createElement('button', {
-                onClick: () => setEmailNotifications(!emailNotifications),
-                className: `w-10 h-5 sm:w-12 sm:h-6 rounded-full transition-colors ${emailNotifications ? 'bg-blue-500' : 'bg-gray-300'}`
-              },
-                React.createElement('div', { className: `w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-transform ${emailNotifications ? 'translate-x-5 sm:translate-x-6' : 'translate-x-0.5 sm:translate-x-1'}` })
+            React.createElement('div', 
+              { className: "flex items-center space-x-1 sm:space-x-2" },
+              React.createElement(Mail, { 
+                size: 16, 
+                className: emailNotifications ? 'text-blue-500' : 'text-gray-400' 
+              }),
+              React.createElement('button',
+                {
+                  onClick: () => setEmailNotifications(!emailNotifications),
+                  className: `w-10 h-5 sm:w-12 sm:h-6 rounded-full transition-colors ${
+                    emailNotifications ? 'bg-blue-500' : 'bg-gray-300'
+                  }`
+                },
+                React.createElement('div', 
+                  { 
+                    className: `w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-transform ${
+                      emailNotifications ? 'translate-x-5 sm:translate-x-6' : 'translate-x-0.5 sm:translate-x-1'
+                    }` 
+                  }
+                )
               )
             )
           )
         )
       ),
 
-      // Resto del componente continúa igual...
-      // Por brevedad, aquí irían todos los demás elementos convertidos a React.createElement
+      // Leyenda de colores
+      React.createElement('div', 
+        { className: "bg-white rounded-lg shadow-sm p-3 sm:p-4 mb-4 sm:mb-6" },
+        React.createElement('h3', 
+          { className: "font-semibold text-gray-800 mb-2 sm:mb-3 text-sm sm:text-base" },
+          "Sistema de Etiquetado Automático"
+        ),
+        React.createElement('div', 
+          { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3" },
+          React.createElement('div', 
+            { className: "flex items-center space-x-2" },
+            React.createElement('div', { className: "w-3 h-3 sm:w-4 sm:h-4 bg-green-400 rounded" }),
+            React.createElement('span', { className: "text-xs sm:text-sm" }, "A tiempo (+4 días)")
+          ),
+          React.createElement('div', 
+            { className: "flex items-center space-x-2" },
+            React.createElement('div', { className: "w-3 h-3 sm:w-4 sm:h-4 bg-yellow-400 rounded" }),
+            React.createElement('span', { className: "text-xs sm:text-sm" }, "Por vencer (2-3 días)")
+          ),
+          React.createElement('div', 
+            { className: "flex items-center space-x-2" },
+            React.createElement('div', { className: "w-3 h-3 sm:w-4 sm:h-4 bg-orange-400 rounded" }),
+            React.createElement('span', { className: "text-xs sm:text-sm" }, "Vence mañana")
+          ),
+          React.createElement('div', 
+            { className: "flex items-center space-x-2" },
+            React.createElement('div', { className: "w-3 h-3 sm:w-4 sm:h-4 bg-red-400 rounded" }),
+            React.createElement('span', { className: "text-xs sm:text-sm" }, "Vence hoy / Vencido")
+          ),
+          React.createElement('div', 
+            { className: "flex items-center space-x-2" },
+            React.createElement('div', { className: "w-3 h-3 sm:w-4 sm:h-4 bg-gray-400 rounded" }),
+            React.createElement('span', { className: "text-xs sm:text-sm" }, "Completado")
+          )
+        )
+      ),
+
+      // Alertas
+      notifications.length > 0 && React.createElement('div', 
+        { className: "bg-orange-50 border border-orange-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6" },
+        React.createElement('div', 
+          { className: "flex items-center space-x-2 mb-2" },
+          React.createElement(AlertTriangle, { className: "text-orange-600", size: 16 }),
+          React.createElement('h3', 
+            { className: "font-semibold text-orange-800 text-sm sm:text-base" },
+            "Alertas Activas"
+          )
+        ),
+        React.createElement('div', 
+          { className: "space-y-1" },
+          notifications.slice(0, 3).map((notif, index) =>
+            React.createElement('p', 
+              { key: index, className: "text-xs sm:text-sm text-orange-700" },
+              `• ${notif.message}`
+            )
+          ),
+          notifications.length > 3 && React.createElement('p', 
+            { className: "text-xs sm:text-sm text-orange-600" },
+            `... y ${notifications.length - 3} alertas más`
+          )
+        )
+      ),
+
+      // Navegación
+      React.createElement('div', 
+        { className: "bg-white rounded-lg shadow-sm p-3 sm:p-4 mb-4 sm:mb-6" },
+        React.createElement('div', 
+          { className: "flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4" },
+          React.createElement('button',
+            {
+              onClick: () => setView('list'),
+              className: `px-3 py-2 rounded-lg flex items-center justify-center space-x-2 text-sm ${
+                view === 'list' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
+              }`
+            },
+            React.createElement(BookOpen, { size: 14 }),
+            React.createElement('span', {}, "Lista de Tareas")
+          ),
+          React.createElement('button',
+            {
+              onClick: () => setView('calendar'),
+              className: `px-3 py-2 rounded-lg flex items-center justify-center space-x-2 text-sm ${
+                view === 'calendar' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
+              }`
+            },
+            React.createElement(Calendar, { size: 14 }),
+            React.createElement('span', {}, "Vista de Calendario")
+          )
+        )
+      ),
+
+      // Formulario
+      React.createElement('div', 
+        { className: "bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6" },
+        React.createElement('h3', 
+          { className: "font-semibold text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base" },
+          "Agregar Nueva Tarea"
+        ),
+        React.createElement('div', 
+          { className: "space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-5 sm:gap-4" },
+          React.createElement('input',
+            {
+              type: "text",
+              placeholder: "Asignatura",
+              value: newTask.subject,
+              onChange: (e) => setNewTask({...newTask, subject: e.target.value}),
+              className: "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            }
+          ),
+          React.createElement('input',
+            {
+              type: "text",
+              placeholder: "Título de la tarea",
+              value: newTask.title,
+              onChange: (e) => setNewTask({...newTask, title: e.target.value}),
+              className: "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            }
+          ),
+          React.createElement('select',
+            {
+              value: newTask.type,
+              onChange: (e) => setNewTask({...newTask, type: e.target.value}),
+              className: "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            },
+            React.createElement('option', { value: "Tarea" }, "Tarea"),
+            React.createElement('option', { value: "Examen" }, "Examen"),
+            React.createElement('option', { value: "Ensayo" }, "Ensayo"),
+            React.createElement('option', { value: "Proyecto" }, "Proyecto"),
+            React.createElement('option', { value: "Laboratorio" }, "Laboratorio")
+          ),
+          React.createElement('input',
+            {
+              type: "date",
+              value: newTask.dueDate,
+              onChange: (e) => setNewTask({...newTask, dueDate: e.target.value}),
+              className: "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            }
+          ),
+          React.createElement('button',
+            {
+              onClick: addTask,
+              className: "w-full bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 flex items-center justify-center space-x-2 text-sm font-medium"
+            },
+            React.createElement(Plus, { size: 14 }),
+            React.createElement('span', {}, "Agregar")
+          )
+        )
+      ),
+
+      // Vista principal
+      view === 'list' ? 
+        React.createElement('div', 
+          { className: "space-y-4" },
+          tasks.map(task => {
+            const status = getTaskStatus(task.dueDate, task.completed);
+            const style = getStatusStyle(status);
+            const IconComponent = style.icon;
+            
+            return React.createElement('div',
+              {
+                key: task.id,
+                className: `bg-white rounded-lg shadow-sm border-l-4 ${style.border} p-4 sm:p-6`
+              },
+              React.createElement('div',
+                { className: "flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0" },
+                React.createElement('div',
+                  { className: "flex items-start space-x-3 sm:space-x-4 flex-1" },
+                  React.createElement('button',
+                    {
+                      onClick: () => toggleTask(task.id),
+                      className: `mt-1 w-5 h-5 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                        task.completed 
+                          ? 'bg-green-500 border-green-500 text-white' 
+                          : 'border-gray-300 hover:border-gray-400'
+                      }`
+                    },
+                    task.completed && React.createElement(Check, { size: 12 })
+                  ),
+                  React.createElement('div',
+                    { className: "flex-1 min-w-0" },
+                    React.createElement('div',
+                      { className: "flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-2" },
+                      React.createElement('h3',
+                        { 
+                          className: `font-semibold text-sm sm:text-base ${
+                            task.completed ? 'line-through text-gray-500' : 'text-gray-900'
+                          }` 
+                        },
+                        `${task.subject}: ${task.title}`
+                      ),
+                      React.createElement('div',
+                        { className: "flex items-center space-x-2" },
+                        React.createElement('span',
+                          { className: `px-2 py-1 rounded-full text-xs font-medium ${style.bg} ${style.text}` },
+                          style.label
+                        ),
+                        React.createElement('span',
+                          { className: "text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded" },
+                          task.type
+                        )
+                      )
+                    ),
+                    task.description && React.createElement('p',
+                      { className: "text-gray-600 text-xs sm:text-sm mb-2" },
+                      task.description
+                    ),
+                    React.createElement('div',
+                      { className: "flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 text-xs sm:text-sm text-gray-500" },
+                      React.createElement('span', {}, `📅 ${formatDate(task.dueDate)}`),
+                      React.createElement('span', {}, `⏰ ${getDaysUntilDue(task.dueDate)}`)
+                    )
+                  )
+                ),
+                React.createElement('div',
+                  { className: "flex items-center justify-end sm:justify-center" },
+                  React.createElement(IconComponent, { size: 16, className: style.text })
+                )
+              )
+            );
+          })
+        ) : 
+        React.createElement(CalendarView),
+
+      // Footer
+      React.createElement('div', 
+        { className: "mt-6 sm:mt-8 bg-white rounded-lg shadow-sm p-3 sm:p-4" },
+        React.createElement('div', 
+          { className: "text-center text-xs sm:text-sm text-gray-600 space-y-1" },
+          React.createElement('p', {}, "✨ Sistema de etiquetado automático activado"),
+          React.createElement('p', {}, `🔔 Notificaciones ${emailNotifications ? 'activadas' : 'desactivadas'}`),
+          React.createElement('p', {}, `📊 ${tasks.filter(t => !t.completed).length} tareas pendientes de ${tasks.length} totales`)
+        )
+      )
     )
   );
 };
