@@ -128,13 +128,23 @@
               console.error('Error loading tasks from storage:', error);
             }
             // Si no hay datos guardados, retornar las tareas por defecto
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            const dayAfterTomorrow = new Date(today);
+            dayAfterTomorrow.setDate(today.getDate() + 2);
+            const fourDaysLater = new Date(today);
+            fourDaysLater.setDate(today.getDate() + 4);
+
+            const formatDateForInput = (date) => date.toISOString().split('T')[0];
+
             return [
               {
                 id: 1,
                 subject: 'Matemáticas',
                 title: 'Examen Final',
                 description: 'Cálculo integral y diferencial',
-                dueDate: '2025-06-25',
+                dueDate: formatDateForInput(tomorrow), // Vence mañana
                 type: 'Examen',
                 completed: false
               },
@@ -143,7 +153,7 @@
                 subject: 'Historia',
                 title: 'Ensayo sobre la Revolución',
                 description: 'Análisis de las causas y consecuencias',
-                dueDate: '2025-06-22',
+                dueDate: formatDateForInput(tomorrow), // Vence mañana
                 type: 'Ensayo',
                 completed: false
               },
@@ -152,7 +162,7 @@
                 subject: 'Física',
                 title: 'Laboratorio de Óptica',
                 description: 'Informe de experimentos con lentes',
-                dueDate: '2025-06-21',
+                dueDate: formatDateForInput(dayAfterTomorrow), // Por vencer (2 días)
                 type: 'Laboratorio',
                 completed: false
               },
@@ -161,8 +171,17 @@
                 subject: 'Literatura',
                 title: 'Análisis de "Cien años de soledad"',
                 description: 'Ensayo crítico sobre realismo mágico',
-                dueDate: '2025-06-20',
+                dueDate: formatDateForInput(fourDaysLater), // A tiempo (4 días)
                 type: 'Ensayo',
+                completed: false
+              },
+              {
+                id: 5,
+                subject: 'Química',
+                title: 'Proyecto de Reacciones',
+                description: 'Desarrollo de un modelo molecular',
+                dueDate: formatDateForInput(today), // Vence hoy
+                type: 'Proyecto',
                 completed: false
               }
             ];
@@ -322,6 +341,7 @@
                       id: task.id,
                       message: `${task.subject}: ${task.title} - ${label}`,
                       type: status,
+                      dueDate: task.dueDate, // Añadir la fecha de vencimiento a la notificación
                       timestamp: new Date()
                     });
                   }
@@ -465,29 +485,33 @@
               // Limpiar resaltados existentes inmediatamente
               setHighlightedCalendarDates([]);
 
-              if (view === 'list') { // Si la vista actual es la lista, cambiar a calendario y animar
-                  setView('calendar');
-                  const alertDates = [...new Set(notifications.map(n => n.dueDate))].sort(); // Obtener fechas únicas y ordenadas de las alertas
+              // Siempre forzar la vista de calendario
+              setView('calendar');
+              
+              // Desplazarse al calendario después de un pequeño retardo para asegurar la vista
+              setTimeout(() => {
+                const calendarSection = document.getElementById('calendarSection');
+                if (calendarSection) {
+                  calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }, 100); // Pequeño retardo para que la vista cambie primero
 
-                  let delay = 0;
-                  alertDates.forEach((dateString) => {
-                      // Iluminar la fecha
-                      window._highlightTimeout = setTimeout(() => {
-                          setHighlightedCalendarDates([dateString]);
-                      }, delay);
-                      delay += 1000; // Duración de la iluminación (1 segundo)
+              const alertDates = [...new Set(notifications.map(n => n.dueDate))].sort(); // Obtener fechas únicas y ordenadas de las alertas
 
-                      // Apagar la iluminación
-                      window._highlightTimeout = setTimeout(() => {
-                          setHighlightedCalendarDates([]);
-                      }, delay);
-                      delay += 500; // Pausa antes de la siguiente iluminación (0.5 segundos)
-                  });
+              let delay = 0;
+              alertDates.forEach((dateString) => {
+                  // Iluminar la fecha
+                  window._highlightTimeout = setTimeout(() => {
+                      setHighlightedCalendarDates([dateString]);
+                  }, delay);
+                  delay += 1000; // Duración de la iluminación (1 segundo)
 
-              } else if (view === 'calendar') { // Si la vista actual es el calendario, cambiar a lista
-                  setView('list');
-                  setHighlightedCalendarDates([]); // Asegurarse de que se limpien los resaltados
-              }
+                  // Apagar la iluminación
+                  window._highlightTimeout = setTimeout(() => {
+                      setHighlightedCalendarDates([]);
+                  }, delay);
+                  delay += 500; // Pausa antes de la siguiente iluminación (0.5 segundos)
+              });
           };
 
           // Vista de calendario simplificada
@@ -500,7 +524,7 @@
             }, {});
 
             return (
-              <div className="space-y-8">
+              <div className="space-y-8" id="calendarSection"> {/* Añadido ID aquí */}
                 {/* Calendario Mensual */}
                 <MonthlyCalendar tasks={tasks} highlightedDates={highlightedDates} /> {/* Pasa highlightedDates */}
 
@@ -696,7 +720,7 @@
                         key={day}
                         className={`h-20 sm:h-24 border border-gray-200 p-1 sm:p-2 transition-all duration-300 ease-in-out ${
                           isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50'
-                        } ${isHighlighted ? 'bg-blue-200 border-blue-500 shadow-md' : ''}`}
+                        } ${isHighlighted ? 'border-red-500 ring-2 ring-red-500 shadow-md' : ''}`}
                       >
                         <div className={`text-sm sm:text-base font-medium ${
                           isToday ? 'text-blue-700' : 'text-gray-800'
