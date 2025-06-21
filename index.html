@@ -1032,8 +1032,8 @@
                                     <div
                                         key={currentDayFormatted}
                                         className={`h-20 sm:h-24 border border-gray-200 p-1 sm:p-2 transition-all duration-300 ease-in-out ${
-                                            isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50'
-                                        } ${isHoliday ? 'bg-red-50' : ''} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`}
+                                            isHoliday ? 'bg-red-50' : (isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50')
+                                        } ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`}
                                         style={highlightEntry ? {
                                             '--highlight-color': highlightClassesToApply.match(/border-([\w-]+)-(\d+)/)?.[0].replace('border-', '') || '#3b82f6',
                                             '--ring-color-rgb': highlightBorderColorRgb
