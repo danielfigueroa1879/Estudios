@@ -476,14 +476,34 @@
             return `${diffDays} días restantes`;
           };
 
+          // Helper para animar el resaltado de una fecha en el calendario
+          const animateCalendarDate = async (dateString) => {
+            // Limpiar cualquier animación anterior
+            if (window._currentHighlightTimeout) {
+                clearTimeout(window._currentHighlightTimeout);
+                window._currentHighlightTimeout = null;
+            }
+            setHighlightedCalendarDates([]); // Apagar inmediatamente cualquier fecha resaltada
+
+            // Función de retardo
+            const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+            // Resaltar la fecha
+            setHighlightedCalendarDates([dateString]);
+            await sleep(1500); // Duración del resaltado (1.5 segundos)
+
+            // Apagar el resaltado después de la duración
+            setHighlightedCalendarDates([]);
+            await sleep(750); // Pausa antes de que se pueda iniciar otra animación (0.75 segundos)
+          };
+
           // Manejar el clic en Alertas Activas
-          const handleAlertsClick = () => {
-              // Limpiar cualquier timeout existente para prevenir animaciones superpuestas
-              if (window._highlightTimeout) {
-                  clearTimeout(window._highlightTimeout);
-                  window._highlightTimeout = null;
+          const handleAlertsClick = async () => {
+              // Limpiar cualquier animación anterior y resaltados
+              if (window._currentHighlightTimeout) {
+                  clearTimeout(window._currentHighlightTimeout);
+                  window._currentHighlightTimeout = null;
               }
-              // Limpiar resaltados existentes inmediatamente
               setHighlightedCalendarDates([]);
 
               // Siempre forzar la vista de calendario
@@ -499,20 +519,33 @@
 
               const alertDates = [...new Set(notifications.map(n => n.dueDate))].sort(); // Obtener fechas únicas y ordenadas de las alertas
 
-              let delay = 0;
-              alertDates.forEach((dateString) => {
-                  // Iluminar la fecha
-                  window._highlightTimeout = setTimeout(() => {
-                      setHighlightedCalendarDates([dateString]);
-                  }, delay);
-                  delay += 1500; // Duración de la iluminación (1.5 segundos)
+              // Ejecutar animaciones secuencialmente
+              for (const dateString of alertDates) {
+                  await animateCalendarDate(dateString);
+              }
+          };
 
-                  // Apagar la iluminación
-                  window._highlightTimeout = setTimeout(() => {
-                      setHighlightedCalendarDates([]);
-                  }, delay);
-                  delay += 750; // Pausa antes de la siguiente iluminación (0.75 segundos)
-              });
+          // Manejar el clic en la tarjeta de tarea
+          const handleTaskCardClick = async (dueDate) => {
+              // Limpiar cualquier animación anterior y resaltados
+              if (window._currentHighlightTimeout) {
+                  clearTimeout(window._currentHighlightTimeout);
+                  window._currentHighlightTimeout = null;
+              }
+              setHighlightedCalendarDates([]);
+
+              // Siempre forzar la vista de calendario
+              setView('calendar');
+
+              // Desplazarse al calendario después de un pequeño retardo
+              setTimeout(() => {
+                const calendarSection = document.getElementById('calendarSection');
+                if (calendarSection) {
+                  calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }, 100);
+
+              await animateCalendarDate(dueDate);
           };
 
           // Vista de calendario simplificada
@@ -718,7 +751,7 @@
 
                     return (
                       <div
-                        key={day}
+                        key={currentDayFormatted} // Usar currentDayFormatted como key
                         className={`h-20 sm:h-24 border border-gray-200 p-1 sm:p-2 transition-all duration-300 ease-in-out ${
                           isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50'
                         } ${isHighlighted ? 'border-red-500 ring-2 ring-red-500 shadow-md' : ''}`}
@@ -788,7 +821,7 @@
                                 <IconBook width="20" height="20" />
                             </div>
                             <div>
-                                <h1 className="text-xl sm:text-4xl font-bold text-gray-900 leading-tight">
+                                <h1 className="text-xl sm:text-4xl font-bold text-gray-900 leading-tight"> {/* text-xl para móvil */}
                                     Gestor Académico
                                 </h1>
                                 <p className="text-xs sm:text-lg text-gray-600">
@@ -1039,8 +1072,8 @@
                       return (
                         <div
                           key={task.id}
-                          // Removido onClick de la tarjeta principal
-                          className={`rounded-lg shadow-lg border-l-8 p-4 sm:p-8 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} hover:border-red-500 hover:ring-2 hover:ring-red-500 hover:shadow-lg hover:shadow-red-200`}
+                          onClick={() => handleTaskCardClick(task.dueDate)} // Ahora toda la tarjeta activa el clic
+                          className={`rounded-lg shadow-lg border-l-8 p-4 sm:p-8 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} hover:border-red-500 hover:ring-2 hover:ring-red-500 hover:shadow-lg hover:shadow-red-200 cursor-pointer`} // Añadido cursor-pointer
                         >
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
                             <div className="flex items-start space-x-4 sm:space-x-6 flex-1">
