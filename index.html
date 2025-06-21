@@ -795,7 +795,7 @@
                                 </p>
                             </div>
                         </div>
-                        {/* Notificaciones y Toggle de email - Siempre a la izquierda, debajo del título en móvil */}
+                        {/* Notificaciones y Toggle de email - Alineados a la izquierda, debajo del título en móvil */}
                         <div className="flex items-center space-x-3 mt-2 sm:space-x-6 sm:mt-0 sm:ml-6">
                             {notifications.length > 0 && (
                                 <div className="relative">
@@ -826,7 +826,10 @@
                     </div>
 
                     {/* Contenido Derecho: Menú Hamburguesa */}
-                    <div className="flex-shrink-0 ml-auto sm:ml-0 flex items-center">
+                    {/* Flexbox en el padre (flex-row) y auto-margins en los hijos funcionan para alinear horizontalmente */}
+                    {/* Para centrar verticalmente un elemento flex-item dentro de un flex-container (flex-row), usa items-center en el contenedor */}
+                    {/* O, si el elemento es el único flex-item o quieres controlarlo individualmente, usa self-center */}
+                    <div className="flex-shrink-0 ml-auto sm:ml-0 flex items-center self-center"> {/* Changed self-start to self-center */}
                         <button
                             onClick={() => setShowColorLegend(!showColorLegend)}
                             className="text-gray-600 hover:text-blue-600 p-2 rounded-full hover:bg-gray-100 transition-colors"
@@ -1142,4 +1145,3 @@
     </script>
 </body>
 </html>
-
