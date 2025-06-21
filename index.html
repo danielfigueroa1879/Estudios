@@ -116,6 +116,13 @@
             </svg>
         );
 
+        const IconArrowBack = () => (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5"/>
+              <polyline points="12 19 5 12 12 5"/>
+          </svg>
+        );
+
         const AcademicTaskManager = () => {
           // Función para cargar datos del localStorage
           const loadTasksFromStorage = () => {
@@ -242,6 +249,7 @@
           const [highlightedCalendarDates, setHighlightedCalendarDates] = useState([]); // Nuevo estado para resaltar fechas
           const [currentCalendarViewDate, setCurrentCalendarViewDate] = useState(new Date()); // Controla el mes del calendario
           const todayGlobal = new Date(); // Definir today a nivel superior para acceso global
+          const [originTaskForCalendar, setOriginTaskForCalendar] = useState(null); // Nuevo estado para almacenar la tarea que abrió el calendario
 
           // Efecto para guardar tareas cuando cambien
           useEffect(() => {
@@ -515,6 +523,7 @@
                   window._currentHighlightTimeout = null;
               }
               setHighlightedCalendarDates([]);
+              setOriginTaskForCalendar(null); // Resetear origen
 
               // Siempre forzar la vista de calendario
               setView('calendar');
@@ -568,6 +577,9 @@
               }
               setHighlightedCalendarDates([]);
 
+              // Almacenar la información de la tarea que originó la consulta
+              setOriginTaskForCalendar({ taskId: task.id, scrollY: window.scrollY });
+
               // Siempre forzar la vista de calendario
               setView('calendar');
               
@@ -586,6 +598,24 @@
               const cardStyle = getTaskCardStyle(status, task.completed);
               await animateCalendarDate(task.dueDate, cardStyle.highlightClass);
           };
+
+          // Función para volver a la tarea original
+          const backToOriginTask = () => {
+            if (originTaskForCalendar) {
+                setView('list'); // Volver a la vista de lista
+                setHighlightedCalendarDates([]); // Limpiar cualquier resaltado
+                setOriginTaskForCalendar(null); // Limpiar la tarea de origen
+
+                // Desplazarse a la tarea original
+                setTimeout(() => {
+                    const taskElement = document.getElementById(originTaskForCalendar.taskId);
+                    if (taskElement) {
+                        taskElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 0); // Pequeño retardo para asegurar que la vista cambie
+            }
+          };
+
 
           // Nuevo componente para mostrar tareas por día como tarjetas
           const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, toggleTask, startEditing, deleteTask }) => {
@@ -680,13 +710,80 @@
                     currentViewDate={currentCalendarViewDate} // Pasa el estado del mes
                     setCurrentViewDate={setCurrentCalendarViewDate} // Pasa la función para actualizar el mes
                     todayGlobal={todayGlobal} // Pasa todayGlobal al componente MonthlyCalendar
+                    originTaskForCalendar={originTaskForCalendar} // Pasa la info de la tarea de origen
+                    backToOriginTask={backToOriginTask} // Pasa la función para volver
                 />
+
+                {/* Vista de tarjetas por día */}
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Tareas por Día</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {Object.entries(groupedTasks).sort().map(([date, dayTasksInGroup]) => ( // Usar un nombre diferente para evitar conflicto
+                      <div key={date} className="bg-white rounded-lg shadow-lg p-4 sm:p-6 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer">
+                        <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 mb-3 sm:mb-4">
+                          {formatDate(date)}
+                        </h3>
+                        <div className="space-y-3">
+                          {dayTasksInGroup.map(task => { // Usar dayTasksInGroup aquí
+                            const status = getTaskStatus(task.dueDate, task.completed);
+                            const cardStyle = getTaskCardStyle(status, task.completed); // Estilo general de la tarjeta
+
+                            return (
+                              <div
+                                key={task.id}
+                                className={`p-3 sm:p-4 rounded-lg border-l-8 ${cardStyle.bg} ${cardStyle.border} hover:border-2 hover:border-red-500 hover:shadow-lg hover:shadow-red-200 transition-all duration-300 cursor-pointer`}
+                              >
+                                <div className="flex items-center justify-between mb-3">
+                                  <div className="flex items-center space-x-2">
+                                    <IconClock />
+                                    <span className={`text-base px-3 py-1 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>
+                                        {getDaysUntilDue(task.dueDate)}
+                                    </span>
+                                  </div>
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
+                                    className={`w-6 h-6 sm:w-7 sm:h-7 rounded border-2 flex items-center justify-center ${
+                                      task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300'
+                                    }`}
+                                  >
+                                    {task.completed && <IconCheck size={16} />}
+                                  </button>
+                                </div>
+                                <div>
+                                  <p className="font-medium text-gray-800 text-lg sm:text-xl">{task.subject}</p>
+                                  <p className="text-base sm:text-lg text-gray-600 mt-1">{task.title}</p>
+                                  <p className="text-base text-gray-500 mt-2">{task.type}</p>
+                                </div>
+                                <div className="flex justify-end mt-4 space-x-2">
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); startEditing(task); }}
+                                        className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                                        title="Editar tarea"
+                                    >
+                                        <IconEdit />
+                                    </button>
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
+                                        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                                        title="Eliminar tarea"
+                                    >
+                                        <IconTrash />
+                                    </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             );
           };
 
           // Componente de Calendario Mensual
-          const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal }) => { // Recibe props de control de fecha
+          const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, originTaskForCalendar, backToOriginTask }) => { // Recibe props de control de fecha y el origen
             // Usa currentViewDate de props, no estado local
             const year = currentViewDate.getFullYear();
             const month = currentViewDate.getMonth();
@@ -743,7 +840,7 @@
             };
 
             return (
-              <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+              <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 relative"> {/* Añadido relative para posicionamiento absoluto del botón */}
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
                     {monthNames[month]} {year}
@@ -859,6 +956,17 @@
                 <div className="mt-4 text-sm text-gray-600 text-center">
                   Las barras de colores indican el número y estado de las tareas de cada día.
                 </div>
+
+                {/* Botón Volver a la Tarea (condicional) */}
+                {originTaskForCalendar && (
+                  <button
+                    onClick={backToOriginTask}
+                    className="absolute bottom-4 right-4 p-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors flex items-center justify-center z-10"
+                    title="Volver a la tarea original"
+                  >
+                    <IconArrowBack />
+                  </button>
+                )}
               </div>
             );
           };
@@ -937,6 +1045,7 @@
                                   onClick={() => {
                                       setView('list'); // Redirige a la vista de lista de tareas
                                       setShowColorLegend(false); // Cierra el menú hamburguesa
+                                      setOriginTaskForCalendar(null); // Borrar el origen
                                       // Desplazarse a la sección de la lista de tareas
                                       setTimeout(() => {
                                           const taskListSection = document.getElementById('taskListSection');
@@ -1086,7 +1195,7 @@
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
                     <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-6">
                       <button
-                        onClick={() => setView('list')}
+                        onClick={() => {setView('list'); setOriginTaskForCalendar(null);}} // Resetear origen al ir a lista de tareas
                         className={`px-4 py-3 rounded-lg flex items-center justify-start space-x-3 text-lg w-full ${ // Added w-full and justify-start
                           view === 'list' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
                         }`}
@@ -1097,6 +1206,7 @@
                       <button
                         onClick={() => { // Nuevo botón para tareas por día
                           setView('daily');
+                          setOriginTaskForCalendar(null); // Resetear origen al ir a tareas por día
                            setTimeout(() => {
                                           const dailyTasksSection = document.getElementById('dailyTasksSection');
                                           if (dailyTasksSection) {
@@ -1112,7 +1222,7 @@
                         <span>Tareas por Día</span>
                       </button>
                       <button
-                        onClick={() => setView('calendar')}
+                        onClick={() => {setView('calendar'); setOriginTaskForCalendar(null);}} // Resetear origen al ir a vista de calendario
                         className={`px-4 py-3 rounded-lg flex items-center justify-center space-x-3 text-lg ${
                           view === 'calendar' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
                         }`}
@@ -1145,6 +1255,7 @@
                       return (
                         <div
                           key={task.id}
+                          id={task.id} // Añadir ID para poder desplazarme a ella
                           onClick={() => handleTaskCardClick(task)} // Ahora toda la tarjeta activa el clic y pasa el objeto task
                           className={`rounded-lg shadow-lg border-l-8 p-4 sm:p-8 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} hover:border-red-500 hover:ring-2 hover:ring-red-500 hover:shadow-lg hover:shadow-red-200 cursor-pointer`}
                         >
@@ -1259,4 +1370,3 @@
     </script>
 </body>
 </html>
-
