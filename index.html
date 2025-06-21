@@ -124,6 +124,9 @@
         );
 
         const AcademicTaskManager = () => {
+          // Variable para forzar re-render automático
+          const [currentTime, setCurrentTime] = useState(new Date());
+
           // Función para cargar datos del localStorage
           const loadTasksFromStorage = () => {
             try {
@@ -258,6 +261,15 @@
           const todayGlobal = new Date(); // Definir today a nivel superior para acceso global
           const [originTaskForCalendar, setOriginTaskForCalendar] = useState(null); // Nuevo estado para almacenar la tarea que abrió el calendario
 
+          // *** NUEVO: Efecto para actualizar la hora cada minuto ***
+          useEffect(() => {
+            const interval = setInterval(() => {
+              setCurrentTime(new Date());
+            }, 60000); // Actualizar cada minuto
+
+            return () => clearInterval(interval);
+          }, []);
+
           // Efecto para guardar tareas cuando cambien
           useEffect(() => {
             saveTasksToStorage(tasks);
@@ -275,19 +287,36 @@
               return new Date(parts[0], parts[1] - 1, parts[2]);
           };
 
-          // Función para calcular el estado automático basado en la fecha (mantengo la lógica pero los estilos serán genéricos)
-          const getTaskStatus = (dueDate, completed) => {
+          // *** MODIFICADO: Función para calcular el estado automático basado en la fecha y hora actual ***
+          const getTaskStatus = (dueDate, dueTime, completed) => {
             if (completed) return 'completed';
 
-            const todayMidnight = new Date();
-            todayMidnight.setHours(0, 0, 0, 0); // Medianoche de *hoy* en hora local
+            const now = new Date(); // Usar la hora actual real
+            const todayMidnight = new Date(now);
+            todayMidnight.setHours(0, 0, 0, 0);
 
-            const dueMidnight = createLocalDate(dueDate); // Medianoche de *la fecha de vencimiento* en hora local
+            const dueMidnight = createLocalDate(dueDate);
+            
+            // Si hay hora específica, crear fecha completa con hora
+            let dueDateTime = dueMidnight;
+            if (dueTime) {
+              const [hours, minutes] = dueTime.split(':').map(Number);
+              dueDateTime = new Date(dueMidnight);
+              dueDateTime.setHours(hours, minutes, 0, 0);
+            } else {
+              // Si no hay hora, usar final del día (23:59:59)
+              dueDateTime = new Date(dueMidnight);
+              dueDateTime.setHours(23, 59, 59, 999);
+            }
+
+            // Comparar con la hora actual
+            if (dueDateTime < now) {
+              return 'overdue'; // Ya pasó la fecha/hora
+            }
 
             const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-            if (diffDays < 0) return 'overdue'; // Vencido
             if (diffDays === 0) return 'due-today'; // Vence hoy
             if (diffDays === 1) return 'due-tomorrow'; // Vence mañana
             if (diffDays <= 3) return 'due-soon'; // Por vencer
@@ -309,6 +338,14 @@
             } else {
                 switch (status) {
                     case 'overdue':
+                        // *** TAREAS VENCIDAS: Color gris completo ***
+                        baseStyles = {
+                            bg: 'bg-gray-100',
+                            border: 'border-gray-500',
+                            text: 'text-gray-800',
+                        };
+                        highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md';
+                        break;
                     case 'due-today':
                         baseStyles = {
                             bg: 'bg-red-50',
@@ -348,13 +385,13 @@
           };
 
 
-          // Simulación de notificaciones automáticas
+          // *** MODIFICADO: Simulación de notificaciones automáticas considerando hora ***
           useEffect(() => {
             const checkNotifications = () => {
               const newNotifications = [];
               tasks.forEach(task => {
                 if (!task.completed) {
-                  const status = getTaskStatus(task.dueDate, task.completed);
+                  const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
                   // Notificar si vence hoy, mañana o está vencida
                   if (status === 'due-today' || status === 'due-tomorrow' || status === 'overdue') {
                     // Mantengo el label de getStatusStyle solo para el mensaje de notificación
@@ -380,7 +417,7 @@
             checkNotifications();
             const interval = setInterval(checkNotifications, 60000); // Revisa cada minuto
             return () => clearInterval(interval);
-          }, [tasks]);
+          }, [tasks, currentTime]); // *** AGREGADO: currentTime como dependencia ***
 
           const addTask = () => {
             if (newTask.subject && newTask.title && newTask.dueDate) {
@@ -564,7 +601,7 @@
                   const taskForColor = tasks.find(t => t.dueDate === dateString);
                   let highlightClasses = '';
                   if (taskForColor) {
-                      const status = getTaskStatus(taskForColor.dueDate, taskForColor.completed); // Usar task.completed aquí
+                      const status = getTaskStatus(taskForColor.dueDate, taskForColor.dueTime, taskForColor.completed);
                       highlightClasses = getTaskCardStyle(status, taskForColor.completed).highlightClass;
                   }
                   
@@ -589,7 +626,7 @@
               window._currentHighlightTimeout = null; // Marcar el final de la secuencia
           };
 
-          // Manejar el clic en la tarjeta de tarea
+          // *** MODIFICADO: Manejar el clic en la tarjeta de tarea con hora ***
           const handleTaskCardClick = async (task) => {
               // Limpiar cualquier animación anterior y resaltados
               if (window._currentHighlightTimeout) {
@@ -615,7 +652,7 @@
                 }
               }, 100);
 
-              const status = getTaskStatus(task.dueDate, task.completed);
+              const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
               const cardStyle = getTaskCardStyle(status, task.completed);
               await animateCalendarDate(task.dueDate, cardStyle.highlightClass);
           };
@@ -639,7 +676,7 @@
           };
 
 
-          // Nuevo componente para mostrar tareas por día como tarjetas
+          // *** MODIFICADO: Nuevo componente para mostrar tareas por día como tarjetas ***
           const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, toggleTask, startEditing, deleteTask }) => {
             const groupedTasks = tasks.reduce((acc, task) => {
               const date = task.dueDate;
@@ -661,7 +698,7 @@
                         {dayTasks
                           .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')) // Ordenar por hora
                           .map(task => {
-                          const status = getTaskStatus(task.dueDate, task.completed);
+                          const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
                           const cardStyle = getTaskCardStyle(status, task.completed);
                           return (
                             <div
@@ -736,13 +773,14 @@
                     todayGlobal={todayGlobal} // Pasa todayGlobal al componente MonthlyCalendar
                     originTaskForCalendar={originTaskForCalendar} // Pasa la info de la tarea de origen
                     backToOriginTask={backToOriginTask} // Pasa la función para volver
+                    getTaskStatus={getTaskStatus} // *** AGREGADO: Pasar la función actualizada ***
                 />
               </div>
             );
           };
 
-          // Componente de Calendario Mensual
-          const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, originTaskForCalendar, backToOriginTask }) => { // Recibe props de control de fecha y el origen
+          // *** MODIFICADO: Componente de Calendario Mensual con función getTaskStatus actualizada ***
+          const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, originTaskForCalendar, backToOriginTask, getTaskStatus }) => { // *** AGREGADO: getTaskStatus como prop ***
             // Usa currentViewDate de props, no estado local
             const year = currentViewDate.getFullYear();
             const month = currentCalendarViewDate.getMonth(); // Usar currentCalendarViewDate.getMonth() directamente
@@ -855,11 +893,6 @@
 
                     // Contar tareas por estado
                     const tasksForDay = tasksByDate[day] || []; // Obtener las tareas para el día actual o un array vacío
-                    const taskCounts = tasksForDay.reduce((acc, task) => {
-                      const status = getTaskStatus(task.dueDate, task.completed);
-                      acc[status] = (acc[status] || 0) + 1;
-                      return acc;
-                    }, {});
 
                     return (
                       <div
@@ -874,18 +907,18 @@
                           {day}
                         </div>
 
-                        {/* Indicadores de tareas - Múltiples barras por tarea con hora */}
+                        {/* *** MODIFICADO: Indicadores de tareas con getTaskStatus actualizado *** */}
                         <div className="mt-1 space-y-0.5">
                           {tasksForDay
                             .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')) // Ordenar por hora
                             .map((task, taskIndex) => {
-                            const status = getTaskStatus(task.dueDate, task.completed);
+                            const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); // *** MODIFICADO: Incluir dueTime ***
                             let bgColor = '';
                             let title = '';
                             
                             switch (status) {
                               case 'overdue':
-                                bgColor = 'bg-red-500';
+                                bgColor = 'bg-gray-600'; // *** MODIFICADO: Gris más oscuro para vencidas ***
                                 title = `${task.subject} - Vencida`;
                                 break;
                               case 'due-today':
@@ -1078,13 +1111,13 @@
                   )}
                 </div>
 
-                {/* Banner de Última Actualización (Móvil y PC) */}
-                <div className="bg-white rounded-xl shadow-lg p-3 text-center text-gray-500 text-xs mb-6 sm:mb-8"> {/* Añadido sm:mb-8 para consistencia */}
-                    <div className="sm:hidden"> {/* Ocultar en pantallas sm y mayores */}
+                {/* *** MODIFICADO: Banner de Última Actualización (solo ocultar notificaciones en móvil) *** */}
+                <div className="bg-white rounded-xl shadow-lg p-3 text-center text-gray-500 text-xs mb-6 sm:mb-8">
+                    <div className="hidden sm:block"> {/* *** MODIFICADO: Solo visible en pantallas sm y mayores *** */}
                         <p>🔔 Notificaciones {emailNotifications ? 'activadas' : 'desactivadas'}</p>
                         <p>📊 {tasks.filter(t => !t.completed).length} tareas pendientes de {tasks.length} totales</p>
                     </div>
-                    <p className="text-xs text-gray-500 pt-2 sm:pt-0"> {/* Ajustado mt para móvil y text-size */}
+                    <p className="text-xs text-gray-500 pt-2 sm:pt-0">
                         💾 {localStorage.getItem('academicTasksLastSaved') ?
                           `Última actualización: ${new Date(localStorage.getItem('academicTasksLastSaved')).toLocaleString('es-CL')}` :
                           'Datos cargados'}
@@ -1278,7 +1311,7 @@
                 {view === 'list' ? (
                   <div id="taskListSection" className="space-y-6"> {/* Añadido ID para desplazamiento */}
                     {tasks.map(task => {
-                      const status = getTaskStatus(task.dueDate, task.completed); // Todavía útil para getDaysUntilDue y el label
+                      const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); // *** MODIFICADO: Incluir dueTime ***
                       const cardStyle = getTaskCardStyle(status, task.completed); // Estilo para el fondo y borde
 
                       return (
@@ -1371,7 +1404,7 @@
                   <CalendarView highlightedDates={highlightedCalendarDates} />
                 )}
 
-                {/* Footer con información */}
+                {/* *** MODIFICADO: Footer con información (ocultar notificaciones en móvil) *** */}
                 <div className="mt-8 sm:mt-10 bg-white rounded-xl shadow-lg p-4 sm:p-6">
                   <div className="text-center text-gray-600 space-y-2">
                     <div className="border-b border-gray-200 pb-2">
@@ -1381,13 +1414,13 @@
                       </p>
                       <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p>
                     </div>
-                    {/* Ocultar en pantallas pequeñas, visible en sm y mayores */}
+                    {/* *** MODIFICADO: Solo visible en pantallas sm y mayores *** */}
                     <div className="hidden sm:block pt-2 space-y-0.5 text-xs sm:text-sm">
                       <p>🔔 Notificaciones {emailNotifications ? 'activadas' : 'desactivadas'}</p>
                       <p>📊 {tasks.filter(t => !t.completed).length} tareas pendientes de {tasks.length} totales</p>
                     </div>
                     {/* Última actualización siempre visible */}
-                    <p className="text-xs text-gray-500 pt-2 sm:pt-0"> {/* Ajustado mt para móvil y text-size */}
+                    <p className="text-xs text-gray-500 pt-2 sm:pt-0">
                         💾 {localStorage.getItem('academicTasksLastSaved') ?
                           `Última actualización: ${new Date(localStorage.getItem('academicTasksLastSaved')).toLocaleString('es-CL')}` :
                           'Datos cargados'}
