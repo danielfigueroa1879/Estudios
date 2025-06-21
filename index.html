@@ -1111,8 +1111,8 @@
                   )}
                 </div>
 
-                {/* *** MODIFICADO: Banner de Última Actualización (completamente oculto en PC) *** */}
-                <div className="bg-white rounded-xl shadow-lg p-3 text-center text-gray-500 text-xs mb-6 sm:mb-8 sm:hidden"> {/* *** AGREGADO: sm:hidden para ocultar en PC *** */}
+                {/* *** MODIFICADO: Banner completamente oculto en móvil *** */}
+                <div className="hidden sm:block bg-white rounded-xl shadow-lg p-3 text-center text-gray-500 text-xs mb-6 sm:mb-8">
                     <div>
                         <p>🔔 Notificaciones {emailNotifications ? 'activadas' : 'desactivadas'}</p>
                         <p>📊 {tasks.filter(t => !t.completed).length} tareas pendientes de {tasks.length} totales</p>
@@ -1242,68 +1242,70 @@
                   )}
                 </div>
 
-                {/* *** MODIFICADO: Navegación con diseño destacado y elegante *** */}
-                <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 rounded-xl shadow-lg border border-blue-100 p-4 sm:p-6 mb-6 sm:mb-8 backdrop-blur-sm">
+                {/* *** MODIFICADO: Navegación con diseño destacado, elegante y efecto de iluminación *** */}
+                <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 rounded-2xl shadow-lg border border-blue-100 p-4 sm:p-6 mb-6 sm:mb-8 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
                     <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
-                      <button
-                        onClick={() => {setView('list'); setOriginTaskForCalendar(null);}}
-                        className={`px-6 py-4 rounded-xl flex items-center justify-start space-x-3 text-lg w-full sm:w-auto transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
-                          view === 'list' 
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
-                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
-                        }`}
-                      >
-                        <IconBook />
-                        <span className="font-medium">Lista de Tareas</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setView('daily');
-                          setOriginTaskForCalendar(null);
-                           setTimeout(() => {
-                                          const dailyTasksSection = document.getElementById('dailyTasksSection');
-                                          if (dailyTasksSection) {
-                                              dailyTasksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                          }
-                                      }, 0);
-                        }}
-                        className={`px-6 py-4 rounded-xl flex items-center justify-start space-x-3 text-lg w-full sm:w-auto transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
-                          view === 'daily' 
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
-                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
-                        }`}
-                      >
-                        <IconCalendar />
-                        <span className="font-medium">Tareas por Día</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setView('calendar'); 
-                          setOriginTaskForCalendar(null);
-                          setTimeout(() => {
-                            const calendarSection = document.getElementById('calendarSection');
-                            if (calendarSection) {
-                              calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }
-                          }, 100);
-                        }}
-                        className={`px-6 py-4 rounded-xl flex items-center justify-center space-x-3 text-lg w-full sm:w-auto transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
-                          view === 'calendar' 
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
-                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
-                        }`}
-                      >
-                        <IconCalendar />
-                        <span className="font-medium">Vista de Calendario</span>
-                      </button>
+                      <div className="grid grid-cols-3 gap-2 sm:flex sm:gap-4 w-full sm:w-auto"> {/* *** AGREGADO: Grid en móvil, flex en PC *** */}
+                        <button
+                          onClick={() => {setView('list'); setOriginTaskForCalendar(null);}}
+                          className={`px-3 py-4 sm:px-6 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-start space-y-1 sm:space-y-0 sm:space-x-3 text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                            view === 'list' 
+                              ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                              : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
+                          }`}
+                        >
+                          <IconBook />
+                          <span className="font-medium text-center sm:text-left">Lista</span> {/* *** MODIFICADO: Texto más corto en móvil *** */}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setView('daily');
+                            setOriginTaskForCalendar(null);
+                             setTimeout(() => {
+                                            const dailyTasksSection = document.getElementById('dailyTasksSection');
+                                            if (dailyTasksSection) {
+                                                dailyTasksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                            }
+                                        }, 0);
+                          }}
+                          className={`px-3 py-4 sm:px-6 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-start space-y-1 sm:space-y-0 sm:space-x-3 text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                            view === 'daily' 
+                              ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                              : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
+                          }`}
+                        >
+                          <IconCalendar />
+                          <span className="font-medium text-center sm:text-left">Por Día</span> {/* *** MODIFICADO: Texto más corto *** */}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setView('calendar'); 
+                            setOriginTaskForCalendar(null);
+                            setTimeout(() => {
+                              const calendarSection = document.getElementById('calendarSection');
+                              if (calendarSection) {
+                                calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }
+                            }, 100);
+                          }}
+                          className={`px-3 py-4 sm:px-6 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-start space-y-1 sm:space-y-0 sm:space-x-3 text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                            view === 'calendar' 
+                              ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                              : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
+                          }`}
+                        >
+                          <IconCalendar />
+                          <span className="font-medium text-center sm:text-left">Calendario</span> {/* *** MODIFICADO: Texto más corto *** */}
+                        </button>
+                      </div>
                     </div>
 
                     {/* Botón para eliminar tareas completadas */}
                     {tasks.filter(task => task.completed).length > 0 && (
                       <button
                         onClick={deleteAllCompleted}
-                        className="px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 flex items-center space-x-2 text-base font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-red-200"
+                        className="px-4 py-3 bg-red-500 text-white rounded-2xl hover:bg-red-600 flex items-center space-x-2 text-base font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-red-200"
                       >
                         <IconTrash />
                         <span>Eliminar Completadas ({tasks.filter(task => task.completed).length})</span>
