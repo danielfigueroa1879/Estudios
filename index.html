@@ -778,11 +778,11 @@
               <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
-                  <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-                    {/* Contenido Izquierdo del banner */}
-                    <div className="flex-grow flex flex-col items-start w-full sm:w-auto">
-                        {/* Título e ícono del libro */}
-                        <div className="flex items-center space-x-2 mb-2 sm:mb-0">
+                  {/* Contenedor principal del encabezado: Siempre flex-row en sm y arriba, items-center para centrado vertical */}
+                  <div className="flex flex-row items-center justify-between space-x-4">
+                    {/* Contenido Izquierdo: Icono, Título y Subtítulo */}
+                    <div className="flex-grow flex flex-col items-start space-y-0">
+                        <div className="flex items-center space-x-2">
                             <div className="text-blue-600">
                                 <IconBook width="20" height="20" />
                             </div>
@@ -795,8 +795,8 @@
                                 </p>
                             </div>
                         </div>
-                        {/* Notificaciones y Toggle de email - Alineados a la izquierda, debajo del título en móvil */}
-                        <div className="flex items-center space-x-3 mt-2 sm:space-x-6 sm:mt-0 sm:ml-6">
+                        {/* Notificaciones y Toggle de email - Siempre a la izquierda, debajo del título en móvil */}
+                        <div className="flex items-center space-x-3 mt-2 sm:space-x-6 sm:mt-0"> {/* Ajustado mt y espacio */}
                             {notifications.length > 0 && (
                                 <div className="relative">
                                     <div className="text-orange-500">
@@ -825,11 +825,8 @@
                         </div>
                     </div>
 
-                    {/* Contenido Derecho: Menú Hamburguesa */}
-                    {/* Flexbox en el padre (flex-row) y auto-margins en los hijos funcionan para alinear horizontalmente */}
-                    {/* Para centrar verticalmente un elemento flex-item dentro de un flex-container (flex-row), usa items-center en el contenedor */}
-                    {/* O, si el elemento es el único flex-item o quieres controlarlo individualmente, usa self-center */}
-                    <div className="flex-shrink-0 ml-auto sm:ml-0 flex items-center self-center"> {/* Changed self-start to self-center */}
+                    {/* Contenido Derecho: Menú Hamburguesa - Alineado verticalmente al centro */}
+                    <div className="flex-shrink-0 flex items-center"> {/* items-center para centrar verticalmente */}
                         <button
                             onClick={() => setShowColorLegend(!showColorLegend)}
                             className="text-gray-600 hover:text-blue-600 p-2 rounded-full hover:bg-gray-100 transition-colors"
