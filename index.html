@@ -722,7 +722,7 @@
           const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, originTaskForCalendar, backToOriginTask }) => { // Recibe props de control de fecha y el origen
             // Usa currentViewDate de props, no estado local
             const year = currentViewDate.getFullYear();
-            const month = currentViewDate.getMonth();
+            const month = currentCalendarViewDate.getMonth(); // Usar currentCalendarViewDate.getMonth() directamente
 
             // Obtener el primer día del mes y cuántos días tiene
             const firstDay = new Date(year, month, 1);
@@ -1025,10 +1025,16 @@
                 </div>
 
                 {/* Banner de Última Actualización (Móvil y PC) */}
-                <div className="bg-white rounded-lg shadow-lg p-3 text-center text-gray-500 text-xs mb-6">
-                    💾 {localStorage.getItem('academicTasksLastSaved') ? 
-                      `Última actualización: ${new Date(localStorage.getItem('academicTasksLastSaved')).toLocaleString('es-CL')}` : 
-                      'Datos cargados'}
+                <div className="bg-white rounded-lg shadow-lg p-3 text-center text-gray-500 text-xs mb-6 sm:mb-8"> {/* Añadido sm:mb-8 para consistencia */}
+                    <div className="sm:hidden"> {/* Ocultar en pantallas sm y mayores */}
+                        <p>🔔 Notificaciones {emailNotifications ? 'activadas' : 'desactivadas'}</p>
+                        <p>📊 {tasks.filter(t => !t.completed).length} tareas pendientes de {tasks.length} totales</p>
+                    </div>
+                    <p className="text-xs text-gray-500 pt-2 sm:pt-0"> {/* Ajustado mt para móvil y text-size */}
+                        💾 {localStorage.getItem('academicTasksLastSaved') ?
+                          `Última actualización: ${new Date(localStorage.getItem('academicTasksLastSaved')).toLocaleString('es-CL')}` :
+                          'Datos cargados'}
+                    </p>
                 </div>
 
                 {/* Formulario para agregar/editar tarea */}
@@ -1304,15 +1310,17 @@
                       </p>
                       <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p>
                     </div>
-                    <div className="pt-2 space-y-0.5 text-xs sm:text-sm">
+                    {/* Ocultar en pantallas pequeñas, visible en sm y mayores */}
+                    <div className="hidden sm:block pt-2 space-y-0.5 text-xs sm:text-sm">
                       <p>🔔 Notificaciones {emailNotifications ? 'activadas' : 'desactivadas'}</p>
                       <p>📊 {tasks.filter(t => !t.completed).length} tareas pendientes de {tasks.length} totales</p>
-                      <p className="text-xs text-gray-500">
+                    </div>
+                    {/* Última actualización siempre visible */}
+                    <p className="text-xs text-gray-500 pt-2 sm:pt-0"> {/* Ajustado mt para móvil y text-size */}
                         💾 {localStorage.getItem('academicTasksLastSaved') ?
                           `Última actualización: ${new Date(localStorage.getItem('academicTasksLastSaved')).toLocaleString('es-CL')}` :
                           'Datos cargados'}
-                      </p>
-                    </div>
+                    </p>
                   </div>
                 </div>
               </div>
