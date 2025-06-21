@@ -686,8 +686,10 @@
             }, {});
 
             return (
-              <div className="space-y-8" id="dailyTasksSection"> {/* ID para desplazamiento */}
-                <h3 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Tareas por Día</h3>
+              <div className="space-y-8" id="dailyTasksSection">
+                {/* *** NUEVO: Título de sección *** */}
+                <h2 className="text-2xl sm:text-3xl font-bold text-blue-600 text-center mb-8">TAREAS POR DÍA</h2>
+                
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
                     <div key={date} className="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer">
@@ -763,7 +765,10 @@
             }, {});
 
             return (
-              <div className="space-y-8" id="calendarSection"> {/* Añadido ID aquí */}
+              <div className="space-y-8" id="calendarSection">
+                {/* *** NUEVO: Título de sección *** */}
+                <h2 className="text-2xl sm:text-3xl font-bold text-blue-600 text-center mb-8">CALENDARIO</h2>
+                
                 {/* Calendario Mensual */}
                 <MonthlyCalendar 
                     tasks={tasks} 
@@ -1140,14 +1145,14 @@
                   </div>
                 )}
 
-                {/* *** MODIFICADO: Formulario con efecto de iluminación azul *** */}
+                {/* *** MODIFICADO: Formulario con título azul y efecto de iluminación azul *** */}
                 <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8 border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300">
                   <button
                     onClick={() => setShowAddTask(!showAddTask)}
                     className="w-full flex items-center justify-between text-left mb-4"
                   >
-                    <h3 className="font-semibold text-gray-800 text-lg sm:text-xl">
-                        {editingTask ? 'Editar Tarea' : 'Agregar Nueva Tarea'}
+                    <h3 className="font-semibold text-blue-600 text-lg sm:text-xl"> {/* *** MODIFICADO: Color azul *** */}
+                        {editingTask ? 'EDITAR TAREA' : 'AGREGAR NUEVA TAREA'}
                     </h3>
                     {showAddTask ? <IconChevronUp /> : <IconChevronDown />}
                   </button>
@@ -1231,13 +1236,26 @@
                   )}
                 </div>
 
-                {/* *** MODIFICADO: Navegación con efecto de iluminación al hover *** */}
+                {/* *** MODIFICADO: Navegación con título "TAREAS" y efecto de iluminación al hover *** */}
                 <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 rounded-2xl shadow-lg border border-blue-100 p-4 sm:p-6 mb-6 sm:mb-8 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl">
+                  {/* *** NUEVO: Título TAREAS *** */}
+                  <h2 className="text-2xl sm:text-3xl font-bold text-blue-600 text-center mb-6">TAREAS</h2>
+                  
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
                     <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
                       <div className="grid grid-cols-3 gap-2 sm:flex sm:gap-4 w-full sm:w-auto">
                         <button
-                          onClick={() => {setView('list'); setOriginTaskForCalendar(null);}}
+                          onClick={() => {
+                            setView('list'); 
+                            setOriginTaskForCalendar(null);
+                            // *** NUEVO: Scroll automático a la sección *** 
+                            setTimeout(() => {
+                              const taskListSection = document.getElementById('taskListSection');
+                              if (taskListSection) {
+                                taskListSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }
+                            }, 100);
+                          }}
                           className={`px-2 py-3 sm:px-8 sm:py-4 sm:w-48 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-1 sm:space-y-0 sm:space-x-3 text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
                             view === 'list' 
                               ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
@@ -1251,12 +1269,13 @@
                           onClick={() => {
                             setView('daily');
                             setOriginTaskForCalendar(null);
-                             setTimeout(() => {
-                                            const dailyTasksSection = document.getElementById('dailyTasksSection');
-                                            if (dailyTasksSection) {
-                                                dailyTasksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                            }
-                                        }, 0);
+                            // *** MEJORADO: Scroll automático a la sección *** 
+                            setTimeout(() => {
+                              const dailyTasksSection = document.getElementById('dailyTasksSection');
+                              if (dailyTasksSection) {
+                                dailyTasksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }
+                            }, 100);
                           }}
                           className={`px-2 py-3 sm:px-8 sm:py-4 sm:w-48 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-1 sm:space-y-0 sm:space-x-3 text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
                             view === 'daily' 
@@ -1271,6 +1290,7 @@
                           onClick={() => {
                             setView('calendar'); 
                             setOriginTaskForCalendar(null);
+                            // *** MEJORADO: Scroll automático a la sección *** 
                             setTimeout(() => {
                               const calendarSection = document.getElementById('calendarSection');
                               if (calendarSection) {
@@ -1305,7 +1325,10 @@
 
                 {/* Vista principal */}
                 {view === 'list' ? (
-                  <div id="taskListSection" className="space-y-6"> {/* Añadido ID para desplazamiento */}
+                  <div id="taskListSection" className="space-y-6">
+                    {/* *** NUEVO: Título de sección *** */}
+                    <h2 className="text-2xl sm:text-3xl font-bold text-blue-600 text-center mb-8">LISTA DE TAREAS</h2>
+                    
                     {tasks.map(task => {
                       const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); // *** MODIFICADO: Incluir dueTime ***
                       const cardStyle = getTaskCardStyle(status, task.completed); // Estilo para el fondo y borde
