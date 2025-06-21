@@ -1242,23 +1242,25 @@
                   )}
                 </div>
 
-                {/* Navegación */}
-                <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
+                {/* *** MODIFICADO: Navegación con diseño destacado y elegante *** */}
+                <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 rounded-xl shadow-lg border border-blue-100 p-4 sm:p-6 mb-6 sm:mb-8 backdrop-blur-sm">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-                    <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-6">
+                    <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
                       <button
-                        onClick={() => {setView('list'); setOriginTaskForCalendar(null);}} // Resetear origen al ir a lista de tareas
-                        className={`px-4 py-3 rounded-xl flex items-center justify-start space-x-3 text-lg w-full ${ // Added w-full and justify-start
-                          view === 'list' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
+                        onClick={() => {setView('list'); setOriginTaskForCalendar(null);}}
+                        className={`px-6 py-4 rounded-xl flex items-center justify-start space-x-3 text-lg w-full sm:w-auto transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                          view === 'list' 
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
                         }`}
                       >
                         <IconBook />
-                        <span>Lista de Tareas</span>
+                        <span className="font-medium">Lista de Tareas</span>
                       </button>
                       <button
-                        onClick={() => { // Nuevo botón para tareas por día
+                        onClick={() => {
                           setView('daily');
-                          setOriginTaskForCalendar(null); // Resetear origen al ir a tareas por día
+                          setOriginTaskForCalendar(null);
                            setTimeout(() => {
                                           const dailyTasksSection = document.getElementById('dailyTasksSection');
                                           if (dailyTasksSection) {
@@ -1266,31 +1268,34 @@
                                           }
                                       }, 0);
                         }}
-                        className={`px-4 py-3 rounded-xl flex items-center justify-start space-x-3 text-lg w-full ${ // Added w-full and justify-start
-                          view === 'daily' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
+                        className={`px-6 py-4 rounded-xl flex items-center justify-start space-x-3 text-lg w-full sm:w-auto transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                          view === 'daily' 
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
                         }`}
                       >
-                        <IconCalendar /> {/* Icono de calendario para tareas por día */}
-                        <span>Tareas por Día</span>
+                        <IconCalendar />
+                        <span className="font-medium">Tareas por Día</span>
                       </button>
                       <button
                         onClick={() => {
                           setView('calendar'); 
                           setOriginTaskForCalendar(null);
-                          // Forzar scroll al calendario después de cambiar la vista
                           setTimeout(() => {
                             const calendarSection = document.getElementById('calendarSection');
                             if (calendarSection) {
                               calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                             }
                           }, 100);
-                        }} // Resetear origen al ir a vista de calendario
-                        className={`px-4 py-3 rounded-xl flex items-center justify-center space-x-3 text-lg ${
-                          view === 'calendar' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
+                        }}
+                        className={`px-6 py-4 rounded-xl flex items-center justify-center space-x-3 text-lg w-full sm:w-auto transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                          view === 'calendar' 
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
                         }`}
                       >
                         <IconCalendar />
-                        <span>Vista de Calendario</span>
+                        <span className="font-medium">Vista de Calendario</span>
                       </button>
                     </div>
 
@@ -1298,7 +1303,7 @@
                     {tasks.filter(task => task.completed).length > 0 && (
                       <button
                         onClick={deleteAllCompleted}
-                        className="px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 flex items-center space-x-2 text-base font-medium transition-colors"
+                        className="px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 flex items-center space-x-2 text-base font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-red-200"
                       >
                         <IconTrash />
                         <span>Eliminar Completadas ({tasks.filter(task => task.completed).length})</span>
