@@ -1102,6 +1102,7 @@
                                             </p>
                                         </div>
                                     </div>
+                                    {/* Notificaciones y Toggle de email - Ocultar email toggle en móvil */}
                                     <div className="flex items-center space-x-3 mt-2 sm:space-x-6 sm:mt-0 sm:ml-6">
                                         {notifications.length > 0 && (
                                             <button
@@ -1117,7 +1118,8 @@
                                                 </span>
                                             </button>
                                         )}
-                                        <div className="flex items-center space-x-1">
+                                        {/* Ocultar el toggle de email en pantallas pequeñas */}
+                                        <div className="hidden sm:flex items-center space-x-1">
                                             <div className={emailNotifications ? 'text-blue-500' : 'text-gray-400'}>
                                                 <IconMail width="18" height="18" />
                                             </div>
