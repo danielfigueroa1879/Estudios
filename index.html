@@ -275,19 +275,35 @@
               return new Date(parts[0], parts[1] - 1, parts[2]);
           };
 
-          // Función para calcular el estado automático basado en la fecha (mantengo la lógica pero los estilos serán genéricos)
-          const getTaskStatus = (dueDate, completed) => {
+          // Función para calcular el estado automático basado en la fecha y hora
+          const getTaskStatus = (dueDate, dueTime, completed) => {
             if (completed) return 'completed';
 
-            const todayMidnight = new Date();
-            todayMidnight.setHours(0, 0, 0, 0); // Medianoche de *hoy* en hora local
+            const now = new Date();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Medianoche de hoy
 
-            const dueMidnight = createLocalDate(dueDate); // Medianoche de *la fecha de vencimiento* en hora local
+            const dueDateTime = createLocalDate(dueDate);
+            
+            // Si hay hora especificada, agregarla a la fecha
+            if (dueTime) {
+              const [hours, minutes] = dueTime.split(':').map(Number);
+              dueDateTime.setHours(hours, minutes, 0, 0);
+              
+              // Si la fecha y hora ya pasaron, está vencida por tiempo
+              if (dueDateTime < now) {
+                return 'overdue-time';
+              }
+            }
 
-            const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
+            // Calcular diferencia en días
+            const dueMidnight = createLocalDate(dueDate);
+            dueMidnight.setHours(0, 0, 0, 0);
+            
+            const diffTime = dueMidnight.getTime() - today.getTime();
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-            if (diffDays < 0) return 'overdue'; // Vencido
+            if (diffDays < 0) return 'overdue'; // Vencido por fecha
             if (diffDays === 0) return 'due-today'; // Vence hoy
             if (diffDays === 1) return 'due-tomorrow'; // Vence mañana
             if (diffDays <= 3) return 'due-soon'; // Por vencer
@@ -308,6 +324,14 @@
                 highlightClass = 'border-gray-500 ring-2 ring-gray-500 shadow-md';
             } else {
                 switch (status) {
+                    case 'overdue-time': // Nueva categoría para tareas que pasaron su hora
+                        baseStyles = {
+                            bg: 'bg-gray-100',
+                            border: 'border-gray-400',
+                            text: 'text-gray-700',
+                        };
+                        highlightClass = 'border-gray-400 ring-2 ring-gray-400 shadow-md';
+                        break;
                     case 'overdue':
                     case 'due-today':
                         baseStyles = {
@@ -354,8 +378,8 @@
               const newNotifications = [];
               tasks.forEach(task => {
                 if (!task.completed) {
-                  const status = getTaskStatus(task.dueDate, task.completed);
-                  // Notificar si vence hoy, mañana o está vencida
+                  const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                  // Notificar si vence hoy, mañana o está vencida (pero no las que pasaron de hora)
                   if (status === 'due-today' || status === 'due-tomorrow' || status === 'overdue') {
                     // Mantengo el label de getStatusStyle solo para el mensaje de notificación
                     let label = '';
@@ -501,13 +525,27 @@
             return formattedTime ? `${formattedDate} a las ${formattedTime}` : formattedDate;
           };
 
-          const getDaysUntilDue = (dueDate) => {
-            const todayMidnight = new Date();
-            todayMidnight.setHours(0, 0, 0, 0); // Medianoche de *hoy* en hora local
+          const getDaysUntilDue = (dueDate, dueTime) => {
+            const now = new Date();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
-            const dueMidnight = createLocalDate(dueDate); // Medianoche de *la fecha de vencimiento* en hora local
+            const dueDateTime = createLocalDate(dueDate);
+            
+            // Si hay hora, verificar si ya pasó
+            if (dueTime) {
+              const [hours, minutes] = dueTime.split(':').map(Number);
+              dueDateTime.setHours(hours, minutes, 0, 0);
+              
+              if (dueDateTime < now) {
+                return 'Hora vencida';
+              }
+            }
 
-            const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
+            const dueMidnight = createLocalDate(dueDate);
+            dueMidnight.setHours(0, 0, 0, 0);
+
+            const diffTime = dueMidnight.getTime() - today.getTime();
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
             if (diffDays < 0) return `${Math.abs(diffDays)} días atrasado`;
@@ -564,7 +602,7 @@
                   const taskForColor = tasks.find(t => t.dueDate === dateString);
                   let highlightClasses = '';
                   if (taskForColor) {
-                      const status = getTaskStatus(taskForColor.dueDate, taskForColor.completed); // Usar task.completed aquí
+                      const status = getTaskStatus(taskForColor.dueDate, taskForColor.dueTime, taskForColor.completed);
                       highlightClasses = getTaskCardStyle(status, taskForColor.completed).highlightClass;
                   }
                   
@@ -615,7 +653,7 @@
                 }
               }, 100);
 
-              const status = getTaskStatus(task.dueDate, task.completed);
+              const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
               const cardStyle = getTaskCardStyle(status, task.completed);
               await animateCalendarDate(task.dueDate, cardStyle.highlightClass);
           };
@@ -661,7 +699,7 @@
                         {dayTasks
                           .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')) // Ordenar por hora
                           .map(task => {
-                          const status = getTaskStatus(task.dueDate, task.completed);
+                          const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
                           const cardStyle = getTaskCardStyle(status, task.completed);
                           return (
                             <div
@@ -672,7 +710,7 @@
                                 <div className="flex items-center space-x-2">
                                   <IconClock />
                                   <span className={`text-base px-3 py-1 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>
-                                    {task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate)}
+                                    {task.dueTime ? `${getDaysUntilDue(task.dueDate, task.dueTime)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate, task.dueTime)}
                                   </span>
                                 </div>
                                 <button
@@ -879,11 +917,15 @@
                           {tasksForDay
                             .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')) // Ordenar por hora
                             .map((task, taskIndex) => {
-                            const status = getTaskStatus(task.dueDate, task.completed);
+                            const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
                             let bgColor = '';
                             let title = '';
                             
                             switch (status) {
+                              case 'overdue-time':
+                                bgColor = 'bg-gray-500';
+                                title = `${task.subject} - Hora vencida`;
+                                break;
                               case 'overdue':
                                 bgColor = 'bg-red-500';
                                 title = `${task.subject} - Vencida`;
