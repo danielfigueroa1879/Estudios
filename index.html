@@ -152,6 +152,7 @@
                 title: 'Examen Final',
                 description: 'Cálculo integral y diferencial',
                 dueDate: formatDateForInput(tomorrow), // Vence mañana
+                dueTime: '09:00', // Hora del examen
                 type: 'Examen',
                 completed: false
               },
@@ -161,6 +162,7 @@
                 title: 'Ensayo sobre la Revolución',
                 description: 'Análisis de las causas y consecuencias',
                 dueDate: formatDateForInput(tomorrow), // Vence mañana
+                dueTime: '14:30', // Hora de entrega
                 type: 'Ensayo',
                 completed: false
               },
@@ -170,6 +172,7 @@
                 title: 'Laboratorio de Óptica',
                 description: 'Informe de experimentos con lentes',
                 dueDate: formatDateForInput(dayAfterTomorrow), // Por vencer (2 días)
+                dueTime: '11:00', // Hora del laboratorio
                 type: 'Laboratorio',
                 completed: false
               },
@@ -179,6 +182,7 @@
                 title: 'Análisis de "Cien años de soledad"',
                 description: 'Ensayo crítico sobre realismo mágico',
                 dueDate: formatDateForInput(fourDaysLater), // A tiempo (4 días)
+                dueTime: '16:00', // Hora de entrega
                 type: 'Ensayo',
                 completed: false
               },
@@ -188,6 +192,7 @@
                 title: 'Proyecto de Reacciones',
                 description: 'Desarrollo de un modelo molecular',
                 dueDate: formatDateForInput(today), // Vence hoy
+                dueTime: '13:15', // Hora de presentación
                 type: 'Proyecto',
                 completed: false
               }
@@ -236,6 +241,7 @@
             title: '',
             description: '',
             dueDate: '',
+            dueTime: '', // Nuevo campo para la hora
             type: 'Tarea'
           });
           const [editingTask, setEditingTask] = useState(null); // Estado para la tarea en edición
@@ -388,6 +394,7 @@
                 title: '',
                 description: '',
                 dueDate: '',
+                dueTime: '', // Resetear también la hora
                 type: 'Tarea'
               });
               setShowAddTask(false); // Ocultar el formulario después de añadir
@@ -419,6 +426,7 @@
                 title: '',
                 description: '',
                 dueDate: '',
+                dueTime: '', // Resetear también la hora
                 type: 'Tarea'
               });
               setShowAddTask(false); // Ocultar el formulario después de actualizar
@@ -434,6 +442,7 @@
               title: '',
               description: '',
               dueDate: '',
+              dueTime: '', // Resetear también la hora
               type: 'Tarea'
             });
             setShowAddTask(false); // Ocultar el formulario
@@ -479,6 +488,17 @@
               month: 'short',
               day: 'numeric'
             });
+          };
+
+          const formatTime = (timeString) => {
+            if (!timeString) return '';
+            return timeString;
+          };
+
+          const formatDateTime = (dateString, timeString) => {
+            const formattedDate = formatDate(dateString);
+            const formattedTime = formatTime(timeString);
+            return formattedTime ? `${formattedDate} a las ${formattedTime}` : formattedDate;
           };
 
           const getDaysUntilDue = (dueDate) => {
@@ -638,7 +658,9 @@
                         {formatDate(date)}
                       </h3>
                       <div className="space-y-3">
-                        {dayTasks.map(task => {
+                        {dayTasks
+                          .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')) // Ordenar por hora
+                          .map(task => {
                           const status = getTaskStatus(task.dueDate, task.completed);
                           const cardStyle = getTaskCardStyle(status, task.completed);
                           return (
@@ -650,7 +672,7 @@
                                 <div className="flex items-center space-x-2">
                                   <IconClock />
                                   <span className={`text-base px-3 py-1 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>
-                                    {getDaysUntilDue(task.dueDate)}
+                                    {task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate)}
                                   </span>
                                 </div>
                                 <button
@@ -852,38 +874,54 @@
                           {day}
                         </div>
 
-                        {/* Indicadores de tareas - Revertidos a barras de color */}
+                        {/* Indicadores de tareas - Múltiples barras por tarea con hora */}
                         <div className="mt-1 space-y-0.5">
-                          {taskCounts.overdue > 0 && (
-                            <div className="w-full h-1.5 bg-red-500 rounded text-xs text-white text-center leading-none" title={`${taskCounts.overdue} vencida(s)`}>
-                              {/*taskCounts.overdue*/}
-                            </div>
-                          )}
-                          {taskCounts['due-today'] > 0 && (
-                            <div className="w-full h-1.5 bg-red-400 rounded text-xs text-white text-center leading-none" title={`${taskCounts['due-today']} vence(n) hoy`}>
-                              {/*taskCounts['due-today']*/}
-                            </div>
-                          )}
-                          {taskCounts['due-tomorrow'] > 0 && (
-                            <div className="w-full h-1.5 bg-orange-400 rounded text-xs text-white text-center leading-none" title={`${taskCounts['due-tomorrow']} vence(n) mañana`}>
-                              {/*taskCounts.due-tomorrow*/}
-                            </div>
-                          )}
-                          {taskCounts['due-soon'] > 0 && (
-                            <div className="w-full h-1.5 bg-yellow-400 rounded text-xs text-white text-center leading-none" title={`${taskCounts['due-soon']} por vencer`}>
-                              {/*taskCounts.due-soon*/}
-                            </div>
-                          )}
-                          {taskCounts['on-time'] > 0 && (
-                            <div className="w-full h-1.5 bg-green-400 rounded text-xs text-white text-center leading-none" title={`${taskCounts['on-time']} a tiempo`}>
-                              {/*taskCounts.on-time*/}
-                            </div>
-                          )}
-                          {taskCounts.completed > 0 && (
-                            <div className="w-full h-1.5 bg-gray-400 rounded text-xs text-white text-center leading-none" title={`${taskCounts.completed} completada(s)`}>
-                              {/*taskCounts.completed*/}
-                            </div>
-                          )}
+                          {tasksForDay
+                            .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')) // Ordenar por hora
+                            .map((task, taskIndex) => {
+                            const status = getTaskStatus(task.dueDate, task.completed);
+                            let bgColor = '';
+                            let title = '';
+                            
+                            switch (status) {
+                              case 'overdue':
+                                bgColor = 'bg-red-500';
+                                title = `${task.subject} - Vencida`;
+                                break;
+                              case 'due-today':
+                                bgColor = 'bg-red-400';
+                                title = `${task.subject} - Vence hoy`;
+                                break;
+                              case 'due-tomorrow':
+                                bgColor = 'bg-orange-400';
+                                title = `${task.subject} - Vence mañana`;
+                                break;
+                              case 'due-soon':
+                                bgColor = 'bg-yellow-400';
+                                title = `${task.subject} - Por vencer`;
+                                break;
+                              case 'completed':
+                                bgColor = 'bg-gray-400';
+                                title = `${task.subject} - Completada`;
+                                break;
+                              default:
+                                bgColor = 'bg-green-400';
+                                title = `${task.subject} - A tiempo`;
+                            }
+                            
+                            if (task.dueTime) {
+                              title += ` - ${task.dueTime}`;
+                            }
+                            
+                            return (
+                              <div 
+                                key={`${task.id}-${taskIndex}`}
+                                className={`w-full h-1.5 ${bgColor} rounded text-xs text-white text-center leading-none`} 
+                                title={title}
+                              >
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     );
@@ -891,7 +929,7 @@
                 </div>
 
                 <div className="mt-4 text-sm text-gray-600 text-center">
-                  Las barras de colores indican el número y estado de las tareas de cada día.
+                  Cada barra de color representa una tarea individual. Si hay múltiples tareas el mismo día, verás múltiples barras ordenadas por horario.
                 </div>
 
                 {/* Botón Volver a la Tarea (condicional) */}
@@ -1094,7 +1132,7 @@
 
                   {showAddTask && (
                     <div className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                         <input
                           type="text"
                           placeholder="Asignatura"
@@ -1124,6 +1162,13 @@
                           type="date"
                           value={newTask.dueDate}
                           onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <input
+                          type="time"
+                          placeholder="Hora (opcional)"
+                          value={newTask.dueTime}
+                          onChange={(e) => setNewTask({...newTask, dueTime: e.target.value})}
                           className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
@@ -1278,7 +1323,7 @@
                                 )}
 
                                 <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-base sm:text-lg text-gray-500">
-                                  <span>📅 {formatDate(task.dueDate)}</span>
+                                  <span>📅 {formatDateTime(task.dueDate, task.dueTime)}</span>
                                   <span>⏰ {getDaysUntilDue(task.dueDate)}</span>
                                 </div>
                               </div>
