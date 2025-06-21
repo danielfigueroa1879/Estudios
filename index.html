@@ -201,6 +201,31 @@
             const [confirmDialogMessage, setConfirmDialogMessage] = useState("");
             const confirmCallbackRef = useRef(null); // Ref to store the callback for confirmation
 
+            // Chilean holidays for 2025 (YYYY-MM-DD format)
+            // Sourced from feriados.cl, universal-assistance.com, gob.cl, and timeanddate.com
+            const chileanHolidays = [
+                '2025-01-01', // Año Nuevo
+                '2025-04-18', // Viernes Santo
+                '2025-04-19', // Sábado Santo
+                '2025-05-01', // Día Nacional del Trabajo
+                '2025-05-21', // Día de las Glorias Navales
+                '2025-06-20', // Día Nacional de los Pueblos Indígenas
+                '2025-06-29', // San Pedro y San Pablo
+                // '2025-06-29', // Elecciones Primarias Presidenciales y Parlamentarias (handled if confirmed)
+                '2025-07-16', // Día de la Virgen del Carmen
+                '2025-08-15', // Asunción de la Virgen
+                '2025-09-18', // Independencia Nacional
+                '2025-09-19', // Día de las Glorias del Ejército
+                '2025-10-12', // Encuentro de Dos Mundos
+                '2025-10-31', // Día de las Iglesias Evangélicas y Protestantes
+                '2025-11-01', // Día de Todos los Santos
+                // '2025-11-16', // Elecciones Presidenciales y Parlamentarias (handled if confirmed)
+                '2025-12-08', // Inmaculada Concepción
+                // '2025-12-14', // Elecciones Presidenciales (Segunda Vuelta) (handled if confirmed)
+                '2025-12-25', // Navidad
+            ];
+
+
             // Function to show custom alert
             const showAlert = (message) => {
                 setAlertDialogMessage(message);
@@ -384,7 +409,7 @@
                 saveSettingsToStorage(view, emailNotifications);
             }, [view, emailNotifications]); // Added emailNotifications to dependency array
 
-            // Helper to create a local date at midnight fromiclopedia-MM-DD string
+            // Helper to create a local date at midnight from YYYY-MM-DD
             const createLocalDate = (dateString) => {
                 const parts = dateString.split('-').map(Number);
                 // Month is 0-indexed in Date constructor
@@ -862,7 +887,7 @@
             };
 
             // Simplified calendar view
-            const CalendarView = ({ highlightedDates }) => {
+            const CalendarView = ({ highlightedDates, chileanHolidays }) => { // Pass chileanHolidays
                 return (
                     <div className="space-y-8" id="calendarSection">
                         <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
@@ -879,13 +904,14 @@
                             originTaskForCalendar={originTaskForCalendar}
                             backToOriginTask={backToOriginTask}
                             getTaskStatus={getTaskStatus}
+                            chileanHolidays={chileanHolidays} // Pass chileanHolidays
                         />
                     </div>
                 );
             };
 
             // Monthly Calendar Component
-            const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, originTaskForCalendar, backToOriginTask, getTaskStatus }) => {
+            const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, originTaskForCalendar, backToOriginTask, getTaskStatus, chileanHolidays }) => {
                 const year = currentViewDate.getFullYear();
                 const month = currentViewDate.getMonth();
 
@@ -925,7 +951,12 @@
                     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
                 ];
 
-                const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+                // Day names with Sat and Sun in red
+                const dayNames = [
+                    'Lun', 'Mar', 'Mié', 'Jue', 'Vie',
+                    <span key="sab" className="text-red-600">Sáb</span>,
+                    <span key="dom" className="text-red-600">Dom</span>
+                ];
 
                 // Update parent component's state
                 const goToPreviousMonth = () => {
@@ -970,8 +1001,8 @@
 
                         {/* Nombres de los días */}
                         <div className="grid grid-cols-7 gap-1 mb-2">
-                            {dayNames.map(day => (
-                                <div key={day} className="text-center font-semibold text-gray-600 py-2 text-base">
+                            {dayNames.map((day, index) => (
+                                <div key={index} className="text-center font-semibold text-gray-600 py-2 text-base">
                                     {day}
                                 </div>
                             ))}
@@ -988,8 +1019,11 @@
                                 const isToday = todayGlobal.getDate() === dayObj.getDate() &&
                                                 todayGlobal.getMonth() === dayObj.getMonth() &&
                                                 todayGlobal.getFullYear() === dayObj.getFullYear();
-
+                                
                                 const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                                // Check if it's a holiday
+                                const isHoliday = chileanHolidays.includes(currentDayFormatted);
+
                                 const highlightEntry = highlightedDates.find(h => h.date === currentDayFormatted);
                                 const highlightClassesToApply = highlightEntry ? highlightEntry.classes : '';
                                 const highlightBorderColorRgb = highlightEntry ? highlightEntry.borderColorRgb : '';
@@ -999,14 +1033,14 @@
                                         key={currentDayFormatted}
                                         className={`h-20 sm:h-24 border border-gray-200 p-1 sm:p-2 transition-all duration-300 ease-in-out ${
                                             isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50'
-                                        } ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`}
+                                        } ${isHoliday ? 'bg-red-50' : ''} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`}
                                         style={highlightEntry ? {
                                             '--highlight-color': highlightClassesToApply.match(/border-([\w-]+)-(\d+)/)?.[0].replace('border-', '') || '#3b82f6',
                                             '--ring-color-rgb': highlightBorderColorRgb
                                         } : {}}
                                     >
                                         <div className={`text-sm sm:text-base font-medium ${
-                                            isToday ? 'text-blue-700' : 'text-gray-800'
+                                            isToday ? 'text-blue-700' : (isHoliday ? 'text-red-600' : 'text-gray-800')
                                         }`}>
                                             {day}
                                         </div>
@@ -1432,14 +1466,7 @@
                                     // Completed tasks go to the end
                                     if (a.completed && !b.completed) return 1;
                                     if (!a.completed && b.completed) return -1;
-                                    if (a.completed && b.completed) {
-                                        // If both are completed, sort by due date/time
-                                        const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`);
-                                        const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`);
-                                        return dateA - dateB;
-                                    }
-
-                                    // For uncompleted tasks, sort by due date/time
+                                    // If both are completed or both are not completed, sort by due date/time
                                     const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`);
                                     const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`);
                                     return dateA - dateB;
@@ -1540,7 +1567,7 @@
                                 deleteTask={deleteTask}
                             />
                         ) : (
-                            <CalendarView highlightedDates={highlightedCalendarDates} />
+                            <CalendarView highlightedDates={highlightedCalendarDates} chileanHolidays={chileanHolidays} />
                         )}
 
                         {/* Footer con información */}
