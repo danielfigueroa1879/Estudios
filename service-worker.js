@@ -8,15 +8,15 @@ const urlsToCache = [
     'https://unpkg.com/@babel/standalone/babel.min.js',
     'https://cdn.tailwindcss.com',
     'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap',
-    // Add your icon paths here:
-    '/icons/icon-72x72.png',
-    '/icons/icon-96x96.png',
-    '/icons/icon-128x128.png',
-    '/icons/icon-144x144.png',
-    '/icons/icon-152x152.png',
-    '/icons/icon-192x192.png',
-    '/icons/icon-384x384.png',
-    '/icons/icon-512x512.png'
+    // Rutas de iconos que deben ser cacheadas - actualizadas
+    '/icons/favicon.ico',
+    '/icons/favicon.svg',
+    '/icons/favicon-96x96.png',
+    '/icons/apple-touch-icon.png',
+    '/icons/web-app-manifest-192x192.png',
+    '/icons/web-app-manifest-512x512.png'
+    // Asegúrate de añadir aquí cualquier otro icono o activo estático que uses
+    // que esté referenciado en tu manifest.json o directamente en index.html
 ];
 
 // Install event: caches the static assets
