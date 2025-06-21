@@ -778,16 +778,16 @@
               <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
-                  {/* Contenedor principal del encabezado: Siempre flex-row en sm y arriba, items-center para centrado vertical */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between sm:space-x-4">
-                    {/* Contenido Izquierdo: Icono, Título y Subtítulo */}
-                    <div className="flex-grow flex flex-col items-start space-y-0">
+                  {/* Contenedor principal del encabezado: flex en todas las pantallas */}
+                  <div className="flex items-start justify-between sm:items-center"> {/* items-start para móvil */}
+                    {/* Contenido Izquierdo: Icono, Título y Subtítulo, Notificaciones, Email */}
+                    <div className="flex flex-col sm:flex-row sm:items-center">
                         <div className="flex items-center space-x-2">
                             <div className="text-blue-600">
                                 <IconBook width="20" height="20" />
                             </div>
                             <div>
-                                <h1 className="text-xl sm:text-4xl font-bold text-gray-900 leading-tight">
+                                <h1 className="text-lg sm:text-4xl font-bold text-gray-900 leading-tight">
                                     Gestor Académico
                                 </h1>
                                 <p className="text-xs sm:text-lg text-gray-600">
@@ -795,8 +795,8 @@
                                 </p>
                             </div>
                         </div>
-                        {/* Notificaciones y Toggle de email - Alineados a la izquierda, debajo del título en móvil */}
-                        <div className="flex items-center space-x-3 mt-2 sm:space-x-6 sm:mt-0">
+                        {/* Notificaciones y Toggle de email - Siempre a la izquierda, debajo del título en móvil */}
+                        <div className="flex items-center space-x-3 mt-2 sm:space-x-6 sm:mt-0 sm:ml-6">
                             {notifications.length > 0 && (
                                 <div className="relative">
                                     <div className="text-orange-500">
@@ -825,8 +825,8 @@
                         </div>
                     </div>
 
-                    {/* Contenido Derecho: Menú Hamburguesa - Alineado verticalmente al centro */}
-                    <div className="flex-shrink-0 flex items-center ml-auto sm:ml-0 self-center">
+                    {/* Contenido Derecho: Menú Hamburguesa */}
+                    <div className="flex-shrink-0 flex items-center">
                         <button
                             onClick={() => setShowColorLegend(!showColorLegend)}
                             className="text-gray-600 hover:text-blue-600 p-2 rounded-full hover:bg-gray-100 transition-colors"
