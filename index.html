@@ -1111,13 +1111,13 @@
                   )}
                 </div>
 
-                {/* *** MODIFICADO: Banner de Última Actualización (solo ocultar notificaciones en móvil) *** */}
-                <div className="bg-white rounded-xl shadow-lg p-3 text-center text-gray-500 text-xs mb-6 sm:mb-8">
-                    <div className="hidden sm:block"> {/* *** MODIFICADO: Solo visible en pantallas sm y mayores *** */}
+                {/* *** MODIFICADO: Banner de Última Actualización (completamente oculto en PC) *** */}
+                <div className="bg-white rounded-xl shadow-lg p-3 text-center text-gray-500 text-xs mb-6 sm:mb-8 sm:hidden"> {/* *** AGREGADO: sm:hidden para ocultar en PC *** */}
+                    <div>
                         <p>🔔 Notificaciones {emailNotifications ? 'activadas' : 'desactivadas'}</p>
                         <p>📊 {tasks.filter(t => !t.completed).length} tareas pendientes de {tasks.length} totales</p>
                     </div>
-                    <p className="text-xs text-gray-500 pt-2 sm:pt-0">
+                    <p className="text-xs text-gray-500 pt-2">
                         💾 {localStorage.getItem('academicTasksLastSaved') ?
                           `Última actualización: ${new Date(localStorage.getItem('academicTasksLastSaved')).toLocaleString('es-CL')}` :
                           'Datos cargados'}
@@ -1367,22 +1367,25 @@
                                 <IconClock />
                               </div>
 
-                              {/* Botón editar tarea individual - Visible y funcional */}
+                              {/* *** MODIFICADO: Botones más grandes en PC *** */}
                               <button
-                                onClick={(e) => { e.stopPropagation(); startEditing(task); }} // Detiene la propagación
-                                className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-xl transition-colors"
+                                onClick={(e) => { e.stopPropagation(); startEditing(task); }}
+                                className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 sm:p-3 rounded-xl transition-colors" // *** AGREGADO: sm:p-3 ***
                                 title="Editar tarea"
                               >
-                                <IconEdit />
+                                <div className="w-5 h-5 sm:w-6 sm:h-6"> {/* *** AGREGADO: Contenedor con tamaños responsivos *** */}
+                                  <IconEdit />
+                                </div>
                               </button>
 
-                              {/* Botón eliminar tarea individual */}
                               <button
-                                onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} // Detiene la propagación
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-xl transition-colors"
+                                onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 sm:p-3 rounded-xl transition-colors" // *** AGREGADO: sm:p-3 ***
                                 title="Eliminar tarea"
                               >
-                                <IconTrash />
+                                <div className="w-5 h-5 sm:w-6 sm:h-6"> {/* *** AGREGADO: Contenedor con tamaños responsivos *** */}
+                                  <IconTrash />
+                                </div>
                               </button>
                             </div>
                           </div>
@@ -1414,10 +1417,9 @@
                       </p>
                       <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p>
                     </div>
-                    {/* *** MODIFICADO: Solo visible en pantallas sm y mayores *** */}
+                    {/* *** MODIFICADO: Footer sin notificaciones en PC *** */}
                     <div className="hidden sm:block pt-2 space-y-0.5 text-xs sm:text-sm">
-                      <p>🔔 Notificaciones {emailNotifications ? 'activadas' : 'desactivadas'}</p>
-                      <p>📊 {tasks.filter(t => !t.completed).length} tareas pendientes de {tasks.length} totales</p>
+                      {/* Contenido completamente removido */}
                     </div>
                     {/* Última actualización siempre visible */}
                     <p className="text-xs text-gray-500 pt-2 sm:pt-0">
