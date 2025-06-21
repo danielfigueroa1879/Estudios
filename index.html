@@ -707,7 +707,8 @@
                           return (
                             <div
                               key={task.id}
-                              className={`p-3 sm:p-4 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300`}
+                              onClick={() => handleTaskCardClick(task)} // *** AGREGADO: Click handler para ir al calendario ***
+                              className={`p-3 sm:p-4 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300 cursor-pointer hover:shadow-lg`} // *** AGREGADO: cursor-pointer y hover ***
                             >
                               <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center space-x-2">
@@ -1002,8 +1003,8 @@
                                 <IconBook width="20" height="20" />
                             </div>
                             <div>
-                                <h1 className="text-xl sm:text-4xl font-bold text-gray-900 leading-tight">
-                                    Gestor Académico
+                                <h1 className="text-xl sm:text-4xl font-bold text-blue-600 leading-tight"> {/* *** MODIFICADO: Mayúscula y color azul *** */}
+                                    GESTOR ACADÉMICO
                                 </h1>
                                 <p className="text-xs sm:text-lg text-gray-600">
                                     Organiza tus tareas académicas
@@ -1131,11 +1132,11 @@
                     onClick={handleAlertsClick}
                     className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-4 sm:p-6 mb-6 sm:mb-8 cursor-pointer transition-all duration-300 ease-in-out"
                   >
-                    <div className="flex items-center space-x-3 mb-3">
-                      <div className="text-orange-600">
+                    <div className="flex items-center justify-between mb-3"> {/* *** MODIFICADO: justify-between *** */}
+                      <h3 className="font-semibold text-orange-800 text-xl sm:text-2xl text-left">Alertas activas</h3> {/* *** MODIFICADO: Sin icono aquí *** */}
+                      <div className="text-orange-600"> {/* *** MOVIDO: Icono al lado derecho *** */}
                         <IconAlert />
                       </div>
-                      <h3 className="font-semibold text-orange-800 text-xl sm:text-2xl text-left">Alertas activas</h3> {/* *** MODIFICADO: Tamaño más grande *** */}
                     </div>
                     <div className="space-y-2">
                       {notifications.slice(0, 3).map((notif, index) => (
@@ -1329,6 +1330,9 @@
                     )}
                   </div>
                 </div>
+
+                {/* *** NUEVA: Línea de separación más gruesa *** */}
+                <div className="border-t-4 border-gray-100 my-4"></div>
 
                 {/* Vista principal */}
                 {view === 'list' ? (
