@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor Académico - Etiquetado Automático</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#3b82f6"/> <!-- Color del tema, se recomienda un azul para el tema -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Gestor Académico">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png"> <!-- Icono para iOS -->
+    <meta name="description" content="Organiza tus tareas académicas de manera eficiente."/>
+
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -409,7 +419,7 @@
                 saveSettingsToStorage(view, emailNotifications);
             }, [view, emailNotifications]); // Added emailNotifications to dependency array
 
-            // Helper to create a local date at midnight from YYYY-MM-DD
+            // Helper to create a local date at midnight fromiclopedia-MM-DD
             const createLocalDate = (dateString) => {
                 const parts = dateString.split('-').map(Number);
                 // Month is 0-indexed in Date constructor
@@ -1604,6 +1614,20 @@
         const container = document.getElementById('root');
         const root = ReactDOM.createRoot(container);
         root.render(<AcademicTaskManager />);
+    </script>
+    <script>
+        // Register the Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registrado con éxito:', registration);
+                    })
+                    .catch(error => {
+                        console.log('Fallo el registro del Service Worker:', error);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
