@@ -687,8 +687,10 @@
 
             return (
               <div className="space-y-8" id="dailyTasksSection">
-                {/* *** MODIFICADO: Subtítulo minúscula y alineado izquierda *** */}
-                <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-8">Tareas por día</h2>
+                {/* *** MODIFICADO: Subtítulo en container alineado *** */}
+                <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
+                  <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-8">Tareas por día</h2>
+                </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
@@ -766,8 +768,10 @@
 
             return (
               <div className="space-y-8" id="calendarSection">
-                {/* *** MODIFICADO: Subtítulo minúscula y alineado izquierda *** */}
-                <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-8">Calendario</h2>
+                {/* *** MODIFICADO: Subtítulo en container alineado *** */}
+                <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
+                  <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-8">Calendario</h2>
+                </div>
                 
                 {/* Calendario Mensual */}
                 <MonthlyCalendar 
@@ -1055,7 +1059,7 @@
                   {/* Acceso Rápido a Tareas - Conditionally rendered */}
                   {showColorLegend && (
                       <div className="mt-6 pt-4 border-t border-gray-200">
-                          <h3 className="font-semibold text-blue-600 text-lg sm:text-xl text-left mb-4">Acceso rápido a tareas</h3> {/* *** MODIFICADO: Minúscula y alineado izquierda *** */}
+                          <h3 className="font-semibold text-blue-600 text-xl sm:text-2xl text-left mb-4">Acceso rápido a tareas</h3> {/* *** MODIFICADO: Tamaño más grande *** */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                               {/* Nueva opción "Tareas" */}
                               <button
@@ -1131,7 +1135,7 @@
                       <div className="text-orange-600">
                         <IconAlert />
                       </div>
-                      <h3 className="font-semibold text-orange-800 text-lg sm:text-xl text-left">Alertas activas</h3> {/* *** MODIFICADO: Minúscula y alineado izquierda *** */}
+                      <h3 className="font-semibold text-orange-800 text-xl sm:text-2xl text-left">Alertas activas</h3> {/* *** MODIFICADO: Tamaño más grande *** */}
                     </div>
                     <div className="space-y-2">
                       {notifications.slice(0, 3).map((notif, index) => (
@@ -1154,7 +1158,7 @@
                     onClick={() => setShowAddTask(!showAddTask)}
                     className="w-full flex items-center justify-between text-left mb-4"
                   >
-                    <h3 className="font-semibold text-blue-600 text-lg sm:text-xl text-left"> {/* *** MODIFICADO: Minúscula y alineado izquierda *** */}
+                    <h3 className="font-semibold text-blue-600 text-xl sm:text-2xl text-left"> {/* *** MODIFICADO: Tamaño más grande *** */}
                         {editingTask ? 'Editar tarea' : 'Agregar nueva tarea'}
                     </h3>
                     {showAddTask ? <IconChevronUp /> : <IconChevronDown />}
@@ -1241,8 +1245,8 @@
 
                 {/* *** MODIFICADO: Navegación con título "TAREAS" mayúscula *** */}
                 <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 rounded-2xl shadow-lg border border-blue-100 p-4 sm:p-6 mb-6 sm:mb-8 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl">
-                  {/* *** MODIFICADO: Título TAREAS en mayúscula *** */}
-                  <h1 className="text-2xl sm:text-3xl font-bold text-blue-600 text-center mb-6">TAREAS</h1>
+                  {/* *** MODIFICADO: TAREAS como subtítulo alineado izquierda *** */}
+                  <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-6">Tareas</h2>
                   
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
                     <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
@@ -1329,8 +1333,10 @@
                 {/* Vista principal */}
                 {view === 'list' ? (
                   <div id="taskListSection" className="space-y-6">
-                    {/* *** MODIFICADO: Subtítulo minúscula y alineado izquierda *** */}
-                    <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-8">Lista de tareas</h2>
+                    {/* *** MODIFICADO: Subtítulo alineado con "Agregar nueva tarea" *** */}
+                    <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
+                      <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-8">Lista de tareas</h2>
+                    </div>
                     
                     {tasks.map(task => {
                       const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); // *** MODIFICADO: Incluir dueTime ***
