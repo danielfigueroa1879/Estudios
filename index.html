@@ -632,7 +632,7 @@
                 <h3 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Tareas por Día</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
-                    <div key={date} className="bg-white rounded-lg shadow-lg p-4 sm:p-6 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer">
+                    <div key={date} className="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer">
                       <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 mb-3 sm:mb-4">
                         {formatDate(date)}
                       </h3>
@@ -643,7 +643,7 @@
                           return (
                             <div
                               key={task.id}
-                              className={`p-3 sm:p-4 rounded-lg border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300`}
+                              className={`p-3 sm:p-4 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300`}
                             >
                               <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center space-x-2">
@@ -669,14 +669,14 @@
                               <div className="flex justify-end mt-4 space-x-2">
                                 <button
                                   onClick={(e) => { e.stopPropagation(); startEditing(task); }}
-                                  className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                                  className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-xl transition-colors"
                                   title="Editar tarea"
                                 >
                                   <IconEdit />
                                 </button>
                                 <button
                                   onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
-                                  className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                                  className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-xl transition-colors"
                                   title="Eliminar tarea"
                                 >
                                   <IconTrash />
@@ -776,7 +776,7 @@
             };
 
             return (
-              <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 relative"> {/* Añadido relative para posicionamiento absoluto del botón */}
+              <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 relative"> {/* Añadido relative para posicionamiento absoluto del botón */}
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
                     {monthNames[month]} {year}
@@ -784,19 +784,19 @@
                   <div className="flex space-x-2">
                     <button
                       onClick={goToPreviousMonth}
-                      className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-base"
+                      className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-base"
                     >
                       ←
                     </button>
                     <button
                       onClick={goToToday}
-                      className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-base"
+                      className="px-4 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-base"
                     >
                       Hoy
                     </button>
                     <button
                       onClick={goToNextMonth}
-                      className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-base"
+                      className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-base"
                     >
                       →
                     </button>
@@ -911,7 +911,7 @@
             <div className="min-h-screen bg-gray-200 p-3 sm:p-6">
               <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
+                <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
                   {/* Contenedor principal del encabezado: flex en todas las pantallas */}
                   <div className="flex items-start sm:items-center justify-between">
                     {/* Contenido Izquierdo: Icono, Título y Subtítulo */}
@@ -932,14 +932,18 @@
                         {/* Notificaciones y Toggle de email - Siempre a la izquierda, debajo del título en móvil */}
                         <div className="flex items-center space-x-3 mt-2 sm:space-x-6 sm:mt-0 sm:ml-6">
                             {notifications.length > 0 && (
-                                <div className="relative">
+                                <button
+                                  onClick={() => setShowColorLegend(!showColorLegend)}
+                                  className="relative hover:bg-gray-100 p-2 rounded-xl transition-colors"
+                                  title="Ver alertas"
+                                >
                                     <div className="text-orange-500">
                                         <IconBell width="18" height="18" />
                                     </div>
                                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                                         {notifications.length}
                                     </span>
-                                </div>
+                                </button>
                             )}
                             <div className="flex items-center space-x-1">
                                 <div className={emailNotifications ? 'text-blue-500' : 'text-gray-400'}>
@@ -963,7 +967,7 @@
                     <div className="flex-shrink-0 flex items-center">
                         <button
                             onClick={() => setShowColorLegend(!showColorLegend)}
-                            className="text-gray-600 hover:text-blue-600 p-2 rounded-full hover:bg-gray-100 transition-colors"
+                            className="text-gray-600 hover:text-blue-600 p-2 rounded-xl hover:bg-gray-100 transition-colors"
                             title="Acceso Rápido a Tareas"
                         >
                             <IconHamburger width="28" height="28" /> {/* Aumentado tamaño */}
@@ -990,7 +994,7 @@
                                           }
                                       }, 0); // Pequeño retardo para asegurar que la vista cambie
                                   }}
-                                  className="block w-full text-left p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
+                                  className="block w-full text-left p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
                               >
                                   <IconBook size={20} /> {/* Icono para la opción Tareas */}
                                   <span>Tareas</span>
@@ -1007,14 +1011,25 @@
                                                       }
                                                   }, 0);
                                   }}
-                                  className="block w-full text-left p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
+                                  className="block w-full text-left p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
                               >
                                   <IconCalendar /> {/* Icono de calendario para tareas por día */}
                                   <span>Tareas por Día</span>
                               </button>
                               <button
-                                onClick={() => {setView('calendar'); setShowColorLegend(false); setOriginTaskForCalendar(null);}} // Resetear origen al ir a vista de calendario
-                                className="block w-full text-left p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
+                                onClick={() => {
+                                  setView('calendar'); 
+                                  setShowColorLegend(false); 
+                                  setOriginTaskForCalendar(null);
+                                  // Forzar scroll al calendario después de cambiar la vista
+                                  setTimeout(() => {
+                                    const calendarSection = document.getElementById('calendarSection');
+                                    if (calendarSection) {
+                                      calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }
+                                  }, 100);
+                                }} // Resetear origen al ir a vista de calendario
+                                className="block w-full text-left p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
                               >
                                 <IconCalendar />
                                 <span>Vista de Calendario</span>
@@ -1025,7 +1040,7 @@
                 </div>
 
                 {/* Banner de Última Actualización (Móvil y PC) */}
-                <div className="bg-white rounded-lg shadow-lg p-3 text-center text-gray-500 text-xs mb-6 sm:mb-8"> {/* Añadido sm:mb-8 para consistencia */}
+                <div className="bg-white rounded-xl shadow-lg p-3 text-center text-gray-500 text-xs mb-6 sm:mb-8"> {/* Añadido sm:mb-8 para consistencia */}
                     <div className="sm:hidden"> {/* Ocultar en pantallas sm y mayores */}
                         <p>🔔 Notificaciones {emailNotifications ? 'activadas' : 'desactivadas'}</p>
                         <p>📊 {tasks.filter(t => !t.completed).length} tareas pendientes de {tasks.length} totales</p>
@@ -1037,95 +1052,11 @@
                     </p>
                 </div>
 
-                {/* Formulario para agregar/editar tarea */}
-                <div id="addTaskFormSection" className="bg-white rounded-lg shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
-                  <button
-                    onClick={() => setShowAddTask(!showAddTask)}
-                    className="w-full flex items-center justify-between text-left mb-4"
-                  >
-                    <h3 className="font-semibold text-gray-800 text-lg sm:text-xl">
-                        {editingTask ? 'Editar Tarea' : 'Agregar Nueva Tarea'}
-                    </h3>
-                    {showAddTask ? <IconChevronUp /> : <IconChevronDown />}
-                  </button>
-
-                  {showAddTask && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <input
-                          type="text"
-                          placeholder="Asignatura"
-                          value={newTask.subject}
-                          onChange={(e) => setNewTask({...newTask, subject: e.target.value})}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Título de la tarea"
-                          value={newTask.title}
-                          onChange={(e) => setNewTask({...newTask, title: e.target.value})}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                        <select
-                          value={newTask.type}
-                          onChange={(e) => setNewTask({...newTask, type: e.target.value})}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                          <option value="Tarea">Tarea</option>
-                          <option value="Examen">Examen</option>
-                          <option value="Ensayo">Ensayo</option>
-                          <option value="Proyecto">Proyecto</option>
-                          <option value="Laboratorio">Laboratorio</option>
-                        </select>
-                        <input
-                          type="date"
-                          value={newTask.dueDate}
-                          onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      </div>
-                      <textarea
-                        placeholder="Descripción (opcional)"
-                        value={newTask.description}
-                        onChange={(e) => setNewTask({...newTask, description: e.target.value})}
-                        rows="3"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
-                      ></textarea>
-                      <div className="flex space-x-4">
-                        <button
-                          onClick={editingTask ? updateTask : addTask}
-                          className="flex-1 bg-blue-600 text-white rounded-lg px-4 py-3 hover:bg-blue-700 flex items-center justify-center space-x-2 text-lg font-medium"
-                        >
-                          {editingTask ? (
-                            <>
-                              <IconCheck />
-                              <span>Actualizar</span>
-                            </>
-                          ) : (
-                            <>
-                              <IconPlus />
-                              <span>Agregar</span>
-                            </>
-                          )}
-                        </button>
-                        {editingTask && (
-                          <button
-                            onClick={cancelEditing}
-                            className="flex-1 bg-gray-500 text-white rounded-lg px-4 py-3 hover:bg-gray-600 flex items-center justify-center space-x-2 text-lg font-medium"
-                          >
-                            <span>Cancelar</span>
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Alertas de notificaciones */}
-                {notifications.length > 0 && (
+                {/* Alertas de notificaciones - Solo mostrar cuando hay notificaciones Y se hace click en la campana */}
+                {notifications.length > 0 && showColorLegend && (
                   <div
                     onClick={handleAlertsClick} // Ahora usa la función que gestiona la alternancia y el resaltado
-                    className="bg-orange-50 border border-orange-400 rounded-lg shadow-lg shadow-red-200 p-4 sm:p-6 mb-6 sm:mb-8 cursor-pointer transition-all duration-300 ease-in-out" // Borde rojo y sombra
+                    className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-4 sm:p-6 mb-6 sm:mb-8 cursor-pointer transition-all duration-300 ease-in-out" // Borde rojo y sombra
                   >
                     <div className="flex items-center space-x-3 mb-3">
                       <div className="text-orange-600">
@@ -1148,13 +1079,97 @@
                   </div>
                 )}
 
+                {/* Formulario para agregar/editar tarea */}
+                <div id="addTaskFormSection" className="bg-white rounded-xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
+                  <button
+                    onClick={() => setShowAddTask(!showAddTask)}
+                    className="w-full flex items-center justify-between text-left mb-4"
+                  >
+                    <h3 className="font-semibold text-gray-800 text-lg sm:text-xl">
+                        {editingTask ? 'Editar Tarea' : 'Agregar Nueva Tarea'}
+                    </h3>
+                    {showAddTask ? <IconChevronUp /> : <IconChevronDown />}
+                  </button>
+
+                  {showAddTask && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <input
+                          type="text"
+                          placeholder="Asignatura"
+                          value={newTask.subject}
+                          onChange={(e) => setNewTask({...newTask, subject: e.target.value})}
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Título de la tarea"
+                          value={newTask.title}
+                          onChange={(e) => setNewTask({...newTask, title: e.target.value})}
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <select
+                          value={newTask.type}
+                          onChange={(e) => setNewTask({...newTask, type: e.target.value})}
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="Tarea">Tarea</option>
+                          <option value="Examen">Examen</option>
+                          <option value="Ensayo">Ensayo</option>
+                          <option value="Proyecto">Proyecto</option>
+                          <option value="Laboratorio">Laboratorio</option>
+                        </select>
+                        <input
+                          type="date"
+                          value={newTask.dueDate}
+                          onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                      <textarea
+                        placeholder="Descripción (opcional)"
+                        value={newTask.description}
+                        onChange={(e) => setNewTask({...newTask, description: e.target.value})}
+                        rows="3"
+                        className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+                      ></textarea>
+                      <div className="flex space-x-4">
+                        <button
+                          onClick={editingTask ? updateTask : addTask}
+                          className="flex-1 bg-blue-600 text-white rounded-xl px-4 py-3 hover:bg-blue-700 flex items-center justify-center space-x-2 text-lg font-medium"
+                        >
+                          {editingTask ? (
+                            <>
+                              <IconCheck />
+                              <span>Actualizar</span>
+                            </>
+                          ) : (
+                            <>
+                              <IconPlus />
+                              <span>Agregar</span>
+                            </>
+                          )}
+                        </button>
+                        {editingTask && (
+                          <button
+                            onClick={cancelEditing}
+                            className="flex-1 bg-gray-500 text-white rounded-xl px-4 py-3 hover:bg-gray-600 flex items-center justify-center space-x-2 text-lg font-medium"
+                          >
+                            <span>Cancelar</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* Navegación */}
-                <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
+                <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
                     <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-6">
                       <button
                         onClick={() => {setView('list'); setOriginTaskForCalendar(null);}} // Resetear origen al ir a lista de tareas
-                        className={`px-4 py-3 rounded-lg flex items-center justify-start space-x-3 text-lg w-full ${ // Added w-full and justify-start
+                        className={`px-4 py-3 rounded-xl flex items-center justify-start space-x-3 text-lg w-full ${ // Added w-full and justify-start
                           view === 'list' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
                         }`}
                       >
@@ -1172,7 +1187,7 @@
                                           }
                                       }, 0);
                         }}
-                        className={`px-4 py-3 rounded-lg flex items-center justify-start space-x-3 text-lg w-full ${ // Added w-full and justify-start
+                        className={`px-4 py-3 rounded-xl flex items-center justify-start space-x-3 text-lg w-full ${ // Added w-full and justify-start
                           view === 'daily' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
                         }`}
                       >
@@ -1180,8 +1195,18 @@
                         <span>Tareas por Día</span>
                       </button>
                       <button
-                        onClick={() => {setView('calendar'); setOriginTaskForCalendar(null);}} // Resetear origen al ir a vista de calendario
-                        className={`px-4 py-3 rounded-lg flex items-center justify-center space-x-3 text-lg ${
+                        onClick={() => {
+                          setView('calendar'); 
+                          setOriginTaskForCalendar(null);
+                          // Forzar scroll al calendario después de cambiar la vista
+                          setTimeout(() => {
+                            const calendarSection = document.getElementById('calendarSection');
+                            if (calendarSection) {
+                              calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                          }, 100);
+                        }} // Resetear origen al ir a vista de calendario
+                        className={`px-4 py-3 rounded-xl flex items-center justify-center space-x-3 text-lg ${
                           view === 'calendar' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
                         }`}
                       >
@@ -1194,7 +1219,7 @@
                     {tasks.filter(task => task.completed).length > 0 && (
                       <button
                         onClick={deleteAllCompleted}
-                        className="px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center space-x-2 text-base font-medium transition-colors"
+                        className="px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 flex items-center space-x-2 text-base font-medium transition-colors"
                       >
                         <IconTrash />
                         <span>Eliminar Completadas ({tasks.filter(task => task.completed).length})</span>
@@ -1220,7 +1245,7 @@
                                   handleTaskCardClick(task);
                               }
                           }}
-                          className={`rounded-lg shadow-lg border-l-8 p-4 sm:p-8 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} hover:border-red-500 hover:ring-2 hover:ring-red-500 hover:shadow-lg hover:shadow-red-200 cursor-pointer`}
+                          className={`rounded-xl shadow-lg border-l-8 p-4 sm:p-8 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} hover:border-red-500 hover:ring-2 hover:ring-red-500 hover:shadow-lg hover:shadow-red-200 cursor-pointer`}
                         >
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
                             <div className="flex items-start space-x-4 sm:space-x-6 flex-1">
@@ -1266,7 +1291,7 @@
                               {/* Botón editar tarea individual - Visible y funcional */}
                               <button
                                 onClick={(e) => { e.stopPropagation(); startEditing(task); }} // Detiene la propagación
-                                className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                                className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-xl transition-colors"
                                 title="Editar tarea"
                               >
                                 <IconEdit />
@@ -1275,7 +1300,7 @@
                               {/* Botón eliminar tarea individual */}
                               <button
                                 onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} // Detiene la propagación
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-xl transition-colors"
                                 title="Eliminar tarea"
                               >
                                 <IconTrash />
@@ -1301,7 +1326,7 @@
                 )}
 
                 {/* Footer con información */}
-                <div className="mt-8 sm:mt-10 bg-white rounded-lg shadow-lg p-4 sm:p-6">
+                <div className="mt-8 sm:mt-10 bg-white rounded-xl shadow-lg p-4 sm:p-6">
                   <div className="text-center text-gray-600 space-y-2">
                     <div className="border-b border-gray-200 pb-2">
                       <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p>
