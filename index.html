@@ -1085,7 +1085,7 @@
             return (
                 <div className="min-h-screen bg-gray-200">
                     {/* Contenedor del Encabezado (ancho completo) */}
-                    <div className="bg-white shadow-lg w-full py-4 sm:py-8 mb-6">
+                    <div className="bg-white shadow-lg w-full py-4 sm:py-6 mb-6"> {/* Adjusted py for smaller height on desktop */}
                         <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Contenido centrado dentro del encabezado */}
                             <div className="flex items-start sm:items-center justify-between">
                                 <div className="flex flex-col sm:flex-row sm:items-center">
@@ -1105,7 +1105,7 @@
                                 </div>
 
                                 {/* Contenido Derecho: Campana (visible siempre), Toggle de email (oculto en móvil), Menú Hamburguesa */}
-                                <div className="flex-shrink-0 flex items-center space-x-3"> {/* Added space-x-3 for spacing between bell and hamburger on mobile */}
+                                <div className="flex-shrink-0 flex items-center space-x-3">
                                     {notifications.length > 0 && (
                                         <button
                                             onClick={() => setShowAlerts(!showAlerts)}
@@ -1224,14 +1224,14 @@
                                         <IconAlert width="20" height="20" />
                                     </div>
                                 </div>
-                                <div className="flex flex-col gap-1"> {/* Cambiado space-y-2 a flex flex-col gap-1 */}
+                                <div className="flex flex-col gap-1">
                                     {notifications.slice(0, 3).map((notif, index) => (
-                                        <p key={notif.id || index} className="text-sm text-orange-700 w-full text-left"> {/* Añadido w-full y text-left */}
+                                        <p key={notif.id || index} className="text-sm text-orange-700 w-full text-left">
                                             • {notif.message}
                                         </p>
                                     ))}
                                     {notifications.length > 3 && (
-                                        <p className="text-sm text-orange-600 w-full text-left"> {/* Añadido w-full y text-left */}
+                                        <p className="text-sm text-orange-600 w-full text-left">
                                             ... y {notifications.length - 3} alertas más
                                         </p>
                                     )}
@@ -1240,7 +1240,7 @@
                         )}
 
                         {/* Formulario con título azul y efecto de iluminación azul */}
-                        <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8 border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300 mt-4"> {/* Añadido mt-4 */}
+                        <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8 border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300 mt-4">
                             <button
                                 onClick={() => setShowAddTask(!showAddTask)}
                                 className="w-full flex items-center justify-between text-left mb-4"
@@ -1330,8 +1330,8 @@
                             )}
                         </div>
 
-                        {/* Contenedor de la Navegación (ancho completo) - MOVIDO AQUÍ */}
-                        <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-4 sm:py-6 mt-6 mb-6 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl">
+                        {/* Contenedor de la Navegación (ancho completo) */}
+                        <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-3 sm:py-4 mt-6 mb-6 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl"> {/* Adjusted py for smaller height on desktop */}
                             <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Contenido centrado dentro de la navegación */}
                                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-6">Tareas</h2>
                                 
@@ -1427,7 +1427,23 @@
                                     <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-4 sm:mb-8">Lista de tareas</h2>
                                 </div>
                                 
-                                {tasks.map(task => {
+                                {/* Sorted tasks rendering */}
+                                {[...tasks].sort((a, b) => {
+                                    // Completed tasks go to the end
+                                    if (a.completed && !b.completed) return 1;
+                                    if (!a.completed && b.completed) return -1;
+                                    if (a.completed && b.completed) {
+                                        // If both are completed, sort by due date/time
+                                        const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`);
+                                        const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`);
+                                        return dateA - dateB;
+                                    }
+
+                                    // For uncompleted tasks, sort by due date/time
+                                    const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`);
+                                    const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`);
+                                    return dateA - dateB;
+                                }).map(task => {
                                     const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
                                     const cardStyle = getTaskCardStyle(status, task.completed);
 
