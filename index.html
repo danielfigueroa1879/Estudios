@@ -5,26 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor Académico - Etiquetado Automático</title>
 
-    <!-- PWA Meta Tags -->
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#3b82f6"/> <!-- Color del tema, se recomienda un azul para el tema -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Gestor Académico">
+    <!-- PWA Meta Tags (Comentadas para depuración - descomentar si se implementan los archivos PWA) -->
+    <!-- <link rel="manifest" href="/manifest.json"> -->
+    <!-- <meta name="theme-color" content="#3b82f6"/> -->
+    <!-- <meta name="apple-mobile-web-app-capable" content="yes"> -->
+    <!-- <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> -->
+    <!-- <meta name="apple-mobile-web-app-title" content="Gestor Académico"> -->
 
-    <!-- Favicons e iconos táctiles para diferentes dispositivos/contextos -->
-    <!-- Asegúrate de que estos archivos existan en la carpeta /icons/ -->
-    <link rel="icon" type="image/x-icon" href="/icons/favicon.ico">
-    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
-    <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"> <!-- Icono principal para iOS -->
+    <!-- Favicons e iconos táctiles (Comentadas para depuración - descomentar si se implementan los archivos) -->
+    <!-- <link rel="icon" type="image/x-icon" href="/icons/favicon.ico"> -->
+    <!-- <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg"> -->
+    <!-- <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png"> -->
+    <!-- <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"> -->
 
     <meta name="description" content="Organiza tus tareas académicas de manera eficiente."/>
 
+    <!-- Carga de React, ReactDOM y Babel. El orden es importante. -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Carga de Tailwind CSS para estilos -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carga de la fuente Poppins desde Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -34,17 +36,21 @@
         }
         /* Estilos para animar el highlight en el calendario */
         .highlight-animation {
+            /* Definición de variables CSS para los colores de la animación */
+            --ring-color-rgb: 59, 130, 246; /* RGB de Tailwind blue-500 */
+            --border-color: #e5e7eb; /* gray-200 */
+            --highlight-color: #3b82f6; /* blue-500 */
             animation: pulse-border 1.5s infinite alternate; /* Alternar para un efecto de parpadeo suave */
         }
         @keyframes pulse-border {
             from {
-                box-shadow: 0 0 0 0 rgba(var(--ring-color-rgb, 0, 0, 0), 0.7);
-                border-color: var(--border-color, #e5e7eb);
+                box-shadow: 0 0 0 0 rgba(var(--ring-color-rgb), 0.7);
+                border-color: var(--border-color);
                 transform: scale(1);
             }
             to {
-                box-shadow: 0 0 0 4px rgba(var(--ring-color-rgb, 0, 0, 0), 0);
-                border-color: var(--highlight-color, #3b82f6);
+                box-shadow: 0 0 0 4px rgba(var(--ring-color-rgb), 0);
+                border-color: var(--highlight-color);
                 transform: scale(1.02);
             }
         }
@@ -59,9 +65,11 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        // Importa los hooks necesarios de React
         const { useState, useEffect, useRef } = React;
 
         // --- Iconos simples en SVG ---
+        // Componente de icono para un libro
         const IconBook = ({ width = "20", height = "20" }) => (
             <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
@@ -69,6 +77,7 @@
             </svg>
         );
 
+        // Componente de icono para un calendario
         const IconCalendar = ({ width = "20", height = "20" }) => (
             <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -78,6 +87,7 @@
             </svg>
         );
 
+        // Componente de icono para el signo más
         const IconPlus = ({ width = "20", height = "20" }) => (
             <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"/>
@@ -85,6 +95,7 @@
             </svg>
         );
 
+        // Componente de icono para un reloj
         const IconClock = ({ width = "20", height = "20" }) => (
             <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"/>
@@ -92,6 +103,7 @@
             </svg>
         );
 
+        // Componente de icono para un email
         const IconMail = ({ width = "20", height = "20" }) => (
             <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -99,6 +111,7 @@
             </svg>
         );
 
+        // Componente de icono para una campana (notificaciones)
         const IconBell = ({ width = "22", height = "22" }) => (
             <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
@@ -106,6 +119,7 @@
             </svg>
         );
 
+        // Componente de icono para una alerta
         const IconAlert = ({ width = "20", height = "20" }) => (
             <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
@@ -114,18 +128,21 @@
             </svg>
         );
 
+        // Componente de icono para una flecha hacia abajo
         const IconChevronDown = ({ width = "24", height = "24" }) => (
             <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="6,9 12,15 18,9"/>
             </svg>
         );
 
+        // Componente de icono para una flecha hacia arriba
         const IconChevronUp = ({ width = "24", height = "24" }) => (
             <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="18,15 12,9 6,15"/>
             </svg>
         );
 
+        // Componente de icono para una papelera (eliminar)
         const IconTrash = ({ width = "18", height = "18" }) => (
             <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="3,6 5,6 21,6"/>
@@ -135,12 +152,14 @@
             </svg>
         );
 
+        // Componente de icono para un check (completado)
         const IconCheck = ({ width = "18", height = "18" }) => (
             <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20,6 9,17 4,12"/>
             </svg>
         );
 
+        // Componente de icono para editar
         const IconEdit = ({ width = "18", height = "18" }) => (
             <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -148,6 +167,7 @@
             </svg>
         );
 
+        // Componente de icono para el menú hamburguesa
         const IconHamburger = ({ width = "24", height = "24" }) => (
             <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -156,6 +176,7 @@
             </svg>
         );
 
+        // Componente de icono para flecha de retroceso
         const IconArrowBack = ({ width = "24", height = "24" }) => (
             <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M19 12H5"/>
@@ -164,8 +185,9 @@
         );
 
         // --- Custom Alert/Confirm Dialogs ---
+        // Componente para un diálogo de alerta personalizado
         const CustomAlertDialog = ({ message, isOpen, onClose }) => {
-            if (!isOpen) return null;
+            if (!isOpen) return null; // No renderiza si no está abierto
             return (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-blue-500">
@@ -182,8 +204,9 @@
             );
         };
 
+        // Componente para un diálogo de confirmación personalizado
         const CustomConfirmDialog = ({ message, isOpen, onConfirm, onCancel }) => {
-            if (!isOpen) return null;
+            if (!isOpen) return null; // No renderiza si no está abierto
             return (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-red-500">
@@ -208,18 +231,18 @@
             );
         };
 
-
+        // Componente principal de la aplicación de gestión académica
         const AcademicTaskManager = () => {
-            // State variables
-            const [currentTime, setCurrentTime] = useState(new Date());
-            const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
-            const [alertDialogMessage, setAlertDialogMessage] = useState("");
-            const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-            const [confirmDialogMessage, setConfirmDialogMessage] = useState("");
-            const confirmCallbackRef = useRef(null); // Ref to store the callback for confirmation
+            // Estados de la aplicación
+            const [currentTime, setCurrentTime] = useState(new Date()); // Hora actual
+            const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false); // Controla visibilidad del diálogo de alerta
+            const [alertDialogMessage, setAlertDialogMessage] = useState(""); // Mensaje del diálogo de alerta
+            const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false); // Controla visibilidad del diálogo de confirmación
+            const [confirmDialogMessage, setConfirmDialogMessage] = useState(""); // Mensaje del diálogo de confirmación
+            const confirmCallbackRef = useRef(null); // Referencia para almacenar el callback de confirmación
 
-            // Chilean holidays for 2025 (YYYY-MM-DD format)
-            // Sourced from feriados.cl, universal-assistance.com, gob.cl, and timeanddate.com
+            // Días festivos chilenos para 2025 (formato YYYY-MM-DD)
+            // Origen: feriados.cl, universal-assistance.com, gob.cl, y timeanddate.com
             const chileanHolidays = [
                 '2025-01-01', // Año Nuevo
                 '2025-04-18', // Viernes Santo
@@ -228,7 +251,6 @@
                 '2025-05-21', // Día de las Glorias Navales
                 '2025-06-20', // Día Nacional de los Pueblos Indígenas
                 '2025-06-29', // San Pedro y San Pablo
-                // '2025-06-29', // Elecciones Primarias Presidenciales y Parlamentarias (handled if confirmed)
                 '2025-07-16', // Día de la Virgen del Carmen
                 '2025-08-15', // Asunción de la Virgen
                 '2025-09-18', // Independencia Nacional
@@ -236,27 +258,24 @@
                 '2025-10-12', // Encuentro de Dos Mundos
                 '2025-10-31', // Día de las Iglesias Evangélicas y Protestantes
                 '2025-11-01', // Día de Todos los Santos
-                // '2025-11-16', // Elecciones Presidenciales y Parlamentarias (handled if confirmed)
                 '2025-12-08', // Inmaculada Concepción
-                // '2025-12-14', // Elecciones Presidenciales (Segunda Vuelta) (handled if confirmed)
                 '2025-12-25', // Navidad
             ];
 
-
-            // Function to show custom alert
+            // Función para mostrar el diálogo de alerta personalizado
             const showAlert = (message) => {
                 setAlertDialogMessage(message);
                 setIsAlertDialogOpen(true);
             };
 
-            // Function to show custom confirm
+            // Función para mostrar el diálogo de confirmación personalizado
             const showConfirm = (message, onConfirmCallback) => {
                 setConfirmDialogMessage(message);
                 confirmCallbackRef.current = onConfirmCallback;
                 setIsConfirmDialogOpen(true);
             };
 
-            // Handlers for custom dialogs
+            // Manejadores para los diálogos personalizados
             const handleAlertDialogClose = () => {
                 setIsAlertDialogOpen(false);
             };
@@ -272,7 +291,7 @@
                 setIsConfirmDialogOpen(false);
             };
 
-            // Function to load data from localStorage
+            // Función para cargar datos desde localStorage
             const loadTasksFromStorage = () => {
                 try {
                     const savedTasks = localStorage.getItem('academicTasks');
@@ -280,9 +299,9 @@
                         return JSON.parse(savedTasks);
                     }
                 } catch (error) {
-                    console.error('Error loading tasks from storage:', error);
+                    console.error('Error al cargar tareas desde el almacenamiento local:', error);
                 }
-                // If no saved data, return default tasks
+                // Si no hay datos guardados, retorna tareas por defecto
                 const today = new Date();
                 const tomorrow = new Date(today);
                 tomorrow.setDate(today.getDate() + 1);
@@ -347,42 +366,42 @@
                 ];
             };
 
-            // Function to save data to localStorage
+            // Función para guardar datos en localStorage
             const saveTasksToStorage = (tasksToSave) => {
                 try {
                     localStorage.setItem('academicTasks', JSON.stringify(tasksToSave));
                     localStorage.setItem('academicTasksLastSaved', new Date().toISOString());
                 } catch (error) {
-                    console.error('Error saving tasks to storage:', error);
+                    console.error('Error al guardar tareas en el almacenamiento local:', error);
                 }
             };
 
-            // Function to load settings
+            // Función para cargar configuración desde localStorage
             const loadSettingsFromStorage = () => {
                 try {
                     const savedView = localStorage.getItem('currentView');
                     const savedEmailNotifications = localStorage.getItem('emailNotifications');
                     return {
                         view: savedView || 'list',
-                        emailNotifications: savedEmailNotifications === 'true' // Convert string to boolean
+                        emailNotifications: savedEmailNotifications === 'true' // Convierte string a booleano
                     };
                 } catch (error) {
-                    console.error('Error loading settings from storage:', error);
+                    console.error('Error al cargar configuración desde el almacenamiento local:', error);
                     return { view: 'list', emailNotifications: false };
                 }
             };
 
-            // Function to save settings
+            // Función para guardar configuración
             const saveSettingsToStorage = (currentView, emailNotificationsState) => {
                 try {
                     localStorage.setItem('currentView', currentView);
-                    localStorage.setItem('emailNotifications', String(emailNotificationsState)); // Save boolean as string
+                    localStorage.setItem('emailNotifications', String(emailNotificationsState)); // Guarda booleano como string
                 } catch (error) {
-                    console.error('Error saving settings to storage:', error);
+                    console.error('Error al guardar configuración en el almacenamiento local:', error);
                 }
             };
 
-            // Initialize states with saved data
+            // Inicializa estados con datos guardados
             const [tasks, setTasks] = useState(() => loadTasksFromStorage());
             const [newTask, setNewTask] = useState({
                 subject: '',
@@ -395,23 +414,21 @@
             const [editingTask, setEditingTask] = useState(null);
 
             const savedSettings = loadSettingsFromStorage();
-            const [view, setView] = useState(savedSettings.view);
-            const [notifications, setNotifications] = useState([]);
-            const [showAddTask, setShowAddTask] = useState(false);
-            const [showColorLegend, setShowColorLegend] = useState(false);
-            const [showAlerts, setShowAlerts] = useState(true);
-            const [emailNotifications, setEmailNotifications] =
-            // State variable for email notifications from settings
-            useState(savedSettings.emailNotifications);
-            const [sidebarOpen, setSidebarOpen] = useState(false);
-            const [showAllTasksInCalendar, setShowAllTasksInCalendar] = useState(false);
-            const [selectedDateInCalendar, setSelectedDateInCalendar] = useState(null); // New state for selected date
+            const [view, setView] = useState(savedSettings.view); // Vista actual (lista, calendario, etc.)
+            const [notifications, setNotifications] = useState([]); // Lista de notificaciones
+            const [showAddTask, setShowAddTask] = useState(false); // Muestra/oculta formulario de añadir tarea
+            const [showColorLegend, setShowColorLegend] = useState(false); // Muestra/oculta leyenda de colores (no implementado en UI)
+            const [showAlerts, setShowAlerts] = useState(true); // Muestra/oculta panel de alertas
+            const [emailNotifications, setEmailNotifications] = useState(savedSettings.emailNotifications); // Notificaciones por correo electrónico
+            const [sidebarOpen, setSidebarOpen] = useState(false); // Muestra/oculta la barra lateral
+            const [showAllTasksInCalendar, setShowAllTasksInCalendar] = useState(false); // Muestra todas las tareas en el calendario (no usado directamente en UI)
+            const [selectedDateInCalendar, setSelectedDateInCalendar] = useState(null); // Fecha seleccionada en el calendario
 
-            // Refs for highlighting in calendar
+            // Referencias para el calendario (para scroll y resaltado)
             const calendarRef = useRef(null);
             const highlightedDateRef = useRef(null);
 
-            // Effect to save tasks and settings whenever they change
+            // Efecto para guardar tareas y configuración cuando cambian
             useEffect(() => {
                 saveTasksToStorage(tasks);
             }, [tasks]);
@@ -420,15 +437,15 @@
                 saveSettingsToStorage(view, emailNotifications);
             }, [view, emailNotifications]);
 
-
+            // Efecto para actualizar la hora actual cada segundo
             useEffect(() => {
                 const interval = setInterval(() => {
                     setCurrentTime(new Date());
-                }, 1000); // Update every second for accurate time display
-                return () => clearInterval(interval);
+                }, 1000); // Actualiza cada segundo
+                return () => clearInterval(interval); // Limpia el intervalo al desmontar
             }, []);
 
-            // Notification logic
+            // Lógica de notificaciones
             useEffect(() => {
                 const generateNotifications = () => {
                     const now = new Date();
@@ -438,7 +455,7 @@
                         if (!task.completed) {
                             const taskDateTime = new Date(`${task.dueDate}T${task.dueTime}`);
 
-                            // Notification for tasks due in 24 hours
+                            // Notificación para tareas que vencen en 24 horas
                             const oneDayBefore = new Date(taskDateTime);
                             oneDayBefore.setDate(taskDateTime.getDate() - 1);
                             if (now >= oneDayBefore && now < taskDateTime && !task.notified24h) {
@@ -448,11 +465,11 @@
                                     type: 'warning',
                                     taskId: task.id
                                 });
-                                // Mark as notified to prevent repeated notifications
+                                // Marca como notificado para evitar notificaciones repetidas
                                 setTasks(prevTasks => prevTasks.map(t => t.id === task.id ? { ...t, notified24h: true } : t));
                             }
 
-                            // Notification for tasks due in 1 hour
+                            // Notificación para tareas que vencen en 1 hora
                             const oneHourBefore = new Date(taskDateTime);
                             oneHourBefore.setHours(taskDateTime.getHours() - 1);
                             if (now >= oneHourBefore && now < taskDateTime && !task.notified1h) {
@@ -465,7 +482,7 @@
                                 setTasks(prevTasks => prevTasks.map(t => t.id === task.id ? { ...t, notified1h: true } : t));
                             }
 
-                            // Notification for overdue tasks
+                            // Notificación para tareas vencidas
                             if (now > taskDateTime && !task.notifiedOverdue) {
                                 newNotifications.push({
                                     id: `${task.id}-overdue`,
@@ -478,7 +495,7 @@
                         }
                     });
 
-                    // Add new unique notifications
+                    // Añade nuevas notificaciones únicas
                     setNotifications(prevNotifications => {
                         const existingNotificationIds = new Set(prevNotifications.map(n => n.id));
                         const filteredNewNotifications = newNotifications.filter(n => !existingNotificationIds.has(n.id));
@@ -486,13 +503,14 @@
                     });
                 };
 
-                const notificationInterval = setInterval(generateNotifications, 60 * 1000); // Check every minute
-                generateNotifications(); // Initial check
-                return () => clearInterval(notificationInterval);
+                const notificationInterval = setInterval(generateNotifications, 60 * 1000); // Comprueba cada minuto
+                generateNotifications(); // Comprobación inicial
+                return () => clearInterval(notificationInterval); // Limpia el intervalo al desmontar
             }, [tasks]);
 
 
-            // PWA Service Worker Registration
+            // Registro del Service Worker de PWA (Comentado para depuración)
+            /*
             useEffect(() => {
                 if ('serviceWorker' in navigator) {
                     navigator.serviceWorker.register('/service-worker.js')
@@ -504,14 +522,15 @@
                         });
                 }
             }, []);
+            */
 
-            // Function to format date for display
+            // Función para formatear la fecha para mostrar
             const formatDate = (dateString) => {
                 const options = { year: 'numeric', month: 'long', day: 'numeric' };
                 return new Date(dateString).toLocaleDateString('es-ES', options);
             };
 
-            // Function to format time for display
+            // Función para formatear la hora para mostrar
             const formatTime = (timeString) => {
                 const [hour, minute] = timeString.split(':');
                 const date = new Date();
@@ -520,7 +539,7 @@
                 return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true });
             };
 
-            // Calculate status of a task
+            // Calcula el estado de una tarea
             const getTaskStatus = (task) => {
                 if (task.completed) {
                     return 'Completado';
@@ -532,11 +551,11 @@
                 if (diffDays < 0) {
                     return 'Vencido';
                 } else if (diffDays === 0) {
-                    // Check time for 'Vence Hoy'
+                    // Comprueba la hora para 'Vence Hoy'
                     if (now < dueDateTime) {
                         return 'Vence Hoy';
                     } else {
-                        return 'Vencido'; // Passed due time on the same day
+                        return 'Vencido'; // Pasó la hora de vencimiento en el mismo día
                     }
                 } else if (diffDays === 1) {
                     return 'Vence Mañana';
@@ -547,7 +566,7 @@
                 }
             };
 
-            // Determine color based on task status
+            // Determina el color del borde basado en el estado de la tarea
             const getStatusColor = (status) => {
                 switch (status) {
                     case 'Vencido':
@@ -566,6 +585,7 @@
                 }
             };
 
+            // Determina el color del texto basado en el estado de la tarea
             const getStatusTextColor = (status) => {
                 switch (status) {
                     case 'Vencido':
@@ -584,7 +604,7 @@
                 }
             };
 
-            // Handle input change for new/editing task
+            // Maneja el cambio de entrada para la tarea nueva/en edición
             const handleChange = (e) => {
                 const { name, value } = e.target;
                 if (editingTask) {
@@ -594,23 +614,23 @@
                 }
             };
 
-            // Handle adding/updating a task
+            // Maneja el envío del formulario para añadir/actualizar una tarea
             const handleSubmit = (e) => {
                 e.preventDefault();
                 if (editingTask) {
-                    // Update existing task
+                    // Actualiza tarea existente
                     setTasks(tasks.map(task => task.id === editingTask.id ? { ...editingTask, completed: editingTask.completed || false } : task));
                     setEditingTask(null);
                     showAlert("Tarea actualizada con éxito.");
                 } else {
-                    // Add new task
+                    // Añade nueva tarea
                     if (!newTask.subject || !newTask.title || !newTask.dueDate || !newTask.dueTime) {
                         showAlert("Por favor, completa todos los campos obligatorios (Asignatura, Título, Fecha y Hora de Vencimiento).");
                         return;
                     }
                     const taskToAdd = {
                         ...newTask,
-                        id: tasks.length ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
+                        id: tasks.length ? Math.max(...tasks.map(t => t.id)) + 1 : 1, // Genera ID único
                         completed: false
                     };
                     setTasks([...tasks, taskToAdd]);
@@ -620,7 +640,7 @@
                 setShowAddTask(false);
             };
 
-            // Handle deleting a task
+            // Maneja la eliminación de una tarea
             const handleDelete = (id) => {
                 showConfirm("¿Estás seguro de que quieres eliminar esta tarea? Esta acción no se puede deshacer.", () => {
                     setTasks(tasks.filter(task => task.id !== id));
@@ -628,45 +648,45 @@
                 });
             };
 
-            // Handle marking a task as complete/incomplete
+            // Maneja marcar una tarea como completa/incompleta
             const toggleComplete = (id) => {
                 setTasks(tasks.map(task =>
                     task.id === id ? { ...task, completed: !task.completed } : task
                 ));
             };
 
-            // Function to sort tasks
+            // Función para ordenar tareas
             const sortTasks = (tasksToSort) => {
                 const now = new Date();
                 return [...tasksToSort].sort((a, b) => {
                     const statusA = getTaskStatus(a);
                     const statusB = getTaskStatus(b);
 
-                    // Prioritize 'Vencido'
+                    // Prioriza 'Vencido'
                     if (statusA === 'Vencido' && statusB !== 'Vencido') return -1;
                     if (statusA !== 'Vencido' && statusB === 'Vencido') return 1;
 
-                    // Then 'Vence Hoy'
+                    // Luego 'Vence Hoy'
                     if (statusA === 'Vence Hoy' && statusB !== 'Vence Hoy') return -1;
                     if (statusA !== 'Vence Hoy' && statusB === 'Vence Hoy') return 1;
 
-                    // Then 'Vence Mañana'
+                    // Luego 'Vence Mañana'
                     if (statusA === 'Vence Mañana' && statusB !== 'Vence Mañana') return -1;
                     if (statusA !== 'Vence Mañana' && statusB === 'Vence Mañana') return 1;
 
-                    // Then 'Por Vencer'
+                    // Luego 'Por Vencer'
                     if (statusA === 'Por Vencer' && statusB !== 'Por Vencer') return -1;
                     if (statusA !== 'Por Vencer' && statusB === 'Por Vencer') return 1;
 
-                    // Then 'A Tiempo'
+                    // Luego 'A Tiempo'
                     if (statusA === 'A Tiempo' && statusB !== 'A Tiempo') return -1;
                     if (statusA !== 'A Tiempo' && statusB === 'A Tiempo') return 1;
 
-                    // 'Completado' comes last
+                    // 'Completado' va al final
                     if (statusA === 'Completado' && statusB !== 'Completado') return 1;
                     if (statusA !== 'Completado' && statusB === 'Completado') return -1;
 
-                    // For tasks with the same status, sort by due date and time
+                    // Para tareas con el mismo estado, ordena por fecha y hora de vencimiento
                     const dateA = new Date(`${a.dueDate}T${a.dueTime}`);
                     const dateB = new Date(`${b.dueDate}T${b.dueTime}`);
                     return dateA - dateB;
@@ -675,25 +695,29 @@
 
             const sortedTasks = sortTasks(tasks);
 
-            // Filter tasks for the calendar
+            // Filtra tareas para una fecha específica en el calendario
             const getTasksForDate = (date) => {
                 const dateString = date.toISOString().split('T')[0];
                 return tasks.filter(task => task.dueDate === dateString);
             };
 
-            // Calendar component logic
+            // Componente del Calendario
             const Calendar = () => {
                 const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
                 const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
+                // Obtiene el número de días en un mes dado
                 const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
-                const firstDayOfMonth = (month, year) => new Date(year, month, 1).getDay(); // 0 for Sunday, 1 for Monday
+                // Obtiene el primer día de la semana del mes (0 para domingo, 1 para lunes)
+                const firstDayOfMonth = (month, year) => new Date(year, month, 1).getDay();
 
+                // Navega al mes anterior
                 const goToPreviousMonth = () => {
                     setCurrentMonth(prevMonth => (prevMonth === 0 ? 11 : prevMonth - 1));
                     if (currentMonth === 0) setCurrentYear(prevYear => prevYear - 1);
                 };
 
+                // Navega al mes siguiente
                 const goToNextMonth = () => {
                     setCurrentMonth(prevMonth => (prevMonth === 11 ? 0 : prevMonth + 1));
                     if (currentMonth === 11) setCurrentYear(prevYear => prevYear + 1);
@@ -702,19 +726,21 @@
                 const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
                 const dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
+                // Renderiza los días del calendario
                 const renderCalendarDays = () => {
                     const totalDays = daysInMonth(currentMonth, currentYear);
                     const startDay = firstDayOfMonth(currentMonth, currentYear);
                     const days = [];
 
-                    // Adjust startDay for Monday-first week (0 for Sunday -> 6 for Saturday)
-                    const adjustedStartDay = startDay === 0 ? 6 : startDay - 1; // If Sunday, map to 6, otherwise (day - 1)
+                    // Ajusta startDay para una semana que comienza en lunes
+                    const adjustedStartDay = startDay === 0 ? 6 : startDay - 1; // Si es domingo (0), lo mapea a 6 (sábado), de lo contrario (día - 1)
 
-                    // Fill leading empty days
+                    // Rellena los días vacíos al principio del mes
                     for (let i = 0; i < adjustedStartDay; i++) {
                         days.push(<div key={`empty-${i}`} className="p-2 text-center text-gray-400"></div>);
                     }
 
+                    // Renderiza cada día del mes
                     for (let day = 1; day <= totalDays; day++) {
                         const date = new Date(currentYear, currentMonth, day);
                         const dateString = date.toISOString().split('T')[0];
@@ -738,7 +764,7 @@
                                 key={dateString}
                                 className={`${classes} ${hasTasksClass}`}
                                 onClick={() => setSelectedDateInCalendar(date)}
-                                ref={isSelected ? highlightedDateRef : null}
+                                ref={isSelected ? highlightedDateRef : null} // Asigna la ref si la fecha está seleccionada
                             >
                                 {day}
                                 {tasksOnDate.length > 0 && (
@@ -755,19 +781,19 @@
                     return days;
                 };
 
-                // Effect to scroll to and highlight selected date
+                // Efecto para desplazar y resaltar la fecha seleccionada en el calendario
                 useEffect(() => {
                     if (highlightedDateRef.current && selectedDateInCalendar) {
                         highlightedDateRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                         highlightedDateRef.current.classList.add('highlight-animation');
 
-                        // Remove animation class after it completes to allow re-triggering
+                        // Elimina la clase de animación después de que se complete para permitir que se vuelva a activar
                         const timer = setTimeout(() => {
                             highlightedDateRef.current.classList.remove('highlight-animation');
-                        }, 2000); // Duration of the animation
+                        }, 2000); // Duración de la animación
                         return () => clearTimeout(timer);
                     }
-                }, [selectedDateInCalendar, currentMonth, currentYear]); // Re-run if month/year changes or selection
+                }, [selectedDateInCalendar, currentMonth, currentYear]); // Se ejecuta si cambia la fecha seleccionada, mes o año
 
                 return (
                     <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-6">
@@ -812,18 +838,18 @@
                 );
             };
 
-
+            // Componente de la Tarjeta de Tarea
             const TaskCard = ({ task, onEdit, onDelete, onToggleComplete }) => {
                 const status = getTaskStatus(task);
                 const borderColor = getStatusColor(status);
                 const textColor = getStatusTextColor(status);
 
-                // Handle click on the date only
+                // Maneja el clic solo en la fecha para abrir el calendario
                 const handleDateClick = (e) => {
-                    e.stopPropagation(); // Prevent the card's general click event if any
-                    const taskDate = new Date(`${task.dueDate}T00:00:00`); // Only interested in the date part
-                    setSelectedDateInCalendar(taskDate);
-                    setView('calendar'); // Switch to calendar view
+                    e.stopPropagation(); // Evita que se propague el evento de clic a la tarjeta general
+                    const taskDate = new Date(`${task.dueDate}T00:00:00`); // Solo interesa la parte de la fecha
+                    setSelectedDateInCalendar(taskDate); // Establece la fecha seleccionada en el calendario
+                    setView('calendar'); // Cambia a la vista de calendario
                 };
 
                 return (
@@ -845,7 +871,7 @@
                         </div>
                         <div
                             className="flex items-center text-gray-700 text-xs mb-3 cursor-pointer hover:underline"
-                            onClick={handleDateClick} // Only date click opens calendar
+                            onClick={handleDateClick} // Solo el clic en la fecha abre el calendario
                         >
                             <IconCalendar width="14" height="14" className="mr-1 text-gray-500" />
                             <span className="font-medium">{formatDate(task.dueDate)}</span>
@@ -877,9 +903,9 @@
                 );
             };
 
-
+            // Componente del Formulario de Tarea (para añadir o editar)
             const TaskForm = ({ task, onChange, onSubmit, onCancel }) => {
-                const isEditMode = !!task.id;
+                const isEditMode = !!task.id; // Determina si el formulario está en modo edición
                 return (
                     <form onSubmit={onSubmit} className="bg-white p-6 rounded-lg shadow-xl max-w-lg mx-auto my-4 border-t-4 border-blue-500">
                         <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
@@ -992,7 +1018,9 @@
                 );
             };
 
+            // Componente del Panel de Notificaciones
             const NotificationPanel = ({ notifications, onClose }) => {
+                // Selecciona el icono según el tipo de notificación
                 const getIconForNotificationType = (type) => {
                     switch (type) {
                         case 'warning': return <IconBell width="20" height="20" className="text-orange-500" />;
@@ -1032,7 +1060,7 @@
                 );
             };
 
-
+            // Componente de la Barra Lateral
             const Sidebar = ({ isOpen, onClose, onSetView, currentView, onToggleEmailNotifications, emailNotificationsEnabled }) => {
                 return (
                     <div className={`fixed inset-0 bg-gray-900 bg-opacity-50 z-40 ${isOpen ? 'block' : 'hidden'}`} onClick={onClose}>
@@ -1087,6 +1115,7 @@
                 );
             };
 
+            // Componente del Panel de Ajustes
             const SettingsPanel = ({ emailNotifications, onToggleEmailNotifications, onBack }) => {
                 return (
                     <div className="p-4 sm:p-6 max-w-2xl mx-auto">
@@ -1118,13 +1147,12 @@
                         <div className="bg-white rounded-xl shadow-lg p-6">
                             <h3 className="text-xl font-semibold text-gray-800 mb-4">Acerca de</h3>
                             <p className="text-gray-700 mb-2">Gestor Académico - Etiquetado Automático</p>
-                            <p className="text-700 mb-2">Versión: 1.0.0</p>
+                            <p className="text-gray-700 mb-2">Versión: 1.0.0</p>
                             <p className="text-gray-700">Desarrollado con ❤️ para ayudarte a organizar tus estudios.</p>
                         </div>
                     </div>
                 );
             };
-
 
             return (
                 <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -1233,7 +1261,13 @@
             );
         };
 
-        ReactDOM.render(<AcademicTaskManager />, document.getElementById('root'));
+        // Renderiza el componente principal de React en el elemento con id 'root'
+        try {
+            ReactDOM.render(<AcademicTaskManager />, document.getElementById('root'));
+            console.log('La aplicación React se ha cargado correctamente.');
+        } catch (error) {
+            console.error('Error al renderizar la aplicación React:', error);
+        }
     </script>
 </body>
 </html>
