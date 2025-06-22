@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#3b82f6"/> <!-- Color del tema, se recomienda un azul para el tema -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Gestor Académico">
+    <meta name="apple-mobile-web-app-app-title" content="Gestor Académico">
     
     <!-- Favicons e iconos táctiles para diferentes dispositivos/contextos -->
     <!-- Asegúrate de que estos archivos existan en la carpeta /icons/ -->
@@ -21,25 +21,25 @@
     
     <meta name="description" content="Organiza tus tareas académicas de manera eficiente."/>
 
-    <!-- Link to external CSS file -->
+    <!-- Enlace al archivo CSS externo -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- React and Babel CDNs -->
+    <!-- CDNs de React y Babel para que React funcione en el navegador -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Tailwind CSS CDN - Ensure it's loaded before your custom CSS if you're overriding Tailwind defaults -->
+    <!-- CDN de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts for Poppins -->
+    <!-- Fuente de Google Fonts para Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="root"></div>
 
-    <!-- Link to external JavaScript file, type="text/babel" is needed for JSX compilation in browser -->
+    <!-- Enlace al archivo JavaScript externo (con type="text/babel" para JSX) -->
     <script type="text/babel" src="script.js"></script>
 
-    <!-- Service Worker Registration -->
+    <!-- Registro del Service Worker (para PWA) -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -55,3 +55,4 @@
     </script>
 </body>
 </html>
+
