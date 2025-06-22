@@ -220,7 +220,7 @@
 
         // --- Component for Daily Tasks Card View ---
         // Moved outside AcademicTaskManager for better React practice and to avoid re-creation on every render.
-        const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, toggleTask, startEditing, deleteTask, handleTaskCardClick }) => {
+        const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, toggleTask, startEditing, deleteTask, handleTaskCardClick, getDaysUntilDue }) => {
             const groupedTasks = tasks.reduce((acc, task) => {
                 const date = task.dueDate;
                 if (!acc[date]) acc[date] = [];
@@ -305,7 +305,7 @@
 
         // Monthly Calendar Component
         // Moved outside AcademicTaskManager for better React practice and to avoid re-creation on every render.
-        const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, originTaskForCalendar, backToOriginTask, getTaskStatus, chileanHolidays }) => {
+        const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, originTaskForCalendar, backToOriginTask, getTaskStatus, chileanHolidays, createLocalDate }) => {
             const year = currentViewDate.getFullYear();
             const month = currentViewDate.getMonth();
 
@@ -535,6 +535,7 @@
                 '2025-08-15', // Asunción de la Virgen
                 '2025-09-18', // Independencia Nacional
                 '2025-09-19', // Día de las Glorias del Ejército
+                '2022-10-10', // Descubrimiento de Dos Mundos (Reemplazado por 12 de octubre, mantener para referencia si es necesario)
                 '2025-10-12', // Encuentro de Dos Mundos
                 '2025-10-31', // Día de las Iglesias Evangélicas y Protestantes
                 '2025-11-01', // Día de Todos los Santos
@@ -1041,7 +1042,7 @@
                     let highlightClasses = '';
                     let borderColorRgb = '';
                     if (taskForColor) {
-                        const status = getTaskStatus(taskForColor.dueDate, task.dueTime, task.completed);
+                        const status = getTaskStatus(taskForColor.dueDate, taskForColor.dueTime, taskForColor.completed);
                         const style = getTaskCardStyle(status, taskForColor.completed);
                         highlightClasses = style.highlightClass;
                         borderColorRgb = style.borderColorRgb;
@@ -1117,7 +1118,7 @@
             };
 
             // Simplified calendar view
-            const CalendarView = ({ highlightedDates, chileanHolidays }) => { // Pass chileanHolidays
+            const CalendarView = ({ highlightedDates, chileanHolidays, tasks, getTaskStatus, createLocalDate }) => {
                 return (
                     <div className="space-y-8" id="calendarSection">
                         <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
@@ -1134,8 +1135,8 @@
                             originTaskForCalendar={originTaskForCalendar}
                             backToOriginTask={backToOriginTask}
                             getTaskStatus={getTaskStatus}
-                            chileanHolidays={chileanHolidays} // Pass chileanHolidays
-                            createLocalDate={createLocalDate} // Pass createLocalDate
+                            chileanHolidays={chileanHolidays}
+                            createLocalDate={createLocalDate}
                         />
                     </div>
                 );
@@ -1590,10 +1591,17 @@
                                 toggleTask={toggleTask}
                                 startEditing={startEditing}
                                 deleteTask={deleteTask}
-                                handleTaskCardClick={handleTaskCardClick} // ¡Propiedad agregada aquí!
+                                handleTaskCardClick={handleTaskCardClick}
+                                getDaysUntilDue={getDaysUntilDue} {/* Pasa la función como prop */}
                             />
                         ) : (
-                            <CalendarView highlightedDates={highlightedCalendarDates} chileanHolidays={chileanHolidays} />
+                            <CalendarView 
+                                highlightedDates={highlightedCalendarDates} 
+                                chileanHolidays={chileanHolidays}
+                                tasks={tasks}
+                                getTaskStatus={getTaskStatus}
+                                createLocalDate={createLocalDate}
+                            />
                         )}
 
                         {/* Footer con información */}
