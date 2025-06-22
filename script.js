@@ -128,8 +128,6 @@
         }
         highlightTimeoutRef.current = null;
     };
-
-    return React.createElement("div", { className: "min-h-screen bg-gray-200" },
         // Header
         React.createElement("div", { className: "bg-white shadow-lg w-full py-4 sm:py-6 mb-6" },
             React.createElement("div", { className: "max-w-7xl mx-auto px-3 sm:px-6" },
