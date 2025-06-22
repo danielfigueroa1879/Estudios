@@ -1,4 +1,4 @@
-// Handle date click specifically
+    // Handle date click specifically
     const handleDateClick = async (task, e) => {
         e.stopPropagation();
         if (highlightTimeoutRef.current) {
