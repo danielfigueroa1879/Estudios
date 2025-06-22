@@ -1157,7 +1157,7 @@ const AcademicTaskManager = () => {
                                 <button
                                     onClick={() => {
                                         setView('list');
-                                        setShowColorLegend(false);
+                                        setShowColorLegend(false); // Hide quick access if main view is selected
                                         setOriginTaskForCalendar(null);
                                         setTimeout(() => {
                                             const taskListSection = document.getElementById('taskListSection');
@@ -1174,7 +1174,7 @@ const AcademicTaskManager = () => {
                                 <button
                                     onClick={() => {
                                         setView('daily');
-                                        setShowColorLegend(false);
+                                        setShowColorLegend(false); // Hide quick access if main view is selected
                                         setTimeout(() => {
                                             const dailyTasksSection = document.getElementById('dailyTasksSection');
                                             if (dailyTasksSection) {
@@ -1191,7 +1191,7 @@ const AcademicTaskManager = () => {
                                 <button
                                     onClick={() => {
                                         setView('calendar');
-                                        setShowColorLegend(false);
+                                        setShowColorLegend(false); // Hide quick access if main view is selected
                                         setTimeout(() => {
                                             const calendarSection = document.getElementById('calendarSection');
                                             if (calendarSection) {
@@ -1566,4 +1566,3 @@ const AcademicTaskManager = () => {
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 root.render(<AcademicTaskManager />);
-
