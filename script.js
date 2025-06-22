@@ -341,7 +341,19 @@ const AcademicTaskManager = () => {
     const [currentCalendarViewDate, setCurrentCalendarViewDate] = useState(new Date());
     const todayGlobal = new Date();
     const [originTaskForCalendar, setOriginTaskForCalendar] = useState(null);
-    const highlightTimeoutRef = useRef(null);
+    // Add state for task expansion
+    const [expandedTasks, setExpandedTasks] = useState(new Set());
+
+    // Toggle task expansion
+    const toggleTaskExpansion = (taskId) => {
+        const newExpanded = new Set(expandedTasks);
+        if (newExpanded.has(taskId)) {
+            newExpanded.delete(taskId);
+        } else {
+            newExpanded.add(taskId);
+        }
+        setExpandedTasks(newExpanded);
+    };
 
     // Effect to update time every minute for real-time status checks
     useEffect(() => {
@@ -724,6 +736,12 @@ const AcademicTaskManager = () => {
         await animateCalendarDate(task.dueDate, cardStyle.highlightClass, cardStyle.borderColorRgb);
     };
 
+    // Handle date click specifically
+    const handleDateClick = async (task, e) => {
+        e.stopPropagation(); // Prevent card click
+        await handleTaskCardClick(task);
+    };
+
     // Function to go back to original task in list view
     const backToOriginTask = () => {
         if (originTaskForCalendar) {
@@ -900,30 +918,33 @@ const AcademicTaskManager = () => {
 
         return (
             <div className="bg-blue-50 rounded-2xl shadow-lg p-4 sm:p-6 relative border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300">
-                <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-                    <h2 className="text-lg sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-0">
+                <div className="flex items-center justify-center mb-6 relative">
+                    <button
+                        onClick={goToPreviousMonth}
+                        className="absolute left-0 px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
+                    >
+                        ←
+                    </button>
+                    
+                    <h2 className="text-base sm:text-2xl font-bold text-gray-800">
                         {monthNames[month]} {year}
                     </h2>
-                    <div className="flex space-x-2">
-                        <button
-                            onClick={goToPreviousMonth}
-                            className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-xs sm:text-base"
-                        >
-                            ←
-                        </button>
-                        <button
-                            onClick={goToToday}
-                            className="px-4 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-xs sm:text-base"
-                        >
-                            Hoy
-                        </button>
-                        <button
-                            onClick={goToNextMonth}
-                            className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-xs sm:text-base"
-                        >
-                            →
-                        </button>
-                    </div>
+                    
+                    <button
+                        onClick={goToNextMonth}
+                        className="absolute right-0 px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
+                    >
+                        →
+                    </button>
+                </div>
+
+                <div className="flex justify-center mb-4">
+                    <button
+                        onClick={goToToday}
+                        className="px-3 py-1 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-xs sm:text-sm"
+                    >
+                        Hoy
+                    </button>
                 </div>
 
                 <div className="grid grid-cols-7 gap-1 mb-2">
@@ -1030,10 +1051,10 @@ const AcademicTaskManager = () => {
                 {originTaskForCalendar && (
                     <button
                         onClick={backToOriginTask}
-                        className="absolute bottom-4 right-4 p-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors flex items-center justify-center z-10"
+                        className="absolute top-4 right-4 p-2 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors flex items-center justify-center z-10"
                         title="Volver a la tarea original"
                     >
-                        <IconArrowBack width="24" height="24" />
+                        <IconArrowBack width="20" height="20" />
                     </button>
                 )}
             </div>
@@ -1383,61 +1404,104 @@ const AcademicTaskManager = () => {
                         }).map(task => {
                             const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
                             const cardStyle = getTaskCardStyle(status, task.completed);
+                            const isExpanded = expandedTasks.has(task.id);
 
                             return (
                                 <div
                                     key={task.id}
                                     id={task.id}
-                                    onClick={(e) => {
-                                        if (e.target.tagName !== 'BUTTON' && e.target.closest('button') === null) {
-                                            handleTaskCardClick(task);
-                                        }
-                                    }}
-                                    className={`rounded-xl shadow-lg border-l-8 p-4 sm:p-8 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} hover:border-red-500 hover:ring-2 hover:ring-red-500 hover:shadow-lg hover:shadow-red-200 cursor-pointer`}
+                                    className={`rounded-xl shadow-lg border-l-8 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} ${
+                                        isExpanded ? 'p-4 sm:p-8' : 'p-2 sm:p-4'
+                                    }`}
                                 >
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
-                                        <div className="flex items-start space-x-4 sm:space-x-6 flex-1">
+                                    {/* Compact view */}
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center space-x-3 flex-1">
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
-                                                className={`mt-1 w-6 h-6 sm:w-7 sm:h-7 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                                                className={`w-5 h-5 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center flex-shrink-0 ${
                                                     task.completed
                                                         ? 'bg-green-500 border-green-500 text-white'
                                                         : 'border-gray-300 hover:border-gray-400'
                                                 }`}
                                             >
-                                                {task.completed && <IconCheck width="16" height="16" />}
+                                                {task.completed && <IconCheck width="14" height="14" />}
                                             </button>
 
                                             <div className="flex-1 min-w-0">
-                                                <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-3">
-                                                    <h3 className={`font-semibold text-lg sm:text-xl ${
-                                                        task.completed ? 'line-through text-gray-500' : 
-                                                        status === 'overdue' ? 'line-through text-gray-700' : 'text-gray-900'
-                                                    }`}>
-                                                        {task.subject}: {task.title}
-                                                    </h3>
-                                                    <div className="flex items-center space-x-3">
-                                                        <span className="text-base bg-gray-100 text-gray-600 px-3 py-1 rounded">
-                                                            {task.type}
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                {task.description && (
-                                                    <p className="text-gray-600 text-base sm:text-lg mb-3">{task.description}</p>
-                                                )}
-
-                                                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-base sm:text-lg text-gray-500">
-                                                    <span>📅 {formatDateTime(task.dueDate, task.dueTime)}</span>
+                                                <h3 className={`font-semibold text-sm sm:text-base ${
+                                                    task.completed ? 'line-through text-gray-500' : 
+                                                    status === 'overdue' ? 'line-through text-gray-700' : 'text-gray-900'
+                                                }`}>
+                                                    {task.subject}: {task.title}
+                                                </h3>
+                                                <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500">
+                                                    <span 
+                                                        onClick={(e) => handleDateClick(task, e)}
+                                                        className="cursor-pointer hover:text-blue-600 hover:underline"
+                                                    >
+                                                        📅 {formatDate(task.dueDate)}
+                                                    </span>
                                                     <span>⏰ {getDaysUntilDue(task.dueDate)}</span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center space-x-3">
-                                            <div className="flex items-center justify-end sm:justify-center">
-                                                <div className="w-5 h-5 sm:w-7 sm:h-7">
-                                                    <IconClock width="24" height="24" />
+                                        <button
+                                            onClick={() => toggleTaskExpansion(task.id)}
+                                            className="text-gray-400 hover:text-gray-600 p-1"
+                                        >
+                                            {isExpanded ? <IconChevronUp width="20" height="20" /> : <IconChevronDown width="20" height="20" />}
+                                        </button>
+                                    </div>
+
+                                    {/* Expanded view */}
+                                    {isExpanded && (
+                                        <div className="mt-4 pt-4 border-t border-gray-200">
+                                            <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-3">
+                                                <div className="flex items-center space-x-3">
+                                                    <span className="text-sm bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                                                        {task.type}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {task.description && (
+                                                <p className="text-gray-600 text-sm sm:text-base mb-3">{task.description}</p>
+                                            )}
+
+                                            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm sm:text-base text-gray-500 mb-4">
+                                                <span 
+                                                    onClick={(e) => handleDateClick(task, e)}
+                                                    className="cursor-pointer hover:text-blue-600 hover:underline"
+                                                >
+                                                    📅 {formatDateTime(task.dueDate, task.dueTime)}
+                                                </span>
+                                                <span>⏰ {getDaysUntilDue(task.dueDate)}</span>
+                                            </div>
+
+                                            <div className="flex items-center justify-end space-x-2">
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); startEditing(task); }}
+                                                    className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-xl transition-colors"
+                                                    title="Editar tarea"
+                                                >
+                                                    <IconEdit width="18" height="18" />
+                                                </button>
+
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
+                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-xl transition-colors"
+                                                    title="Eliminar tarea"
+                                                >
+                                                    <IconTrash width="18" height="18" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}="24" height="24" />
                                                 </div>
                                             </div>
 
