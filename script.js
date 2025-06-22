@@ -338,8 +338,8 @@ const AcademicTaskManager = () => {
     const [view, setView] = useState(savedSettings.view);
     const [notifications, setNotifications] = useState([]);
     const [showAddTask, setShowAddTask] = useState(false);
-    const [showColorLegend, setShowColorLegend] = useState(false);
-    const [showAlerts, setShowAlerts] = useState(true);
+    const [showColorLegend, setShowColorLegend] = useState(true); // Changed to true for easier testing
+    const [showAlerts, setShowAlerts] = useState(true); // Keep as true for alerts visibility
     const [emailNotifications, setEmailNotifications] = useState(savedSettings.emailNotifications); // Correctly initialized
     const [highlightedCalendarDates, setHighlightedCalendarDates] = useState([]);
     const [currentCalendarViewDate, setCurrentCalendarViewDate] = useState(new Date());
@@ -931,6 +931,7 @@ const AcademicTaskManager = () => {
 
         return (
             // Changed bg-white to bg-blue-50 for the outer calendar container
+            // This applies the light blue background "outside" the day cells
             <div className="bg-blue-50 rounded-2xl shadow-lg p-4 sm:p-6 relative border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
                     {/* Adjusted text size for month/year title: text-lg for mobile, sm:text-2xl for larger screens */}
@@ -995,6 +996,7 @@ const AcademicTaskManager = () => {
                             <div
                                 key={currentDayFormatted}
                                 // Changed bg-blue-50 to bg-white for individual day cells, and adjusted hover
+                                // This keeps day cells white and provides a hover effect
                                 className={`h-[4.5rem] sm:h-[6rem] border border-gray-200 p-1 sm:p-2 transition-all duration-300 ease-in-out ${
                                     isHoliday ? 'bg-red-50' : ''
                                 } ${isToday ? 'bg-blue-100 border-blue-500' : 'bg-white hover:bg-blue-50'} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`}
@@ -1106,6 +1108,7 @@ const AcademicTaskManager = () => {
 
                         {/* Contenido Derecho: Campana (visible siempre), Toggle de email (oculto en móvil), Menú Hamburguesa */}
                         <div className="flex-shrink-0 flex items-center space-x-3">
+                            {/* The alerts button and notification count are only shown if there are active notifications. */}
                             {notifications.length > 0 && (
                                 <button
                                     onClick={() => setShowAlerts(!showAlerts)}
@@ -1146,7 +1149,7 @@ const AcademicTaskManager = () => {
                         </div>
                     </div>
 
-                    {/* Acceso Rápido a Tareas - Conditionally rendered */}
+                    {/* Acceso Rápido a Tareas - Conditionally rendered: Visible when showColorLegend is true */}
                     {showColorLegend && (
                         <div className="mt-6 pt-4 border-t border-gray-200">
                             <h3 className="font-semibold text-blue-600 text-xl sm:text-2xl text-left mb-4">Acceso rápido a tareas</h3>
@@ -1359,3 +1362,4 @@ const AcademicTaskManager = () => {
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 root.render(<AcademicTaskManager />);
+
