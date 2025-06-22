@@ -1376,14 +1376,10 @@ const AcademicTaskManager = () => {
                                                 }
                                             }, 100);
                                         }}
-                                        className={`px-2 py-3 sm:px-8 sm:py-4 sm:w-48 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-1 sm:space-y-0 sm:space-x-3 text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
-                                            view === 'daily' 
-                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
-                                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
-                                        }`}
+                                        className="block w-full text-left p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
                                     >
                                         <IconCalendar width="20" height="20" />
-                                        <span className="font-medium text-center sm:text-center">Por Día</span>
+                                        <span>Tareas por Día</span>
                                     </button>
                                     <button
                                         onClick={() => {
@@ -1397,14 +1393,10 @@ const AcademicTaskManager = () => {
                                                 }
                                             }, 100);
                                         }}
-                                        className={`px-2 py-3 sm:px-8 sm:py-4 sm:w-48 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-1 sm:space-y-0 sm:space-x-3 text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
-                                            view === 'calendar' 
-                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
-                                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
-                                        }`}
+                                        className="block w-full text-left p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
                                     >
                                         <IconCalendar width="20" height="20" />
-                                        <span className="font-medium text-center sm:text-center">Calendario</span>
+                                        <span>Vista de Calendario</span>
                                     </button>
                                 </div>
                             </div>
@@ -1574,3 +1566,4 @@ const AcademicTaskManager = () => {
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 root.render(<AcademicTaskManager />);
+
