@@ -333,8 +333,8 @@ const AcademicTaskManager = () => {
     const savedSettings = loadSettingsFromStorage();
     const [view, setView] = useState(savedSettings.view);
     const [notifications, setNotifications] = useState([]);
-    const [showAddTask, setShowAddTask] = useState(true);
-    const [showColorLegend, setShowColorLegend] = useState(true);
+    const [showAddTask, setShowAddTask] = useState(false); // Cambiado a false - formulario cerrado por defecto
+    const [showColorLegend, setShowColorLegend] = useState(false); // Cambiado a false - menú hamburguesa cerrado por defecto
     const [showAlerts, setShowAlerts] = useState(true);
     const [emailNotifications, setEmailNotifications] = useState(savedSettings.emailNotifications);
     const [highlightedCalendarDates, setHighlightedCalendarDates] = useState([]);
