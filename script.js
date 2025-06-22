@@ -157,10 +157,9 @@ const AcademicTaskManager = () => {
     const [alertDialogMessage, setAlertDialogMessage] = useState("");
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [confirmDialogMessage, setConfirmDialogMessage] = useState("");
-    const confirmCallbackRef = useRef(null); // Ref to store the callback for confirmation
+    const confirmCallbackRef = useRef(null);
 
-    // Chilean holidays for 2025 (YYYY-MM-DD format)
-    // Sourced from feriados.cl, universal-assistance.com, gob.cl, and timeanddate.com
+    // Chilean holidays for 2025
     const chileanHolidays = [
         '2025-01-01', // Año Nuevo
         '2025-04-18', // Viernes Santo
@@ -169,7 +168,6 @@ const AcademicTaskManager = () => {
         '2025-05-21', // Día de las Glorias Navales
         '2025-06-20', // Día Nacional de los Pueblos Indígenas
         '2025-06-29', // San Pedro y San Pablo
-        // '2025-06-29', // Elecciones Primarias Presidenciales y Parlamentarias (handled if confirmed)
         '2025-07-16', // Día de la Virgen del Carmen
         '2025-08-15', // Asunción de la Virgen
         '2025-09-18', // Independencia Nacional
@@ -177,9 +175,7 @@ const AcademicTaskManager = () => {
         '2025-10-12', // Encuentro de Dos Mundos
         '2025-10-31', // Día de las Iglesias Evangélicas y Protestantes
         '2025-11-01', // Día de Todos los Santos
-        // '2025-11-16', // Elecciones Presidenciales y Parlamentarias (handled if confirmed)
         '2025-12-08', // Inmaculada Concepción
-        // '2025-12-14', // Elecciones Presidenciales (Segunda Vuelta) (handled if confirmed)
         '2025-12-25', // Navidad
     ];
 
@@ -222,7 +218,7 @@ const AcademicTaskManager = () => {
         } catch (error) {
             console.error('Error loading tasks from storage:', error);
         }
-        // If no saved data, return default tasks
+        
         const today = new Date();
         const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
@@ -239,8 +235,8 @@ const AcademicTaskManager = () => {
                 subject: 'Matemáticas',
                 title: 'Examen Final',
                 description: 'Cálculo integral y diferencial',
-                dueDate: formatDateForInput(tomorrow), // Vence mañana
-                dueTime: '09:00', // Hora del examen
+                dueDate: formatDateForInput(tomorrow),
+                dueTime: '09:00',
                 type: 'Examen',
                 completed: false
             },
@@ -249,8 +245,8 @@ const AcademicTaskManager = () => {
                 subject: 'Historia',
                 title: 'Ensayo sobre la Revolución',
                 description: 'Análisis de las causas y consecuencias',
-                dueDate: formatDateForInput(tomorrow), // Vence mañana
-                dueTime: '14:30', // Hora de entrega
+                dueDate: formatDateForInput(tomorrow),
+                dueTime: '14:30',
                 type: 'Ensayo',
                 completed: false
             },
@@ -259,8 +255,8 @@ const AcademicTaskManager = () => {
                 subject: 'Física',
                 title: 'Laboratorio de Óptica',
                 description: 'Informe de experimentos con lentes',
-                dueDate: formatDateForInput(dayAfterTomorrow), // Por vencer (2 días)
-                dueTime: '11:00', // Hora del laboratorio
+                dueDate: formatDateForInput(dayAfterTomorrow),
+                dueTime: '11:00',
                 type: 'Laboratorio',
                 completed: false
             },
@@ -269,8 +265,8 @@ const AcademicTaskManager = () => {
                 subject: 'Literatura',
                 title: 'Análisis de "Cien años de soledad"',
                 description: 'Ensayo crítico sobre realismo mágico',
-                dueDate: formatDateForInput(fourDaysLater), // A tiempo (4 días)
-                dueTime: '16:00', // Hora de entrega
+                dueDate: formatDateForInput(fourDaysLater),
+                dueTime: '16:00',
                 type: 'Ensayo',
                 completed: false
             },
@@ -279,8 +275,8 @@ const AcademicTaskManager = () => {
                 subject: 'Química',
                 title: 'Proyecto de Reacciones',
                 description: 'Desarrollo de un modelo molecular',
-                dueDate: formatDateForInput(today), // Vence hoy
-                dueTime: '13:15', // Hora de presentación
+                dueDate: formatDateForInput(today),
+                dueTime: '13:15',
                 type: 'Proyecto',
                 completed: false
             }
@@ -304,7 +300,7 @@ const AcademicTaskManager = () => {
             const savedEmailNotifications = localStorage.getItem('emailNotifications');
             return {
                 view: savedView || 'list',
-                emailNotifications: savedEmailNotifications === 'true' // Convert string to boolean
+                emailNotifications: savedEmailNotifications === 'true'
             };
         } catch (error) {
             console.error('Error loading settings from storage:', error);
@@ -316,7 +312,7 @@ const AcademicTaskManager = () => {
     const saveSettingsToStorage = (currentView, emailNotificationsState) => {
         try {
             localStorage.setItem('currentView', currentView);
-            localStorage.setItem('emailNotifications', String(emailNotificationsState)); // Save boolean as string
+            localStorage.setItem('emailNotifications', String(emailNotificationsState));
         } catch (error) {
             console.error('Error saving settings to storage:', error);
         }
@@ -337,21 +333,21 @@ const AcademicTaskManager = () => {
     const savedSettings = loadSettingsFromStorage();
     const [view, setView] = useState(savedSettings.view);
     const [notifications, setNotifications] = useState([]);
-    const [showAddTask, setShowAddTask] = useState(true); // Changed to true so the form is visible by default
-    const [showColorLegend, setShowColorLegend] = useState(true); // Changed to true so quick access buttons are visible by default
-    const [showAlerts, setShowAlerts] = useState(true); // Keep as true for alerts visibility
-    const [emailNotifications, setEmailNotifications] = useState(savedSettings.emailNotifications); // Correctly initialized
+    const [showAddTask, setShowAddTask] = useState(true);
+    const [showColorLegend, setShowColorLegend] = useState(true);
+    const [showAlerts, setShowAlerts] = useState(true);
+    const [emailNotifications, setEmailNotifications] = useState(savedSettings.emailNotifications);
     const [highlightedCalendarDates, setHighlightedCalendarDates] = useState([]);
     const [currentCalendarViewDate, setCurrentCalendarViewDate] = useState(new Date());
     const todayGlobal = new Date();
     const [originTaskForCalendar, setOriginTaskForCalendar] = useState(null);
-    const highlightTimeoutRef = useRef(null); // Ref for animation timeout
+    const highlightTimeoutRef = useRef(null);
 
     // Effect to update time every minute for real-time status checks
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentTime(new Date());
-        }, 60000); // Update every minute
+        }, 60000);
 
         return () => clearInterval(interval);
     }, []);
@@ -364,12 +360,11 @@ const AcademicTaskManager = () => {
     // Effect to save settings when they change
     useEffect(() => {
         saveSettingsToStorage(view, emailNotifications);
-    }, [view, emailNotifications]); // Added emailNotifications to dependency array
+    }, [view, emailNotifications]);
 
     // Helper to create a local date at midnight from ISO-MM-DD
     const createLocalDate = (dateString) => {
         const parts = dateString.split('-').map(Number);
-        // Month is 0-indexed in Date constructor
         return new Date(parts[0], parts[1] - 1, parts[2]);
     };
 
@@ -389,29 +384,28 @@ const AcademicTaskManager = () => {
             dueDateTime = new Date(dueMidnight);
             dueDateTime.setHours(hours, minutes, 0, 0);
         } else {
-            // If no time, use end of the day (23:59:59) for comparison
             dueDateTime = new Date(dueMidnight);
             dueDateTime.setHours(23, 59, 59, 999);
         }
 
         if (dueDateTime < now) {
-            return 'overdue'; // Passed the date/time
+            return 'overdue';
         }
 
         const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-        if (diffDays === 0) return 'due-today'; // Due today
-        if (diffDays === 1) return 'due-tomorrow'; // Due tomorrow
-        if (diffDays <= 3) return 'due-soon'; // Due soon
-        return 'on-time'; // On time
+        if (diffDays === 0) return 'due-today';
+        if (diffDays === 1) return 'due-tomorrow';
+        if (diffDays <= 3) return 'due-soon';
+        return 'on-time';
     };
 
     // Function to get task card styles based on status
     const getTaskCardStyle = (status, completed) => {
         let baseStyles = {};
         let highlightClass = '';
-        let borderColorRgb = '0,0,0'; // Default black for calculation
+        let borderColorRgb = '0,0,0';
 
         if (completed) {
             baseStyles = {
@@ -420,7 +414,7 @@ const AcademicTaskManager = () => {
                 text: 'text-gray-600',
             };
             highlightClass = 'border-gray-500 ring-2 ring-gray-500 shadow-md';
-            borderColorRgb = '107,114,128'; // gray-500
+            borderColorRgb = '107,114,128';
         } else {
             switch (status) {
                 case 'overdue':
@@ -430,7 +424,7 @@ const AcademicTaskManager = () => {
                         text: 'text-gray-800',
                     };
                     highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md';
-                    borderColorRgb = '75,85,99'; // gray-600
+                    borderColorRgb = '75,85,99';
                     break;
                 case 'due-today':
                     baseStyles = {
@@ -439,7 +433,7 @@ const AcademicTaskManager = () => {
                         text: 'text-red-800',
                     };
                     highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
-                    borderColorRgb = '239,68,68'; // red-500
+                    borderColorRgb = '239,68,68';
                     break;
                 case 'due-tomorrow':
                     baseStyles = {
@@ -448,7 +442,7 @@ const AcademicTaskManager = () => {
                         text: 'text-orange-800',
                     };
                     highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
-                    borderColorRgb = '249,115,22'; // orange-500
+                    borderColorRgb = '249,115,22';
                     break;
                 case 'due-soon':
                     baseStyles = {
@@ -457,7 +451,7 @@ const AcademicTaskManager = () => {
                         text: 'text-yellow-800',
                     };
                     highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
-                    borderColorRgb = '245,158,11'; // yellow-500
+                    borderColorRgb = '245,158,11';
                     break;
                 case 'on-time':
                 default:
@@ -467,13 +461,12 @@ const AcademicTaskManager = () => {
                         text: 'text-green-800',
                     };
                     highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
-                    borderColorRgb = '34,197,94'; // green-500
+                    borderColorRgb = '34,197,94';
                     break;
             }
         }
         return { ...baseStyles, highlightClass: highlightClass, borderColorRgb: borderColorRgb };
     };
-
 
     // Simulate automatic notifications considering time
     useEffect(() => {
@@ -482,7 +475,6 @@ const AcademicTaskManager = () => {
             tasks.forEach(task => {
                 if (!task.completed) {
                     const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-                    // Notify if due today, tomorrow or overdue
                     if (status === 'due-today' || status === 'due-tomorrow' || status === 'overdue') {
                         let label = '';
                         switch (status) {
@@ -504,14 +496,14 @@ const AcademicTaskManager = () => {
         };
 
         checkNotifications();
-        const interval = setInterval(checkNotifications, 60000); // Check every minute
+        const interval = setInterval(checkNotifications, 60000);
         return () => clearInterval(interval);
     }, [tasks, currentTime]);
 
     const addTask = () => {
         if (newTask.subject && newTask.title && newTask.dueDate) {
             setTasks([...tasks, {
-                id: Date.now(), // Use Date.now() for unique IDs
+                id: Date.now(),
                 ...newTask,
                 completed: false
             }]);
@@ -523,7 +515,7 @@ const AcademicTaskManager = () => {
                 dueTime: '',
                 type: 'Tarea'
             });
-            setShowAddTask(false); // Hide form after adding
+            setShowAddTask(false);
         } else {
             showAlert('Por favor, completa los campos de Asignatura, Título y Fecha de Vencimiento.');
         }
@@ -531,10 +523,9 @@ const AcademicTaskManager = () => {
 
     const startEditing = (task) => {
         setEditingTask(task);
-        setNewTask(task); // Load task data into form
-        setShowAddTask(true); // Open form for editing
-        setView('list'); // Ensure list view is active to see the form
-        // Scroll to the form if out of view
+        setNewTask(task);
+        setShowAddTask(true);
+        setView('list');
         const formElement = document.getElementById('addTaskFormSection');
         if (formElement) {
             formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -546,8 +537,8 @@ const AcademicTaskManager = () => {
             setTasks(tasks.map(task =>
                 task.id === editingTask.id ? { ...newTask } : task
             ));
-            setEditingTask(null); // Exit edit mode
-            setNewTask({ // Reset form
+            setEditingTask(null);
+            setNewTask({
                 subject: '',
                 title: '',
                 description: '',
@@ -555,7 +546,7 @@ const AcademicTaskManager = () => {
                 dueTime: '',
                 type: 'Tarea'
             });
-            setShowAddTask(false); // Hide form after updating
+            setShowAddTask(false);
         } else {
             showAlert('Por favor, completa los campos de Asignatura, Título y Fecha de Vencimiento.');
         }
@@ -563,7 +554,7 @@ const AcademicTaskManager = () => {
 
     const cancelEditing = () => {
         setEditingTask(null);
-        setNewTask({ // Reset form
+        setNewTask({
             subject: '',
             title: '',
             description: '',
@@ -571,7 +562,7 @@ const AcademicTaskManager = () => {
             dueTime: '',
             type: 'Tarea'
         });
-        setShowAddTask(false); // Hide form
+        setShowAddTask(false);
     };
 
     const toggleTask = (id) => {
@@ -583,7 +574,7 @@ const AcademicTaskManager = () => {
     const deleteTask = (id) => {
         showConfirm('¿Estás seguro de que quieres eliminar esta tarea?', () => {
             setTasks(tasks.filter(task => task.id !== id));
-            if (editingTask && editingTask.id === id) { // If the task being edited is deleted
+            if (editingTask && editingTask.id === id) {
                 cancelEditing();
             }
         });
@@ -599,13 +590,13 @@ const AcademicTaskManager = () => {
         showConfirm(`¿Estás seguro de que quieres eliminar ${completedCount} tarea${completedCount > 1 ? 's' : ''} completada${completedCount > 1 ? 's' : ''}?`, () => {
             setTasks(tasks.filter(task => !task.completed));
             if (editingTask && tasks.filter(task => task.completed).some(t => t.id === editingTask.id)) {
-                cancelEditing(); // Cancel edit if edited task is completed and deleted
+                cancelEditing();
             }
         });
     };
 
     const formatDate = (dateString) => {
-        const date = createLocalDate(dateString); // Use helper function to create date
+        const date = createLocalDate(dateString);
         return date.toLocaleDateString('es-ES', {
             weekday: 'short',
             year: 'numeric',
@@ -627,9 +618,9 @@ const AcademicTaskManager = () => {
 
     const getDaysUntilDue = (dueDate) => {
         const todayMidnight = new Date();
-        todayMidnight.setHours(0, 0, 0, 0); // Midnight of *today* in local time
+        todayMidnight.setHours(0, 0, 0, 0);
 
-        const dueMidnight = createLocalDate(dueDate); // Midnight of *due date* in local time
+        const dueMidnight = createLocalDate(dueDate);
 
         const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -642,46 +633,41 @@ const AcademicTaskManager = () => {
 
     // Helper to animate date highlighting in the calendar
     const animateCalendarDate = async (dateString, highlightClasses, borderColorRgb) => {
-        // Clear any previous animation
-        if (highlightTimeoutRef.current) {
-            clearTimeout(highlightTimeoutRef.current);
-            highlightTimeoutRef.current = null;
-        }
-        setHighlightedCalendarDates([]); // Immediately turn off any highlighted date
-
-        // Highlight the date
-        setHighlightedCalendarDates([{ date: dateString, classes: highlightClasses, borderColorRgb: borderColorRgb }]);
-        highlightTimeoutRef.current = setTimeout(() => { // Store timeout ID
-            setHighlightedCalendarDates([]);
-            highlightTimeoutRef.current = null;
-        }, 30000); // Highlight duration (30 seconds)
-    };
-
-    // Handle Active Alerts click
-    const handleAlertsClick = async () => {
-        // Clear any previous animation and highlights
         if (highlightTimeoutRef.current) {
             clearTimeout(highlightTimeoutRef.current);
             highlightTimeoutRef.current = null;
         }
         setHighlightedCalendarDates([]);
-        setOriginTaskForCalendar(null); // Reset origin
 
-        // Always force calendar view
+        setHighlightedCalendarDates([{ date: dateString, classes: highlightClasses, borderColorRgb: borderColorRgb }]);
+        highlightTimeoutRef.current = setTimeout(() => {
+            setHighlightedCalendarDates([]);
+            highlightTimeoutRef.current = null;
+        }, 30000);
+    };
+
+    // Handle Active Alerts click
+    const handleAlertsClick = async () => {
+        if (highlightTimeoutRef.current) {
+            clearTimeout(highlightTimeoutRef.current);
+            highlightTimeoutRef.current = null;
+        }
+        setHighlightedCalendarDates([]);
+        setOriginTaskForCalendar(null);
+
         setView('calendar');
         
-        // Scroll to calendar after a small delay to ensure view is ready
         setTimeout(() => {
             const calendarSection = document.getElementById('calendarSection');
             if (calendarSection) {
                 calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-        }, 100); // Small delay for view to change first
+        }, 100);
 
-        const alertDates = [...new Set(notifications.map(n => n.dueDate))].sort(); // Get unique and sorted dates from alerts
+        const alertDates = [...new Set(notifications.map(n => n.dueDate))].sort();
 
         let delay = 0;
-        for (const dateString of alertDates) { // Use for...of for flow control with await
+        for (const dateString of alertDates) {
             const taskForColor = tasks.find(t => t.dueDate === dateString);
             let highlightClasses = '';
             let borderColorRgb = '';
@@ -692,16 +678,14 @@ const AcademicTaskManager = () => {
                 borderColorRgb = style.borderColorRgb;
             }
             
-            // Highlight the date
             await new Promise(resolve => {
                 highlightTimeoutRef.current = setTimeout(() => {
                     setHighlightedCalendarDates([{ date: dateString, classes: highlightClasses, borderColorRgb: borderColorRgb }]);
                     resolve();
                 }, delay);
             });
-            delay += 1500; // Illumination duration (1.5 seconds)
+            delay += 1500;
 
-            // Turn off illumination (or prepare for next)
             await new Promise(resolve => {
                 highlightTimeoutRef.current = setTimeout(() => {
                     setHighlightedCalendarDates([]);
@@ -709,30 +693,25 @@ const AcademicTaskManager = () => {
                     resolve();
                 }, delay);
             });
-            delay += 750; // Pause before next illumination (0.75 seconds)
+            delay += 750;
         }
-        highlightTimeoutRef.current = null; // Mark end of sequence
+        highlightTimeoutRef.current = null;
     };
 
     // Handle task card click to navigate to calendar and highlight
     const handleTaskCardClick = async (task) => {
-        // Clear any previous animation and highlights
         if (highlightTimeoutRef.current) {
             clearTimeout(highlightTimeoutRef.current);
             highlightTimeoutRef.current = null;
         }
         setHighlightedCalendarDates([]);
 
-        // Store task info that originated the query
         setOriginTaskForCalendar({ taskId: task.id, scrollY: window.scrollY });
 
-        // Always force calendar view
         setView('calendar');
         
-        // Update calendar month to task's date
         setCurrentCalendarViewDate(createLocalDate(task.dueDate));
 
-        // Scroll to calendar after a small delay
         setTimeout(() => {
             const calendarSection = document.getElementById('calendarSection');
             if (calendarSection) {
@@ -748,20 +727,18 @@ const AcademicTaskManager = () => {
     // Function to go back to original task in list view
     const backToOriginTask = () => {
         if (originTaskForCalendar) {
-            setView('list'); // Go back to list view
-            setHighlightedCalendarDates([]); // Clear any highlight
+            setView('list');
+            setHighlightedCalendarDates([]);
             
-            // Scroll to original task
             setTimeout(() => {
                 const taskElement = document.getElementById(originTaskForCalendar.taskId);
                 if (taskElement) {
                     taskElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
-                setOriginTaskForCalendar(null); // Clear origin after scrolling
-            }, 0); // Small delay to ensure view changes
+                setOriginTaskForCalendar(null);
+            }, 0);
         }
     };
-
 
     // --- Component for Daily Tasks Card View ---
     const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, toggleTask, startEditing, deleteTask, handleTaskCardClick }) => {
@@ -786,7 +763,7 @@ const AcademicTaskManager = () => {
                             </h3>
                             <div className="space-y-3">
                                 {dayTasks
-                                    .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')) // Order by time
+                                    .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00'))
                                     .map(task => {
                                     const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
                                     const cardStyle = getTaskCardStyle(status, task.completed);
@@ -845,14 +822,13 @@ const AcademicTaskManager = () => {
     };
 
     // Simplified calendar view
-    const CalendarView = ({ highlightedDates, chileanHolidays, tasks, currentCalendarViewDate, setCurrentCalendarViewDate, todayGlobal, originTaskForCalendar, backToOriginTask, getTaskStatus }) => { // Pass chileanHolidays
+    const CalendarView = ({ highlightedDates, chileanHolidays, tasks, currentCalendarViewDate, setCurrentCalendarViewDate, todayGlobal, originTaskForCalendar, backToOriginTask, getTaskStatus }) => {
         return (
             <div className="space-y-8" id="calendarSection">
                 <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
                     <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-8">Calendario</h2>
                 </div>
                 
-                {/* Monthly Calendar */}
                 <MonthlyCalendar 
                     tasks={tasks} 
                     highlightedDates={highlightedDates}
@@ -862,7 +838,7 @@ const AcademicTaskManager = () => {
                     originTaskForCalendar={originTaskForCalendar}
                     backToOriginTask={backToOriginTask}
                     getTaskStatus={getTaskStatus}
-                    chileanHolidays={chileanHolidays} // Pass chileanHolidays
+                    chileanHolidays={chileanHolidays}
                 />
             </div>
         );
@@ -873,27 +849,22 @@ const AcademicTaskManager = () => {
         const year = currentViewDate.getFullYear();
         const month = currentViewDate.getMonth();
 
-        // Get first day of the month and number of days
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
         const daysInMonth = lastDay.getDate();
         const startingDayOfWeek = firstDay.getDay();
 
-        // Create array of days of the month
         const daysArray = [];
 
-        // Empty days from previous month (adjusted for Monday as first day)
         const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
         for (let i = 0; i < adjustedStartingDay; i++) {
             daysArray.push(null);
         }
 
-        // Days of current month
         for (let day = 1; day <= daysInMonth; day++) {
             daysArray.push(day);
         }
 
-        // Group tasks by date
         const tasksByDate = tasks.reduce((acc, task) => {
             const taskDate = createLocalDate(task.dueDate);
             if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
@@ -909,14 +880,12 @@ const AcademicTaskManager = () => {
             'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
         ];
 
-        // Day names with Sat and Sun in red
         const dayNames = [
             'Lun', 'Mar', 'Mié', 'Jue', 'Vie',
-            <span key="sab" className="text-red-600">Sáb</span>,
-            <span key="dom" className="text-red-600">Dom</span>
+            React.createElement('span', { key: "sab", className: "text-red-600" }, 'Sáb'),
+            React.createElement('span', { key: "dom", className: "text-red-600" }, 'Dom')
         ];
 
-        // Update parent component's state
         const goToPreviousMonth = () => {
             setCurrentViewDate(new Date(year, month - 1, 1));
         };
@@ -926,35 +895,30 @@ const AcademicTaskManager = () => {
         };
 
         const goToToday = () => {
-            setCurrentViewDate(todayGlobal); // Use global today instance
+            setCurrentViewDate(todayGlobal);
         };
 
         return (
-            // Outer calendar container with light blue background
             <div className="bg-blue-50 rounded-2xl shadow-lg p-4 sm:p-6 relative border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-                    {/* Adjusted text size for month/year title: text-lg for mobile, sm:text-2xl for larger screens */}
                     <h2 className="text-lg sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-0">
                         {monthNames[month]} {year}
                     </h2>
                     <div className="flex space-x-2">
                         <button
                             onClick={goToPreviousMonth}
-                            // Adjusted text size for navigation buttons: text-xs for mobile, sm:text-base for larger screens
                             className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-xs sm:text-base"
                         >
                             ←
                         </button>
                         <button
                             onClick={goToToday}
-                            // Adjusted text size for navigation buttons: text-xs for mobile, sm:text-base for larger screens
                             className="px-4 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-xs sm:text-base"
                         >
                             Hoy
                         </button>
                         <button
                             onClick={goToNextMonth}
-                            // Adjusted text size for navigation buttons: text-xs for mobile, sm:text-base for larger screens
                             className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-xs sm:text-base"
                         >
                             →
@@ -962,7 +926,6 @@ const AcademicTaskManager = () => {
                     </div>
                 </div>
 
-                {/* Day names */}
                 <div className="grid grid-cols-7 gap-1 mb-2">
                     {dayNames.map((day, index) => (
                         <div key={index} className="text-center font-semibold text-gray-600 py-2 text-base">
@@ -971,12 +934,10 @@ const AcademicTaskManager = () => {
                     ))}
                 </div>
 
-                {/* Calendar days grid */}
                 <div className="grid grid-cols-7 gap-1">
                     {daysArray.map((day, index) => {
                         if (!day) {
-                            // Empty cells for days outside the current month
-                            return <div key={index} className="h-[4.5rem] sm:h-[6rem]"></div>; /* Adjusted height for mobile and desktop */
+                            return <div key={index} className="h-[4.5rem] sm:h-[6rem]"></div>;
                         }
 
                         const dayObj = new Date(year, month, day);
@@ -985,7 +946,6 @@ const AcademicTaskManager = () => {
                                         todayGlobal.getFullYear() === dayObj.getFullYear();
                         
                         const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-                        // Check if it's a holiday
                         const isHoliday = chileanHolidays.includes(currentDayFormatted);
 
                         const highlightEntry = highlightedDates.find(h => h.date === currentDayFormatted);
@@ -995,7 +955,6 @@ const AcademicTaskManager = () => {
                         return (
                             <div
                                 key={currentDayFormatted}
-                                // Individual day cells are white with border, hover effect, and today/holiday highlighting
                                 className={`h-[4.5rem] sm:h-[6rem] border border-gray-200 p-1 sm:p-2 transition-all duration-300 ease-in-out ${
                                     isHoliday ? 'bg-red-50' : ''
                                 } ${isToday ? 'bg-blue-100 border-blue-500' : 'bg-white hover:bg-blue-50'} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`}
@@ -1012,7 +971,7 @@ const AcademicTaskManager = () => {
 
                                 <div className="mt-1 space-y-0.5">
                                     {tasksByDate[day] && tasksByDate[day]
-                                        .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')) // Order by time
+                                        .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00'))
                                         .map((task, taskIndex) => {
                                         const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
                                         let bgColor = '';
@@ -1064,12 +1023,10 @@ const AcademicTaskManager = () => {
                     })}
                 </div>
 
-                {/* Modified text size for the descriptive text: text-xs for all screens */}
                 <div className="mt-4 text-xs text-gray-600 text-center">
                     Cada barra de color representa una tarea individual. Si hay múltiples tareas el mismo día, verás múltiples barras ordenadas por horario.
                 </div>
 
-                {/* Button to go back to the original task, conditionally rendered */}
                 {originTaskForCalendar && (
                     <button
                         onClick={backToOriginTask}
@@ -1085,9 +1042,8 @@ const AcademicTaskManager = () => {
 
     return (
         <div className="min-h-screen bg-gray-200">
-            {/* Header container (full width) */}
-            <div className="bg-white shadow-lg w-full py-4 sm:py-6 mb-6"> {/* Adjusted py for smaller height on desktop */}
-                <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Centered content within the header */}
+            <div className="bg-white shadow-lg w-full py-4 sm:py-6 mb-6">
+                <div className="max-w-7xl mx-auto px-3 sm:px-6">
                     <div className="flex items-start sm:items-center justify-between">
                         <div className="flex flex-col sm:flex-row sm:items-center">
                             <div className="flex items-center space-x-2">
@@ -1105,9 +1061,7 @@ const AcademicTaskManager = () => {
                             </div>
                         </div>
 
-                        {/* Right content: Bell icon (always visible), Email toggle (hidden on mobile), Hamburger menu */}
                         <div className="flex-shrink-0 flex items-center space-x-3">
-                            {/* The alerts button and notification count are only shown if there are active notifications. */}
                             {notifications.length > 0 && (
                                 <button
                                     onClick={() => setShowAlerts(!showAlerts)}
@@ -1122,7 +1076,6 @@ const AcademicTaskManager = () => {
                                     </span>
                                 </button>
                             )}
-                            {/* Hide email icon and toggle on small screens */}
                             <div className="hidden sm:flex items-center space-x-1">
                                 <div className={emailNotifications ? 'text-blue-500' : 'text-gray-400'}>
                                     <IconMail width="18" height="18" />
@@ -1148,8 +1101,6 @@ const AcademicTaskManager = () => {
                         </div>
                     </div>
 
-                    {/* Quick Access Buttons - Conditionally rendered: Visible when showColorLegend is true */}
-                    {/* This section contains the "Tareas", "Tareas por Día", "Vista de Calendario" buttons */}
                     {showColorLegend && (
                         <div className="mt-6 pt-4 border-t border-gray-200">
                             <h3 className="font-semibold text-blue-600 text-xl sm:text-2xl text-left mb-4">Acceso rápido a tareas</h3>
@@ -1157,7 +1108,7 @@ const AcademicTaskManager = () => {
                                 <button
                                     onClick={() => {
                                         setView('list');
-                                        setShowColorLegend(false); // Hide quick access if main view is selected
+                                        setShowColorLegend(false);
                                         setOriginTaskForCalendar(null);
                                         setTimeout(() => {
                                             const taskListSection = document.getElementById('taskListSection');
@@ -1174,7 +1125,7 @@ const AcademicTaskManager = () => {
                                 <button
                                     onClick={() => {
                                         setView('daily');
-                                        setShowColorLegend(false); // Hide quick access if main view is selected
+                                        setShowColorLegend(false);
                                         setTimeout(() => {
                                             const dailyTasksSection = document.getElementById('dailyTasksSection');
                                             if (dailyTasksSection) {
@@ -1191,7 +1142,7 @@ const AcademicTaskManager = () => {
                                 <button
                                     onClick={() => {
                                         setView('calendar');
-                                        setShowColorLegend(false); // Hide quick access if main view is selected
+                                        setShowColorLegend(false);
                                         setTimeout(() => {
                                             const calendarSection = document.getElementById('calendarSection');
                                             if (calendarSection) {
@@ -1211,15 +1162,12 @@ const AcademicTaskManager = () => {
                 </div>
             </div>
 
-            {/* Main content area (alerts, form, views, footer) */}
-            <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Added horizontal padding */}
-
-                {/* Active Alerts section - Only visible if there are notifications AND showAlerts state is true */}
+            <div className="max-w-7xl mx-auto px-3 sm:px-6">
                 {notifications.length > 0 && showAlerts && (
                     <div
                         onClick={handleAlertsClick}
                         className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-3 sm:p-6 mb-4 sm:mb-6 cursor-pointer transition-all duration-300 ease-in-out"
-                        style={{marginTop: '1rem'}} /* Small top margin to separate from navigation */
+                        style={{marginTop: '1rem'}}
                     >
                         <div className="flex items-center justify-between mb-3">
                             <h3 className="font-semibold text-orange-800 text-xl sm:text-2xl text-left">Alertas activas</h3>
@@ -1242,7 +1190,6 @@ const AcademicTaskManager = () => {
                     </div>
                 )}
 
-                {/* Form section for adding/editing tasks - Always visible now */}
                 <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8 border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300 mt-4">
                     <button
                         onClick={() => setShowAddTask(!showAddTask)}
@@ -1251,7 +1198,6 @@ const AcademicTaskManager = () => {
                         <h3 className="font-semibold text-blue-600 text-xl sm:text-2xl text-left">
                             {editingTask ? 'Editar tarea' : 'Agregar nueva tarea'}
                         </h3>
-                        {/* Chevron icon indicates if the form is expanded or collapsed */}
                         {showAddTask ? <div className="text-blue-600"><IconChevronUp /></div> : <div className="text-blue-600"><IconChevronDown /></div>}
                     </button>
 
@@ -1334,10 +1280,8 @@ const AcademicTaskManager = () => {
                     )}
                 </div>
 
-                {/* Navigation container (full width) */}
-                {/* This section contains the main view buttons: List, By Day, Calendar */}
-                <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-3 sm:py-4 mt-6 mb-6 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl"> {/* Adjusted py for smaller height on desktop */}
-                    <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Centered content within the navigation */}
+                <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-3 sm:py-4 mt-6 mb-6 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl">
+                    <div className="max-w-7xl mx-auto px-3 sm:px-6">
                         <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-6">Tareas</h2>
                         
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
@@ -1346,7 +1290,7 @@ const AcademicTaskManager = () => {
                                     <button
                                         onClick={() => {
                                             setView('list');
-                                            setShowColorLegend(false); // Hide quick access if main view is selected
+                                            setShowColorLegend(false);
                                             setOriginTaskForCalendar(null);
                                             setTimeout(() => {
                                                 const taskListSection = document.getElementById('taskListSection');
@@ -1367,7 +1311,7 @@ const AcademicTaskManager = () => {
                                     <button
                                         onClick={() => {
                                             setView('daily');
-                                            setShowColorLegend(false); // Hide quick access if main view is selected
+                                            setShowColorLegend(false);
                                             setTimeout(() => {
                                                 const dailyTasksSection = document.getElementById('dailyTasksSection');
                                                 if (dailyTasksSection) {
@@ -1376,15 +1320,19 @@ const AcademicTaskManager = () => {
                                                 }
                                             }, 100);
                                         }}
-                                        className="block w-full text-left p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
+                                        className={`px-2 py-3 sm:px-8 sm:py-4 sm:w-48 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-1 sm:space-y-0 sm:space-x-3 text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                                            view === 'daily' 
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
+                                        }`}
                                     >
                                         <IconCalendar width="20" height="20" />
-                                        <span>Tareas por Día</span>
+                                        <span className="font-medium text-center sm:text-center">Por Día</span>
                                     </button>
                                     <button
                                         onClick={() => {
                                             setView('calendar');
-                                            setShowColorLegend(false); // Hide quick access if main view is selected
+                                            setShowColorLegend(false);
                                             setTimeout(() => {
                                                 const calendarSection = document.getElementById('calendarSection');
                                                 if (calendarSection) {
@@ -1393,15 +1341,18 @@ const AcademicTaskManager = () => {
                                                 }
                                             }, 100);
                                         }}
-                                        className="block w-full text-left p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
+                                        className={`px-2 py-3 sm:px-8 sm:py-4 sm:w-48 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-1 sm:space-y-0 sm:space-x-3 text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                                            view === 'calendar' 
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
+                                        }`}
                                     >
                                         <IconCalendar width="20" height="20" />
-                                        <span>Vista de Calendario</span>
+                                        <span className="font-medium text-center sm:text-center">Calendario</span>
                                     </button>
                                 </div>
                             </div>
 
-                            {/* Button to delete completed tasks */}
                             {tasks.filter(task => task.completed).length > 0 && (
                                 <button
                                     onClick={deleteAllCompleted}
@@ -1415,22 +1366,17 @@ const AcademicTaskManager = () => {
                     </div>
                 </div>
 
-                {/* New: More compact separation line on mobile */}
                 <div className="border-t-4 border-gray-100 mb-2 sm:my-4"></div>
 
-                {/* Main view content based on `view` state */}
                 {view === 'list' ? (
                     <div id="taskListSection" className="space-y-6">
                         <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-8 mb-4 sm:mb-8 mt-6 sm:mt-8">
                             <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-4 sm:mb-8">Lista de tareas</h2>
                         </div>
                         
-                        {/* Sorted tasks rendering */}
                         {[...tasks].sort((a, b) => {
-                            // Completed tasks go to the end
                             if (a.completed && !b.completed) return 1;
                             if (!a.completed && b.completed) return -1;
-                            // If both are completed or both are not completed, sort by due date/time
                             const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`);
                             const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`);
                             return dateA - dateB;
@@ -1443,7 +1389,6 @@ const AcademicTaskManager = () => {
                                     key={task.id}
                                     id={task.id}
                                     onClick={(e) => {
-                                        // Prevents triggering when clicking buttons inside the card
                                         if (e.target.tagName !== 'BUTTON' && e.target.closest('button') === null) {
                                             handleTaskCardClick(task);
                                         }
@@ -1489,74 +1434,87 @@ const AcademicTaskManager = () => {
                                             </div>
                                         </div>
 
-                                    <div className="flex items-center space-x-3">
-                                        <div className="flex items-center justify-end sm:justify-center">
-                                            <div className="w-5 h-5 sm:w-7 sm:h-7">
-                                                <IconClock width="24" height="24" />
+                                        <div className="flex items-center space-x-3">
+                                            <div className="flex items-center justify-end sm:justify-center">
+                                                <div className="w-5 h-5 sm:w-7 sm:h-7">
+                                                    <IconClock width="24" height="24" />
+                                                </div>
                                             </div>
+
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); startEditing(task); }}
+                                                className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 sm:p-4 rounded-xl transition-colors"
+                                                title="Editar tarea"
+                                            >
+                                                <div className="w-5 h-5 sm:w-7 sm:h-7">
+                                                    <IconEdit width="24" height="24" />
+                                                </div>
+                                            </button>
+
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
+                                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 sm:p-4 rounded-xl transition-colors"
+                                                title="Eliminar tarea"
+                                            >
+                                                <div className="w-5 h-5 sm:w-7 sm:h-7">
+                                                    <IconTrash width="24" height="24" />
+                                                </div>
+                                            </button>
                                         </div>
-
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); startEditing(task); }}
-                                            className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 sm:p-4 rounded-xl transition-colors"
-                                            title="Editar tarea"
-                                        >
-                                            <div className="w-5 h-5 sm:w-7 sm:h-7">
-                                                <IconEdit width="24" height="24" />
-                                            </div>
-                                        </button>
-
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
-                                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 sm:p-4 rounded-xl transition-colors"
-                                            title="Eliminar tarea"
-                                        >
-                                            <div className="w-5 h-5 sm:w-7 sm:h-7">
-                                                <IconTrash width="24" height="24" />
-                                            </div>
-                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            ) : view === 'daily' ? (
-                <DailyTasksCardView
-                    tasks={tasks}
-                    formatDate={formatDate}
-                    getTaskStatus={getTaskStatus}
-                    getTaskCardStyle={getTaskCardStyle}
-                    toggleTask={toggleTask}
-                    startEditing={startEditing}
-                    deleteTask={deleteTask}
-                    handleTaskCardClick={handleTaskCardClick} // Pass the handler
-                />
-            ) : (
-                <CalendarView 
-                    highlightedDates={highlightedCalendarDates} 
-                    chileanHolidays={chileanHolidays}
-                    tasks={tasks}
-                    currentCalendarViewDate={currentCalendarViewDate}
-                    setCurrentCalendarViewDate={setCurrentCalendarViewDate}
-                    todayGlobal={todayGlobal}
-                    originTaskForCalendar={originTaskForCalendar}
-                    backToOriginTask={backToOriginTask}
-                    getTaskStatus={getTaskStatus}
-                />
-            )}
+                            );
+                        })}
+                    </div>
+                ) : view === 'daily' ? (
+                    <DailyTasksCardView
+                        tasks={tasks}
+                        formatDate={formatDate}
+                        getTaskStatus={getTaskStatus}
+                        getTaskCardStyle={getTaskCardStyle}
+                        toggleTask={toggleTask}
+                        startEditing={startEditing}
+                        deleteTask={deleteTask}
+                        handleTaskCardClick={handleTaskCardClick}
+                    />
+                ) : (
+                    <CalendarView 
+                        highlightedDates={highlightedCalendarDates} 
+                        chileanHolidays={chileanHolidays}
+                        tasks={tasks}
+                        currentCalendarViewDate={currentCalendarViewDate}
+                        setCurrentCalendarViewDate={setCurrentCalendarViewDate}
+                        todayGlobal={todayGlobal}
+                        originTaskForCalendar={originTaskForCalendar}
+                        backToOriginTask={backToOriginTask}
+                        getTaskStatus={getTaskStatus}
+                    />
+                )}
 
-            {/* Footer with information */}
-            <div className="mt-8 sm:mt-10 bg-white rounded-xl shadow-lg p-4 sm:p-6">
-                <div className="text-center text-gray-600 space-y-2">
-                    <div className="border-b border-gray-200 pb-2">
-                        <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p>
-                        <p className="text-xs text-gray-700">
-                            Realizado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span>
-                        </p>
-                        <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p>
+                <div className="mt-8 sm:mt-10 bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                    <div className="text-center text-gray-600 space-y-2">
+                        <div className="border-b border-gray-200 pb-2">
+                            <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p>
+                            <p className="text-xs text-gray-700">
+                                Realizado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span>
+                            </p>
+                            <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p>
+                        </div>
                     </div>
                 </div>
+
+                <CustomAlertDialog
+                    message={alertDialogMessage}
+                    isOpen={isAlertDialogOpen}
+                    onClose={handleAlertDialogClose}
+                />
+
+                <CustomConfirmDialog
+                    message={confirmDialogMessage}
+                    isOpen={isConfirmDialogOpen}
+                    onConfirm={handleConfirmDialogConfirm}
+                    onCancel={handleConfirmDialogCancel}
+                />
             </div>
         </div>
     );
