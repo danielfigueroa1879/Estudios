@@ -337,8 +337,8 @@ const AcademicTaskManager = () => {
     const savedSettings = loadSettingsFromStorage();
     const [view, setView] = useState(savedSettings.view);
     const [notifications, setNotifications] = useState([]);
-    const [showAddTask, setShowAddTask] = useState(false);
-    const [showColorLegend, setShowColorLegend] = useState(true); // Changed to true for easier testing
+    const [showAddTask, setShowAddTask] = useState(true); // Changed to true so the form is visible by default
+    const [showColorLegend, setShowColorLegend] = useState(true); // Changed to true so quick access buttons are visible by default
     const [showAlerts, setShowAlerts] = useState(true); // Keep as true for alerts visibility
     const [emailNotifications, setEmailNotifications] = useState(savedSettings.emailNotifications); // Correctly initialized
     const [highlightedCalendarDates, setHighlightedCalendarDates] = useState([]);
@@ -930,8 +930,7 @@ const AcademicTaskManager = () => {
         };
 
         return (
-            // Changed bg-white to bg-blue-50 for the outer calendar container
-            // This applies the light blue background "outside" the day cells
+            // Outer calendar container with light blue background
             <div className="bg-blue-50 rounded-2xl shadow-lg p-4 sm:p-6 relative border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
                     {/* Adjusted text size for month/year title: text-lg for mobile, sm:text-2xl for larger screens */}
@@ -963,7 +962,7 @@ const AcademicTaskManager = () => {
                     </div>
                 </div>
 
-                {/* Nombres de los días */}
+                {/* Day names */}
                 <div className="grid grid-cols-7 gap-1 mb-2">
                     {dayNames.map((day, index) => (
                         <div key={index} className="text-center font-semibold text-gray-600 py-2 text-base">
@@ -972,10 +971,11 @@ const AcademicTaskManager = () => {
                     ))}
                 </div>
 
-                {/* Días del calendario */}
+                {/* Calendar days grid */}
                 <div className="grid grid-cols-7 gap-1">
                     {daysArray.map((day, index) => {
                         if (!day) {
+                            // Empty cells for days outside the current month
                             return <div key={index} className="h-[4.5rem] sm:h-[6rem]"></div>; /* Adjusted height for mobile and desktop */
                         }
 
@@ -995,8 +995,7 @@ const AcademicTaskManager = () => {
                         return (
                             <div
                                 key={currentDayFormatted}
-                                // Changed bg-blue-50 to bg-white for individual day cells, and adjusted hover
-                                // This keeps day cells white and provides a hover effect
+                                // Individual day cells are white with border, hover effect, and today/holiday highlighting
                                 className={`h-[4.5rem] sm:h-[6rem] border border-gray-200 p-1 sm:p-2 transition-all duration-300 ease-in-out ${
                                     isHoliday ? 'bg-red-50' : ''
                                 } ${isToday ? 'bg-blue-100 border-blue-500' : 'bg-white hover:bg-blue-50'} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`}
@@ -1070,7 +1069,7 @@ const AcademicTaskManager = () => {
                     Cada barra de color representa una tarea individual. Si hay múltiples tareas el mismo día, verás múltiples barras ordenadas por horario.
                 </div>
 
-                {/* Botón Volver a la Tarea (condicional) */}
+                {/* Button to go back to the original task, conditionally rendered */}
                 {originTaskForCalendar && (
                     <button
                         onClick={backToOriginTask}
@@ -1086,9 +1085,9 @@ const AcademicTaskManager = () => {
 
     return (
         <div className="min-h-screen bg-gray-200">
-            {/* Contenedor del Encabezado (ancho completo) */}
+            {/* Header container (full width) */}
             <div className="bg-white shadow-lg w-full py-4 sm:py-6 mb-6"> {/* Adjusted py for smaller height on desktop */}
-                <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Contenido centrado dentro del encabezado */}
+                <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Centered content within the header */}
                     <div className="flex items-start sm:items-center justify-between">
                         <div className="flex flex-col sm:flex-row sm:items-center">
                             <div className="flex items-center space-x-2">
@@ -1106,7 +1105,7 @@ const AcademicTaskManager = () => {
                             </div>
                         </div>
 
-                        {/* Contenido Derecho: Campana (visible siempre), Toggle de email (oculto en móvil), Menú Hamburguesa */}
+                        {/* Right content: Bell icon (always visible), Email toggle (hidden on mobile), Hamburger menu */}
                         <div className="flex-shrink-0 flex items-center space-x-3">
                             {/* The alerts button and notification count are only shown if there are active notifications. */}
                             {notifications.length > 0 && (
@@ -1123,7 +1122,7 @@ const AcademicTaskManager = () => {
                                     </span>
                                 </button>
                             )}
-                            {/* Ocultar el icono y el toggle de email en pantallas pequeñas */}
+                            {/* Hide email icon and toggle on small screens */}
                             <div className="hidden sm:flex items-center space-x-1">
                                 <div className={emailNotifications ? 'text-blue-500' : 'text-gray-400'}>
                                     <IconMail width="18" height="18" />
@@ -1149,7 +1148,8 @@ const AcademicTaskManager = () => {
                         </div>
                     </div>
 
-                    {/* Acceso Rápido a Tareas - Conditionally rendered: Visible when showColorLegend is true */}
+                    {/* Quick Access Buttons - Conditionally rendered: Visible when showColorLegend is true */}
+                    {/* This section contains the "Tareas", "Tareas por Día", "Vista de Calendario" buttons */}
                     {showColorLegend && (
                         <div className="mt-6 pt-4 border-t border-gray-200">
                             <h3 className="font-semibold text-blue-600 text-xl sm:text-2xl text-left mb-4">Acceso rápido a tareas</h3>
@@ -1211,79 +1211,291 @@ const AcademicTaskManager = () => {
                 </div>
             </div>
 
-            {/* New: More compact separation line on mobile */}
-            <div className="border-t-4 border-gray-100 mb-2 sm:my-4"></div>
+            {/* Main content area (alerts, form, views, footer) */}
+            <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Added horizontal padding */}
 
-            {/* Main view content based on `view` state */}
-            {view === 'list' ? (
-                <div id="taskListSection" className="space-y-6">
-                    <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-8 mb-4 sm:mb-8 mt-6 sm:mt-8">
-                        <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-4 sm:mb-8">Lista de tareas</h2>
+                {/* Active Alerts section - Only visible if there are notifications AND showAlerts state is true */}
+                {notifications.length > 0 && showAlerts && (
+                    <div
+                        onClick={handleAlertsClick}
+                        className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-3 sm:p-6 mb-4 sm:mb-6 cursor-pointer transition-all duration-300 ease-in-out"
+                        style={{marginTop: '1rem'}} /* Small top margin to separate from navigation */
+                    >
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="font-semibold text-orange-800 text-xl sm:text-2xl text-left">Alertas activas</h3>
+                            <div className="text-orange-600">
+                                <IconAlert width="20" height="20" />
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                            {notifications.slice(0, 3).map((notif, index) => (
+                                <p key={notif.id || index} className="text-sm text-orange-700 w-full text-left">
+                                    • {notif.message}
+                                </p>
+                            ))}
+                            {notifications.length > 3 && (
+                                <p className="text-sm text-orange-600 w-full text-left">
+                                    ... y {notifications.length - 3} alertas más
+                                </p>
+                            )}
+                        </div>
                     </div>
-                    
-                    {/* Sorted tasks rendering */}
-                    {[...tasks].sort((a, b) => {
-                        // Completed tasks go to the end
-                        if (a.completed && !b.completed) return 1;
-                        if (!a.completed && b.completed) return -1;
-                        // If both are completed or both are not completed, sort by due date/time
-                        const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`);
-                        const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`);
-                        return dateA - dateB;
-                    }).map(task => {
-                        const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-                        const cardStyle = getTaskCardStyle(status, task.completed);
+                )}
 
-                        return (
-                            <div
-                                key={task.id}
-                                id={task.id}
-                                onClick={(e) => {
-                                    // Prevents triggering when clicking buttons inside the card
-                                    if (e.target.tagName !== 'BUTTON' && e.target.closest('button') === null) {
-                                        handleTaskCardClick(task);
-                                    }
-                                }}
-                                className={`rounded-xl shadow-lg border-l-8 p-4 sm:p-8 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} hover:border-red-500 hover:ring-2 hover:ring-red-500 hover:shadow-lg hover:shadow-red-200 cursor-pointer`}
-                            >
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
-                                    <div className="flex items-start space-x-4 sm:space-x-6 flex-1">
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
-                                            className={`mt-1 w-6 h-6 sm:w-7 sm:h-7 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                                                task.completed
-                                                    ? 'bg-green-500 border-green-500 text-white'
-                                                    : 'border-gray-300 hover:border-gray-400'
-                                            }`}
-                                        >
-                                            {task.completed && <IconCheck width="16" height="16" />}
-                                        </button>
+                {/* Form section for adding/editing tasks - Always visible now */}
+                <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8 border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300 mt-4">
+                    <button
+                        onClick={() => setShowAddTask(!showAddTask)}
+                        className="w-full flex items-center justify-between text-left mb-4"
+                    >
+                        <h3 className="font-semibold text-blue-600 text-xl sm:text-2xl text-left">
+                            {editingTask ? 'Editar tarea' : 'Agregar nueva tarea'}
+                        </h3>
+                        {/* Chevron icon indicates if the form is expanded or collapsed */}
+                        {showAddTask ? <div className="text-blue-600"><IconChevronUp /></div> : <div className="text-blue-600"><IconChevronDown /></div>}
+                    </button>
 
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-3">
-                                                <h3 className={`font-semibold text-lg sm:text-xl ${
-                                                    task.completed ? 'line-through text-gray-500' : 
-                                                    status === 'overdue' ? 'line-through text-gray-700' : 'text-gray-900'
-                                                }`}>
-                                                    {task.subject}: {task.title}
-                                                </h3>
-                                                <div className="flex items-center space-x-3">
-                                                    <span className="text-base bg-gray-100 text-gray-600 px-3 py-1 rounded">
-                                                        {task.type}
-                                                    </span>
+                    {showAddTask && (
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                                <input
+                                    type="text"
+                                    placeholder="Asignatura"
+                                    value={newTask.subject}
+                                    onChange={(e) => setNewTask({...newTask, subject: e.target.value})}
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Título de la tarea"
+                                    value={newTask.title}
+                                    onChange={(e) => setNewTask({...newTask, title: e.target.value})}
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                                <select
+                                    value={newTask.type}
+                                    onChange={(e) => setNewTask({...newTask, type: e.target.value})}
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="Tarea">Tarea</option>
+                                    <option value="Examen">Examen</option>
+                                    <option value="Ensayo">Ensayo</option>
+                                    <option value="Proyecto">Proyecto</option>
+                                    <option value="Laboratorio">Laboratorio</option>
+                                </select>
+                                <input
+                                    type="date"
+                                    value={newTask.dueDate}
+                                    onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                                <input
+                                    type="time"
+                                    placeholder="Hora (opcional)"
+                                    value={newTask.dueTime}
+                                    onChange={(e) => setNewTask({...newTask, dueTime: e.target.value})}
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+                            <textarea
+                                placeholder="Descripción (opcional)"
+                                value={newTask.description}
+                                onChange={(e) => setNewTask({...newTask, description: e.target.value})}
+                                rows="3"
+                                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+                            ></textarea>
+                            <div className="flex space-x-4">
+                                <button
+                                    onClick={editingTask ? updateTask : addTask}
+                                    className="flex-1 bg-blue-600 text-white rounded-xl px-4 py-3 hover:bg-blue-700 flex items-center justify-center space-x-2 text-lg font-medium"
+                                >
+                                    {editingTask ? (
+                                        <>
+                                            <IconCheck width="20" height="20" />
+                                            <span>Actualizar</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <IconPlus width="20" height="20" />
+                                            <span>Agregar</span>
+                                        </>
+                                    )}
+                                </button>
+                                {editingTask && (
+                                    <button
+                                        onClick={cancelEditing}
+                                        className="flex-1 bg-gray-500 text-white rounded-xl px-4 py-3 hover:bg-gray-600 flex items-center justify-center space-x-2 text-lg font-medium"
+                                    >
+                                        <span>Cancelar</span>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Navigation container (full width) */}
+                {/* This section contains the main view buttons: List, By Day, Calendar */}
+                <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-3 sm:py-4 mt-6 mb-6 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl"> {/* Adjusted py for smaller height on desktop */}
+                    <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Centered content within the navigation */}
+                        <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-6">Tareas</h2>
+                        
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
+                                <div className="grid grid-cols-3 gap-2 sm:flex sm:gap-4 w-full sm:w-auto">
+                                    <button
+                                        onClick={() => {
+                                            setView('list');
+                                            setShowColorLegend(false); // Hide quick access if main view is selected
+                                            setOriginTaskForCalendar(null);
+                                            setTimeout(() => {
+                                                const taskListSection = document.getElementById('taskListSection');
+                                                if (taskListSection) {
+                                                    taskListSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                }
+                                            }, 100);
+                                        }}
+                                        className={`px-2 py-3 sm:px-8 sm:py-4 sm:w-48 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-1 sm:space-y-0 sm:space-x-3 text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                                            view === 'list' 
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
+                                        }`}
+                                    >
+                                        <IconBook width="20" height="20" />
+                                        <span className="font-medium text-center sm:text-center">Lista</span>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setView('daily');
+                                            setShowColorLegend(false); // Hide quick access if main view is selected
+                                            setTimeout(() => {
+                                                const dailyTasksSection = document.getElementById('dailyTasksSection');
+                                                if (dailyTasksSection) {
+                                                    dailyTasksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                    setOriginTaskForCalendar(null);
+                                                }
+                                            }, 100);
+                                        }}
+                                        className={`px-2 py-3 sm:px-8 sm:py-4 sm:w-48 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-1 sm:space-y-0 sm:space-x-3 text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                                            view === 'daily' 
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
+                                        }`}
+                                    >
+                                        <IconCalendar width="20" height="20" />
+                                        <span className="font-medium text-center sm:text-center">Por Día</span>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setView('calendar');
+                                            setShowColorLegend(false); // Hide quick access if main view is selected
+                                            setTimeout(() => {
+                                                const calendarSection = document.getElementById('calendarSection');
+                                                if (calendarSection) {
+                                                    calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                    setOriginTaskForCalendar(null);
+                                                }
+                                            }, 100);
+                                        }}
+                                        className={`px-2 py-3 sm:px-8 sm:py-4 sm:w-48 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-1 sm:space-y-0 sm:space-x-3 text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                                            view === 'calendar' 
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
+                                        }`}
+                                    >
+                                        <IconCalendar width="20" height="20" />
+                                        <span className="font-medium text-center sm:text-center">Calendario</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Button to delete completed tasks */}
+                            {tasks.filter(task => task.completed).length > 0 && (
+                                <button
+                                    onClick={deleteAllCompleted}
+                                    className="px-4 py-3 bg-red-500 text-white rounded-2xl hover:bg-red-600 flex items-center space-x-2 text-base font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-red-200"
+                                >
+                                    <IconTrash width="18" height="18" />
+                                    <span>Eliminar Completadas ({tasks.filter(task => task.completed).length})</span>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* New: More compact separation line on mobile */}
+                <div className="border-t-4 border-gray-100 mb-2 sm:my-4"></div>
+
+                {/* Main view content based on `view` state */}
+                {view === 'list' ? (
+                    <div id="taskListSection" className="space-y-6">
+                        <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-8 mb-4 sm:mb-8 mt-6 sm:mt-8">
+                            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-4 sm:mb-8">Lista de tareas</h2>
+                        </div>
+                        
+                        {/* Sorted tasks rendering */}
+                        {[...tasks].sort((a, b) => {
+                            // Completed tasks go to the end
+                            if (a.completed && !b.completed) return 1;
+                            if (!a.completed && b.completed) return -1;
+                            // If both are completed or both are not completed, sort by due date/time
+                            const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`);
+                            const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`);
+                            return dateA - dateB;
+                        }).map(task => {
+                            const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                            const cardStyle = getTaskCardStyle(status, task.completed);
+
+                            return (
+                                <div
+                                    key={task.id}
+                                    id={task.id}
+                                    onClick={(e) => {
+                                        // Prevents triggering when clicking buttons inside the card
+                                        if (e.target.tagName !== 'BUTTON' && e.target.closest('button') === null) {
+                                            handleTaskCardClick(task);
+                                        }
+                                    }}
+                                    className={`rounded-xl shadow-lg border-l-8 p-4 sm:p-8 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} hover:border-red-500 hover:ring-2 hover:ring-red-500 hover:shadow-lg hover:shadow-red-200 cursor-pointer`}
+                                >
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
+                                        <div className="flex items-start space-x-4 sm:space-x-6 flex-1">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
+                                                className={`mt-1 w-6 h-6 sm:w-7 sm:h-7 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                                                    task.completed
+                                                        ? 'bg-green-500 border-green-500 text-white'
+                                                        : 'border-gray-300 hover:border-gray-400'
+                                                }`}
+                                            >
+                                                {task.completed && <IconCheck width="16" height="16" />}
+                                            </button>
+
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-3">
+                                                    <h3 className={`font-semibold text-lg sm:text-xl ${
+                                                        task.completed ? 'line-through text-gray-500' : 
+                                                        status === 'overdue' ? 'line-through text-gray-700' : 'text-gray-900'
+                                                    }`}>
+                                                        {task.subject}: {task.title}
+                                                    </h3>
+                                                    <div className="flex items-center space-x-3">
+                                                        <span className="text-base bg-gray-100 text-gray-600 px-3 py-1 rounded">
+                                                            {task.type}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                {task.description && (
+                                                    <p className="text-gray-600 text-base sm:text-lg mb-3">{task.description}</p>
+                                                )}
+
+                                                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-base sm:text-lg text-gray-500">
+                                                    <span>📅 {formatDateTime(task.dueDate, task.dueTime)}</span>
+                                                    <span>⏰ {getDaysUntilDue(task.dueDate)}</span>
                                                 </div>
                                             </div>
-
-                                            {task.description && (
-                                                <p className="text-gray-600 text-base sm:text-lg mb-3">{task.description}</p>
-                                            )}
-
-                                            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-base sm:text-lg text-gray-500">
-                                                <span>📅 {formatDateTime(task.dueDate, task.dueTime)}</span>
-                                                <span>⏰ {getDaysUntilDue(task.dueDate)}</span>
-                                            </div>
                                         </div>
-                                    </div>
 
                                     <div className="flex items-center space-x-3">
                                         <div className="flex items-center justify-end sm:justify-center">
@@ -1362,4 +1574,3 @@ const AcademicTaskManager = () => {
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 root.render(<AcademicTaskManager />);
-
