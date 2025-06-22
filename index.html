@@ -406,6 +406,8 @@
             const todayGlobal = new Date();
             const [originTaskForCalendar, setOriginTaskForCalendar] = useState(null);
             const highlightTimeoutRef = useRef(null); // Ref for animation timeout
+            const alertHideTimeoutRef = useRef(null); // Ref for alert auto-hide timeout
+
 
             // Effect to update time every minute for real-time status checks
             useEffect(() => {
@@ -567,6 +569,29 @@
                 const interval = setInterval(checkNotifications, 60000); // Check every minute
                 return () => clearInterval(interval);
             }, [tasks, currentTime]);
+
+            // Effect for auto-hiding alerts
+            useEffect(() => {
+                if (showAlerts && notifications.length > 0) {
+                    if (alertHideTimeoutRef.current) {
+                        clearTimeout(alertHideTimeoutRef.current);
+                    }
+                    alertHideTimeoutRef.current = setTimeout(() => {
+                        setShowAlerts(false);
+                        alertHideTimeoutRef.current = null;
+                    }, 25000); // Hide after 25 seconds
+                } else if (!showAlerts && alertHideTimeoutRef.current) {
+                    clearTimeout(alertHideTimeoutRef.current);
+                    alertHideTimeoutRef.current = null;
+                }
+                // Clear timeout if component unmounts
+                return () => {
+                    if (alertHideTimeoutRef.current) {
+                        clearTimeout(alertHideTimeoutRef.current);
+                    }
+                };
+            }, [showAlerts, notifications.length]); // Depend on showAlerts and number of notifications
+
 
             const addTask = () => {
                 if (newTask.subject && newTask.title && newTask.dueDate) {
@@ -838,11 +863,11 @@
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                             {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
-                                <div key={date} className="bg-white rounded-xl shadow-lg p-3 sm:p-5 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer">
+                                <div key={date} className="bg-white rounded-xl shadow-lg p-2.5 sm:p-5 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer">
                                     <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 mb-2 sm:mb-3">
                                         {formatDate(date)}
                                     </h3>
-                                    <div className="space-y-2">
+                                    <div className="space-y-1.5">
                                         {dayTasks
                                             .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')) // Order by time
                                             .map(task => {
@@ -852,12 +877,12 @@
                                                 <div
                                                     key={task.id}
                                                     onClick={() => handleTaskCardClick(task)}
-                                                    className={`p-2 sm:p-3 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300 cursor-pointer hover:shadow-lg`}
+                                                    className={`p-1.5 sm:p-3 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300 cursor-pointer hover:shadow-lg`}
                                                 >
                                                     <div className="flex items-center justify-between mb-2">
                                                         <div className="flex items-center space-x-1">
                                                             <IconClock width="18" height="18" />
-                                                            <span className={`text-sm px-2 py-0.5 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>
+                                                            <span className={`text-xs px-2 py-0.5 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>
                                                                 {task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate)}
                                                             </span>
                                                         </div>
@@ -871,9 +896,9 @@
                                                         </button>
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-gray-800 text-base sm:text-lg">{task.subject}</p>
-                                                        <p className="text-sm sm:text-base text-gray-600 mt-0.5">{task.title}</p>
-                                                        <p className="text-sm text-gray-500 mt-1">{task.type}</p>
+                                                        <p className="font-medium text-sm sm:text-lg text-gray-800">{task.subject}</p>
+                                                        <p className="text-xs sm:text-base text-gray-600 mt-0.5">{task.title}</p>
+                                                        <p className="text-xs text-gray-500 mt-1">{task.type}</p>
                                                     </div>
                                                     <div className="flex justify-end mt-3 space-x-1">
                                                         <button
@@ -990,11 +1015,11 @@
                     // Removed the outer styling div as it's now on CalendarView
                     <div className="relative"> {/* Keep relative for absolute positioning of back button */}
                         <div className="flex flex-col sm:flex-row justify-between items-center mb-5">
-                            <h2 className="hidden sm:block text-xl sm:text-2xl font-bold text-gray-800 w-full text-center mb-3 sm:mb-0">
-                                {/* This title is moved to the parent CalendarView now */}
+                            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 w-full text-center mb-3 sm:mb-0">
+                                {monthNames[month]} {year}
                             </h2>
-                            {/* Adjusted button positioning for desktop, still flex on mobile */}
-                            <div className="flex justify-center sm:justify-center space-x-1 sm:space-x-2 w-full"> {/* Centered buttons for PC */}
+                            {/* Adjusted button positioning for desktop, centered on mobile */}
+                            <div className="flex justify-center sm:justify-center space-x-1 sm:space-x-2 w-full absolute top-0 left-0 right-0 sm:relative">
                                 <button
                                     onClick={goToPreviousMonth}
                                     className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm"
@@ -1247,8 +1272,8 @@
                                             }}
                                             className="block w-full text-left p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-sm flex items-center space-x-1.5"
                                         >
-                                            <IconCalendar width="18" height="18" />
-                                            <span>Vista de Calendario</span>
+                                            <IconCalendar width="20" height="20" /> {/* Increased size for Calendar icon */}
+                                            <span>Calendario</span>
                                         </button>
                                     </div>
                                 </div>
@@ -1262,7 +1287,13 @@
                         {/* Alertas de notificaciones - Siempre visibles cuando hay notificaciones, controladas por showAlerts */}
                         {notifications.length > 0 && showAlerts && (
                             <div
-                                onClick={handleAlertsClick}
+                                onClick={() => {
+                                    handleAlertsClick();
+                                    if (alertHideTimeoutRef.current) { // Clear timeout on click
+                                        clearTimeout(alertHideTimeoutRef.current);
+                                        alertHideTimeoutRef.current = null;
+                                    }
+                                }}
                                 className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out"
                                 style={{marginTop: '0.75rem'}} /* Pequeño margen superior para separar de la navegación */
                             >
@@ -1445,7 +1476,7 @@
                                                     : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
                                                 }`}
                                             >
-                                                <IconCalendar width="18" height="18" />
+                                                <IconCalendar width="20" height="20" /> {/* Increased size for Calendar icon */}
                                                 <span className="font-medium text-center sm:text-center">Calendario</span>
                                             </button>
                                         </div>
@@ -1496,10 +1527,10 @@
                                                     handleTaskCardClick(task);
                                                 }
                                             }}
-                                            className={`rounded-xl shadow-lg border-l-8 p-3 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} hover:border-red-500 hover:ring-2 hover:ring-red-500 hover:shadow-lg hover:shadow-red-200 cursor-pointer`}
+                                            className={`rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} hover:border-red-500 hover:ring-2 hover:ring-red-500 hover:shadow-lg hover:shadow-red-200 cursor-pointer`}
                                         >
-                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
-                                                <div className="flex items-start space-x-3 sm:space-x-4 flex-1">
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2.5 sm:space-y-0">
+                                                <div className="flex items-start space-x-2.5 sm:space-x-4 flex-1">
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
                                                         className={`mt-0.5 w-6 h-6 sm:w-6.5 sm:h-6.5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
@@ -1512,25 +1543,25 @@
                                                     </button>
 
                                                     <div className="flex-1 min-w-0">
-                                                        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-2">
-                                                            <h3 className={`font-semibold text-base sm:text-lg ${
+                                                        <div className="flex flex-col sm:flex-row sm:items-center space-y-1.5 sm:space-y-0 sm:space-x-3 mb-1.5">
+                                                            <h3 className={`font-semibold text-sm sm:text-lg ${ /* Smaller text for mobile */
                                                                 task.completed ? 'line-through text-gray-500' : 
                                                                 status === 'overdue' ? 'line-through text-gray-700' : 'text-gray-900'
                                                             }`}>
                                                                 {task.subject}: {task.title}
                                                             </h3>
                                                             <div className="flex items-center space-x-2">
-                                                                <span className="text-sm bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded">
+                                                                <span className="text-xs sm:text-sm bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded"> {/* Smaller text for mobile */}
                                                                     {task.type}
                                                                 </span>
                                                             </div>
                                                         </div>
 
                                                         {task.description && (
-                                                            <p className="text-gray-600 text-sm sm:text-base mb-2">{task.description}</p>
+                                                            <p className="text-xs sm:text-base text-gray-600 mb-1.5">{task.description}</p> /* Smaller text for mobile */
                                                         )}
 
-                                                        <div className="flex flex-col sm:flex-row sm:items-center space-y-1.5 sm:space-y-0 sm:space-x-5 text-sm sm:text-base text-gray-500">
+                                                        <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-5 text-xs sm:text-base text-gray-500"> {/* Smaller text for mobile */}
                                                             <span>📅 {formatDateTime(task.dueDate, task.dueTime)}</span>
                                                             <span>⏰ {getDaysUntilDue(task.dueDate)}</span>
                                                         </div>
@@ -1632,3 +1663,4 @@
     </script>
 </body>
 </html>
+
