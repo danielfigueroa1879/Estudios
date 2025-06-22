@@ -1,0 +1,31 @@
+/* Custom CSS for the Academic Task Manager */
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0; /* Ensures no default body margin */
+    padding: 0; /* Ensures no default body padding */
+}
+
+/* Styles for animating the highlight in the calendar */
+.highlight-animation {
+    animation: pulse-border 1.5s infinite alternate; /* Alternar para un efecto de parpadeo suave */
+}
+
+@keyframes pulse-border {
+    from {
+        box-shadow: 0 0 0 0 rgba(var(--ring-color-rgb, 0, 0, 0), 0.7);
+        border-color: var(--border-color, #e5e7eb);
+        transform: scale(1);
+    }
+    to {
+        box-shadow: 0 0 0 4px rgba(var(--ring-color-rgb, 0, 0, 0), 0);
+        border-color: var(--highlight-color, #3b82f6);
+        transform: scale(1.02);
+    }
+}
+
+/* To prevent CLS (Cumulative Layout Shift) in SVG icons */
+svg {
+    display: inline-block;
+    vertical-align: middle;
+}
