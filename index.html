@@ -1023,33 +1023,30 @@
 
                 return (
                     <div className="relative">
-                        {/* Header for month/year and navigation buttons */}
-                        <div className="flex flex-col sm:flex-row items-center justify-start mb-5"> {/* Aligned left */}
-                            {/* Month/Year title - always on the left */}
-                            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-left w-full sm:w-auto mb-3 sm:mb-0">
-                                {monthNames[month]} {year}
-                            </h2>
-                            {/* Navigation buttons: centered on mobile, right-aligned on PC to visually align with back button */}
-                            <div className="flex justify-center space-x-1 sm:space-x-2 sm:justify-end w-full sm:w-auto"> {/* Adjusted for alignment */}
-                                <button
-                                    onClick={goToPreviousMonth}
-                                    className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm"
-                                >
-                                    ←
-                                </button>
-                                <button
-                                    onClick={goToToday}
-                                    className="px-3 py-1.5 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm"
-                                >
-                                    Hoy
-                                </button>
-                                <button
-                                    onClick={goToNextMonth}
-                                    className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm"
-                                >
-                                    →
-                                </button>
-                            </div>
+                        {/* Month/Year title - always on the left */}
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-left mb-3 sm:mb-0">
+                            {monthNames[month]} {year}
+                        </h2>
+                        {/* Navigation buttons: consistently centered for all screen sizes, placed below month title */}
+                        <div className="flex justify-center space-x-1 sm:space-x-2 w-full mt-2 mb-4"> {/* Added margin top/bottom */}
+                            <button
+                                onClick={goToPreviousMonth}
+                                className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm"
+                            >
+                                ←
+                            </button>
+                            <button
+                                onClick={goToToday}
+                                className="px-3 py-1.5 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm"
+                            >
+                                Hoy
+                            </button>
+                            <button
+                                onClick={goToNextMonth}
+                                className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm"
+                            >
+                                →
+                            </button>
                         </div>
 
                         {/* Nombres de los días */}
@@ -1065,7 +1062,7 @@
                         <div className="grid grid-cols-7 gap-0.5">
                             {daysArray.map((day, index) => {
                                 if (!day) {
-                                    return <div key={index} className="h-14 sm:h-20 lg:h-28"></div>; {/* Adjusted height for desktop */}
+                                    return <div key={index} className="h-14 sm:h-20 lg:h-28"></div>; /* Adjusted height for desktop */
                                 }
 
                                 const dayObj = new Date(year, month, day);
