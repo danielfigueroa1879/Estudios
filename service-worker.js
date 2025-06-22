@@ -1,4 +1,4 @@
-const CACHE_NAME = 'academic-task-manager-cache-v3';
+//const CACHE_NAME = 'academic-task-manager-cache-v3';
 const urlsToCache = [
     './',
     './index.html',
