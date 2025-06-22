@@ -932,25 +932,25 @@ const AcademicTaskManager = () => {
         return (
             <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 relative border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-0"> {/* Modified text size */}
                         {monthNames[month]} {year}
                     </h2>
                     <div className="flex space-x-2">
                         <button
                             onClick={goToPreviousMonth}
-                            className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-base"
+                            className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm" /* Modified text size */
                         >
                             ←
                         </button>
                         <button
                             onClick={goToToday}
-                            className="px-4 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-base"
+                            className="px-4 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm" /* Modified text size */
                         >
                             Hoy
                         </button>
                         <button
                             onClick={goToNextMonth}
-                            className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-base"
+                            className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm" /* Modified text size */
                         >
                             →
                         </button>
@@ -970,7 +970,7 @@ const AcademicTaskManager = () => {
                 <div className="grid grid-cols-7 gap-1">
                     {daysArray.map((day, index) => {
                         if (!day) {
-                            return <div key={index} className="h-20 sm:h-24"></div>;
+                            return <div key={index} className="h-[4.5rem] sm:h-[6rem]"></div>; /* Adjusted height */
                         }
 
                         const dayObj = new Date(year, month, day);
@@ -989,9 +989,9 @@ const AcademicTaskManager = () => {
                         return (
                             <div
                                 key={currentDayFormatted}
-                                className={`h-20 sm:h-24 border border-gray-200 p-1 sm:p-2 transition-all duration-300 ease-in-out ${
+                                className={`h-[4.5rem] sm:h-[6rem] border border-gray-200 p-1 sm:p-2 transition-all duration-300 ease-in-out ${
                                     isHoliday ? 'bg-red-50' : ''
-                                } ${isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50'} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`}
+                                } ${isToday ? 'bg-blue-100 border-blue-500' : 'bg-blue-50 hover:bg-blue-100'} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`} /* Adjusted height and added light blue background */
                                 style={highlightEntry ? {
                                     '--highlight-color': highlightClassesToApply.match(/border-([\w-]+)-(\d+)/)?.[0].replace('border-', '') || '#3b82f6',
                                     '--ring-color-rgb': highlightBorderColorRgb
@@ -1057,7 +1057,7 @@ const AcademicTaskManager = () => {
                     })}
                 </div>
 
-                <div className="mt-4 text-sm text-gray-600 text-center">
+                <div className="mt-4 text-xs text-gray-600 text-center"> {/* Modified text size */}
                     Cada barra de color representa una tarea individual. Si hay múltiples tareas el mismo día, verás múltiples barras ordenadas por horario.
                 </div>
 
