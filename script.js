@@ -1,4 +1,910 @@
-// React components and application logic for the Academic Task Manager
+setTimeout(() => {
+            const calendarSection = document.getElementById('calendarSection');
+            if (calendarSection) {
+                calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+
+        const alertDates = [...new Set(notifications.map(n => n.dueDate))].sort();
+
+        let delay = 0;
+        for (const dateString of alertDates) {
+            const taskForColor = tasks.find(t => t.dueDate === dateString);
+            let highlightClasses = '';
+            let borderColorRgb = '';
+            if (taskForColor) {
+                const status = getTaskStatus(taskForColor.dueDate, taskForColor.dueTime, taskForColor.completed);
+                const style = getTaskCardStyle(status, taskForColor.completed);
+                highlightClasses = style.highlightClass;
+                borderColorRgb = style.borderColorRgb;
+            }
+            
+            await new Promise(resolve => {
+                highlightTimeoutRef.current = setTimeout(() => {
+                    setHighlightedCalendarDates([{ date: dateString, classes: highlightClasses, borderColorRgb: borderColorRgb }]);
+                    resolve();
+                }, delay);
+            });
+            delay += 1500;
+
+            await new Promise(resolve => {
+                highlightTimeoutRef.current = setTimeout(() => {
+                    setHighlightedCalendarDates([]);
+                    highlightTimeoutRef.current = null;
+                    resolve();
+                }, delay);
+            });
+            delay += 750;
+        }
+        highlightTimeoutRef.current = null;
+    };
+
+    // Handle task card click to navigate to calendar and highlight
+    const handleTaskCardClick = async (task) => {
+        if (highlightTimeoutRef.current) {
+            clearTimeout(highlightTimeoutRef.current);
+            highlightTimeoutRef.current = null;
+        }
+        setHighlightedCalendarDates([]);
+
+        setOriginTaskForCalendar({ taskId: task.id, scrollY: window.scrollY });
+
+        setView('calendar');
+        
+        setCurrentCalendarViewDate(createLocalDate(task.dueDate));
+
+        setTimeout(() => {
+            const calendarSection = document.getElementById('calendarSection');
+            if (calendarSection) {
+                calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+
+        const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+        const cardStyle = getTaskCardStyle(status, task.completed);
+        await animateCalendarDate(task.dueDate, cardStyle.highlightClass, cardStyle.borderColorRgb);
+    };
+
+    // Handle date click specifically - NUEVA FUNCIONALIDAD: Solo clic en fecha lleva al calendario
+    const handleDateClick = async (task, e) => {
+        e.stopPropagation();
+        await handleTaskCardClick(task);
+    };
+
+    // Function to go back to original task in list view
+    const backToOriginTask = () => {
+        if (originTaskForCalendar) {
+            setView('list');
+            setHighlightedCalendarDates([]);
+            
+            setTimeout(() => {
+                const taskElement = document.getElementById(originTaskForCalendar.taskId);
+                if (taskElement) {
+                    taskElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                setOriginTaskForCalendar(null);
+            }, 0);
+        }
+    };
+
+    // --- Component for Daily Tasks Card View ---
+    const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, toggleTask, startEditing, deleteTask, handleTaskCardClick }) => {
+        const groupedTasks = tasks.reduce((acc, task) => {
+            const date = task.dueDate;
+            if (!acc[date]) acc[date] = [];
+            acc[date].push(task);
+            return acc;
+        }, {});
+
+        return (
+            <div className="space-y-8" id="dailyTasksSection">
+                <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-8">Tareas por día</h2>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
+                        <div key={date} className="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer">
+                            <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 mb-3 sm:mb-4">
+                                {formatDate(date)}
+                            </h3>
+                            <div className="space-y-3">
+                                {dayTasks
+                                    .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00'))
+                                    .map(task => {
+                                    const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                                    const cardStyle = getTaskCardStyle(status, task.completed);
+                                    return (
+                                        <div
+                                            key={task.id}
+                                            onClick={() => handleTaskCardClick(task)}
+                                            className={`p-3 sm:p-4 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300 cursor-pointer hover:shadow-lg`}
+                                        >
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center space-x-2">
+                                                    <IconClock width="20" height="20" />
+                                                    <span className={`text-base px-3 py-1 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>
+                                                        {task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate)}
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
+                                                    className={`w-6 h-6 sm:w-7 sm:h-7 rounded border-2 flex items-center justify-center ${
+                                                        task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300'
+                                                    }`}
+                                                >
+                                                    {task.completed && <IconCheck width="16" height="16" />}
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <p className="font-medium text-gray-800 text-lg sm:text-xl">{task.subject}</p>
+                                                <p className="text-base sm:text-lg text-gray-600 mt-1">{task.title}</p>
+                                                <p className="text-base text-gray-500 mt-2">{task.type}</p>
+                                            </div>
+                                            <div className="flex justify-end mt-4 space-x-2">
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); startEditing(task); }}
+                                                    className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-xl transition-colors"
+                                                    title="Editar tarea"
+                                                >
+                                                    <IconEdit width="18" height="18" />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
+                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-xl transition-colors"
+                                                    title="Eliminar tarea"
+                                                >
+                                                    <IconTrash width="18" height="18" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
+    // Simplified calendar view
+    const CalendarView = ({ highlightedDates, chileanHolidays, tasks, currentCalendarViewDate, setCurrentCalendarViewDate, todayGlobal, originTaskForCalendar, backToOriginTask, getTaskStatus }) => {
+        return (
+            <div className="space-y-8" id="calendarSection">
+                <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-8">Calendario</h2>
+                </div>
+                
+                <MonthlyCalendar 
+                    tasks={tasks} 
+                    highlightedDates={highlightedDates}
+                    currentViewDate={currentCalendarViewDate}
+                    setCurrentViewDate={setCurrentCalendarViewDate}
+                    todayGlobal={todayGlobal}
+                    originTaskForCalendar={originTaskForCalendar}
+                    backToOriginTask={backToOriginTask}
+                    getTaskStatus={getTaskStatus}
+                    chileanHolidays={chileanHolidays}
+                />
+            </div>
+        );
+    };
+
+    // Monthly Calendar Component
+    const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, originTaskForCalendar, backToOriginTask, getTaskStatus, chileanHolidays }) => {
+        const year = currentViewDate.getFullYear();
+        const month = currentViewDate.getMonth();
+
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const daysInMonth = lastDay.getDate();
+        const startingDayOfWeek = firstDay.getDay();
+
+        const daysArray = [];
+
+        const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
+        for (let i = 0; i < adjustedStartingDay; i++) {
+            daysArray.push(null);
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            daysArray.push(day);
+        }
+
+        const tasksByDate = tasks.reduce((acc, task) => {
+            const taskDate = createLocalDate(task.dueDate);
+            if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
+                const day = taskDate.getDate();
+                if (!acc[day]) acc[day] = [];
+                acc[day].push(task);
+            }
+            return acc;
+        }, {});
+
+        const monthNames = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+
+        const dayNames = [
+            'Lun', 'Mar', 'Mié', 'Jue', 'Vie',
+            <span key="sab" className="text-red-600">Sáb</span>,
+            <span key="dom" className="text-red-600">Dom</span>
+        ];
+
+        const goToPreviousMonth = () => {
+            setCurrentViewDate(new Date(year, month - 1, 1));
+        };
+
+        const goToNextMonth = () => {
+            setCurrentViewDate(new Date(year, month + 1, 1));
+        };
+
+        const goToToday = () => {
+            setCurrentViewDate(todayGlobal);
+        };
+
+        return (
+            <div className="bg-blue-50 rounded-2xl shadow-lg p-4 sm:p-6 relative border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300">
+                {/* CAMBIOS ESPECÍFICOS PARA MÓVIL: Layout del calendario más compacto */}
+                <div className="flex items-center justify-center mb-6 relative">
+                    <button
+                        onClick={goToPreviousMonth}
+                        className="absolute left-0 px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
+                    >
+                        ←
+                    </button>
+                    
+                    <h2 className="text-base sm:text-2xl font-bold text-gray-800">
+                        {monthNames[month]} {year}
+                    </h2>
+                    
+                    <button
+                        onClick={goToNextMonth}
+                        className="absolute right-0 px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
+                    >
+                        →
+                    </button>
+                </div>
+
+                <div className="flex justify-center mb-4">
+                    <button
+                        onClick={goToToday}
+                        className="px-3 py-1 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-xs sm:text-sm"
+                    >
+                        Hoy
+                    </button>
+                </div>
+
+                <div className="grid grid-cols-7 gap-1 mb-2">
+                    {dayNames.map((day, index) => (
+                        <div key={index} className="text-center font-semibold text-gray-600 py-2 text-base">
+                            {day}
+                        </div>
+                    ))}
+                </div>
+
+                <div className="grid grid-cols-7 gap-1">
+                    {daysArray.map((day, index) => {
+                        if (!day) {
+                            // CAMBIO ESPECÍFICO PARA MÓVIL: Días más cortos en móvil
+                            return <div key={index} className="h-[3rem] sm:h-[6rem]"></div>;
+                        }
+
+                        const dayObj = new Date(year, month, day);
+                        const isToday = todayGlobal.getDate() === dayObj.getDate() &&
+                                        todayGlobal.getMonth() === dayObj.getMonth() &&
+                                        todayGlobal.getFullYear() === dayObj.getFullYear();
+                        
+                        const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                        const isHoliday = chileanHolidays.includes(currentDayFormatted);
+
+                        const highlightEntry = highlightedDates.find(h => h.date === currentDayFormatted);
+                        const highlightClassesToApply = highlightEntry ? highlightEntry.classes : '';
+                        const highlightBorderColorRgb = highlightEntry ? highlightEntry.borderColorRgb : '';
+
+                        return (
+                            <div
+                                key={currentDayFormatted}
+                                // CAMBIO ESPECÍFICO PARA MÓVIL: Días más cortos en móvil
+                                className={`h-[3rem] sm:h-[6rem] border border-gray-200 p-1 sm:p-2 transition-all duration-300 ease-in-out ${
+                                    isHoliday ? 'bg-red-50' : ''
+                                } ${isToday ? 'bg-blue-100 border-blue-500' : 'bg-white hover:bg-blue-50'} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`}
+                                style={highlightEntry ? {
+                                    '--highlight-color': highlightClassesToApply.match(/border-([\w-]+)-(\d+)/)?.[0].replace('border-', '') || '#3b82f6',
+                                    '--ring-color-rgb': highlightBorderColorRgb
+                                } : {}}
+                            >
+                                <div className={`text-sm sm:text-base font-medium ${
+                                    isToday ? 'text-blue-700' : (isHoliday ? 'text-red-600' : 'text-gray-800')
+                                }`}>
+                                    {day}
+                                </div>
+
+                                <div className="mt-1 space-y-0.5">
+                                    {tasksByDate[day] && tasksByDate[day]
+                                        .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00'))
+                                        .map((task, taskIndex) => {
+                                        const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                                        let bgColor = '';
+                                        let title = '';
+                                        
+                                        switch (status) {
+                                            case 'overdue':
+                                                bgColor = 'bg-gray-600';
+                                                title = `${task.subject} - Vencida`;
+                                                break;
+                                            case 'due-today':
+                                                bgColor = 'bg-red-400';
+                                                title = `${task.subject} - Vence hoy`;
+                                                break;
+                                            case 'due-tomorrow':
+                                                bgColor = 'bg-orange-400';
+                                                title = `${task.subject} - Vence mañana`;
+                                                break;
+                                            case 'due-soon':
+                                                bgColor = 'bg-yellow-400';
+                                                title = `${task.subject} - Por vencer`;
+                                                break;
+                                            case 'completed':
+                                                bgColor = 'bg-gray-400';
+                                                title = `${task.subject} - Completada`;
+                                                break;
+                                            default:
+                                                bgColor = 'bg-green-400';
+                                                title = `${task.subject} - A tiempo`;
+                                                break;
+                                        }
+                                        
+                                        if (task.dueTime) {
+                                            title += ` - ${task.dueTime}`;
+                                        }
+                                        
+                                        return (
+                                            <div 
+                                                key={`${task.id}-${taskIndex}`}
+                                                className={`w-full h-1.5 ${bgColor} rounded text-xs text-white text-center leading-none`} 
+                                                title={title}
+                                            >
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                <div className="mt-4 text-xs text-gray-600 text-center">
+                    Cada barra de color representa una tarea individual. Si hay múltiples tareas el mismo día, verás múltiples barras ordenadas por horario.
+                </div>
+
+                {/* CAMBIO ESPECÍFICO: Botón volver movido a esquina superior derecha */}
+                {originTaskForCalendar && (
+                    <button
+                        onClick={backToOriginTask}
+                        className="absolute top-4 right-4 p-2 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors flex items-center justify-center z-10"
+                        title="Volver a la tarea original"
+                    >
+                        <IconArrowBack width="20" height="20" />
+                    </button>
+                )}
+            </div>
+        );
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-200">
+            {/* Header container (full width) */}
+            <div className="bg-white shadow-lg w-full py-4 sm:py-6 mb-6">
+                <div className="max-w-7xl mx-auto px-3 sm:px-6">
+                    <div className="flex items-start sm:items-center justify-between">
+                        <div className="flex flex-col sm:flex-row sm:items-center">
+                            <div className="flex items-center space-x-2">
+                                <div className="text-blue-600">
+                                    <IconBook width="28" height="28" />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl sm:text-4xl font-bold text-blue-600 leading-tight">
+                                        GESTOR ACADÉMICO
+                                    </h1>
+                                    <p className="text-xs sm:text-lg text-gray-600">
+                                        Organiza tus tareas académicas
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex-shrink-0 flex items-center space-x-3">
+                            {notifications.length > 0 && (
+                                <button
+                                    onClick={() => setShowAlerts(!showAlerts)}
+                                    className="relative hover:bg-gray-100 p-2 rounded-xl transition-colors"
+                                    title={showAlerts ? "Ocultar alertas" : "Mostrar alertas"}
+                                >
+                                    <div className="text-orange-500">
+                                        <IconBell width="22" height="22" />
+                                    </div>
+                                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                        {notifications.length}
+                                    </span>
+                                </button>
+                            )}
+                            <div className="hidden sm:flex items-center space-x-1">
+                                <div className={emailNotifications ? 'text-blue-500' : 'text-gray-400'}>
+                                    <IconMail width="18" height="18" />
+                                </div>
+                                <button
+                                    onClick={() => setEmailNotifications(!emailNotifications)}
+                                    className={`w-10 h-5 rounded-full transition-colors ${
+                                        emailNotifications ? 'bg-blue-500' : 'bg-gray-300'
+                                    }`}
+                                >
+                                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${
+                                        emailNotifications ? 'translate-x-5' : 'translate-x-0.5'
+                                    }`} />
+                                </button>
+                            </div>
+                            <button
+                                onClick={() => setShowColorLegend(!showColorLegend)}
+                                className="text-gray-600 hover:text-blue-600 p-2 rounded-xl hover:bg-gray-100 transition-colors"
+                                title="Acceso Rápido a Tareas"
+                            >
+                                <IconHamburger width="28" height="28" />
+                            </button>
+                        </div>
+                    </div>
+
+                    {showColorLegend && (
+                        <div className="mt-6 pt-4 border-t border-gray-200">
+                            <h3 className="font-semibold text-blue-600 text-xl sm:text-2xl text-left mb-4">Acceso rápido a tareas</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <button
+                                    onClick={() => {
+                                        setView('list');
+                                        setShowColorLegend(false);
+                                        setOriginTaskForCalendar(null);
+                                        setTimeout(() => {
+                                            const taskListSection = document.getElementById('taskListSection');
+                                            if (taskListSection) {
+                                                taskListSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                            }
+                                        }, 0);
+                                    }}
+                                    className="block w-full text-left p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
+                                >
+                                    <IconBook width="20" height="20" />
+                                    <span>Tareas</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setView('daily');
+                                        setShowColorLegend(false);
+                                        setTimeout(() => {
+                                            const dailyTasksSection = document.getElementById('dailyTasksSection');
+                                            if (dailyTasksSection) {
+                                                dailyTasksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                setOriginTaskForCalendar(null);
+                                            }
+                                        }, 0);
+                                    }}
+                                    className="block w-full text-left p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
+                                >
+                                    <IconCalendar width="20" height="20" />
+                                    <span>Tareas por Día</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setView('calendar');
+                                        setShowColorLegend(false);
+                                        setTimeout(() => {
+                                            const calendarSection = document.getElementById('calendarSection');
+                                            if (calendarSection) {
+                                                calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                setOriginTaskForCalendar(null);
+                                            }
+                                        }, 100);
+                                    }}
+                                    className="block w-full text-left p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
+                                >
+                                    <IconCalendar width="20" height="20" />
+                                    <span>Vista de Calendario</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Main content area */}
+            <div className="max-w-7xl mx-auto px-3 sm:px-6">
+
+                {/* Active Alerts section */}
+                {notifications.length > 0 && showAlerts && (
+                    <div
+                        onClick={handleAlertsClick}
+                        className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-3 sm:p-6 mb-4 sm:mb-6 cursor-pointer transition-all duration-300 ease-in-out"
+                        style={{marginTop: '1rem'}}
+                    >
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="font-semibold text-orange-800 text-xl sm:text-2xl text-left">Alertas activas</h3>
+                            <div className="text-orange-600">
+                                <IconAlert width="20" height="20" />
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                            {notifications.slice(0, 3).map((notif, index) => (
+                                <p key={notif.id || index} className="text-sm text-orange-700 w-full text-left">
+                                    • {notif.message}
+                                </p>
+                            ))}
+                            {notifications.length > 3 && (
+                                <p className="text-sm text-orange-600 w-full text-left">
+                                    ... y {notifications.length - 3} alertas más
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* Form section for adding/editing tasks */}
+                <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8 border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300 mt-4">
+                    <button
+                        onClick={() => setShowAddTask(!showAddTask)}
+                        className="w-full flex items-center justify-between text-left mb-4"
+                    >
+                        <h3 className="font-semibold text-blue-600 text-xl sm:text-2xl text-left">
+                            {editingTask ? 'Editar tarea' : 'Agregar nueva tarea'}
+                        </h3>
+                        {showAddTask ? <div className="text-blue-600"><IconChevronUp /></div> : <div className="text-blue-600"><IconChevronDown /></div>}
+                    </button>
+
+                    {showAddTask && (
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                                <input
+                                    type="text"
+                                    placeholder="Asignatura"
+                                    value={newTask.subject}
+                                    onChange={(e) => setNewTask({...newTask, subject: e.target.value})}
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Título de la tarea"
+                                    value={newTask.title}
+                                    onChange={(e) => setNewTask({...newTask, title: e.target.value})}
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                                <select
+                                    value={newTask.type}
+                                    onChange={(e) => setNewTask({...newTask, type: e.target.value})}
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="Tarea">Tarea</option>
+                                    <option value="Examen">Examen</option>
+                                    <option value="Ensayo">Ensayo</option>
+                                    <option value="Proyecto">Proyecto</option>
+                                    <option value="Laboratorio">Laboratorio</option>
+                                </select>
+                                <input
+                                    type="date"
+                                    value={newTask.dueDate}
+                                    onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                                <input
+                                    type="time"
+                                    placeholder="Hora (opcional)"
+                                    value={newTask.dueTime}
+                                    onChange={(e) => setNewTask({...newTask, dueTime: e.target.value})}
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+                            <textarea
+                                placeholder="Descripción (opcional)"
+                                value={newTask.description}
+                                onChange={(e) => setNewTask({...newTask, description: e.target.value})}
+                                rows="3"
+                                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+                            ></textarea>
+                            <div className="flex space-x-4">
+                                <button
+                                    onClick={editingTask ? updateTask : addTask}
+                                    className="flex-1 bg-blue-600 text-white rounded-xl px-4 py-3 hover:bg-blue-700 flex items-center justify-center space-x-2 text-lg font-medium"
+                                >
+                                    {editingTask ? (
+                                        <>
+                                            <IconCheck width="20" height="20" />
+                                            <span>Actualizar</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <IconPlus width="20" height="20" />
+                                            <span>Agregar</span>
+                                        </>
+                                    )}
+                                </button>
+                                {editingTask && (
+                                    <button
+                                        onClick={cancelEditing}
+                                        className="flex-1 bg-gray-500 text-white rounded-xl px-4 py-3 hover:bg-gray-600 flex items-center justify-center space-x-2 text-lg font-medium"
+                                    >
+                                        <span>Cancelar</span>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Navigation container */}
+                <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-3 sm:py-4 mt-6 mb-6 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl">
+                    <div className="max-w-7xl mx-auto px-3 sm:px-6">
+                        <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-6">Tareas</h2>
+                        
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
+                                {/* CAMBIOS ESPECÍFICOS PARA MÓVIL: Pestañas más compactas */}
+                                <div className="grid grid-cols-3 gap-2 sm:flex sm:gap-4 w-full sm:w-auto">
+                                    <button
+                                        onClick={() => {
+                                            setView('list');
+                                            setShowColorLegend(false);
+                                            setOriginTaskForCalendar(null);
+                                            setTimeout(() => {
+                                                const taskListSection = document.getElementById('taskListSection');
+                                                if (taskListSection) {
+                                                    taskListSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                }
+                                            }, 100);
+                                        }}
+                                        className={`px-1 py-2 sm:px-8 sm:py-4 sm:w-48 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-1 sm:space-y-0 sm:space-x-3 text-xs sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                                            view === 'list' 
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
+                                        }`}
+                                    >
+                                        <IconBook width="16" height="16" />
+                                        <span className="font-medium text-center sm:text-center">Lista</span>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setView('daily');
+                                            setShowColorLegend(false);
+                                            setTimeout(() => {
+                                                const dailyTasksSection = document.getElementById('dailyTasksSection');
+                                                if (dailyTasksSection) {
+                                                    dailyTasksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                    setOriginTaskForCalendar(null);
+                                                }
+                                            }, 100);
+                                        }}
+                                        className={`px-1 py-2 sm:px-8 sm:py-4 sm:w-48 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-1 sm:space-y-0 sm:space-x-3 text-xs sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                                            view === 'daily' 
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
+                                        }`}
+                                    >
+                                        <IconCalendar width="16" height="16" />
+                                        <span className="font-medium text-center sm:text-center">Por Día</span>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setView('calendar');
+                                            setShowColorLegend(false);
+                                            setTimeout(() => {
+                                                const calendarSection = document.getElementById('calendarSection');
+                                                if (calendarSection) {
+                                                    calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                    setOriginTaskForCalendar(null);
+                                                }
+                                            }, 100);
+                                        }}
+                                        className={`px-1 py-2 sm:px-8 sm:py-4 sm:w-48 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-1 sm:space-y-0 sm:space-x-3 text-xs sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                                            view === 'calendar' 
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                                            : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
+                                        }`}
+                                    >
+                                        <IconCalendar width="16" height="16" />
+                                        <span className="font-medium text-center sm:text-center">Calendario</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {tasks.filter(task => task.completed).length > 0 && (
+                                <button
+                                    onClick={deleteAllCompleted}
+                                    className="px-4 py-3 bg-red-500 text-white rounded-2xl hover:bg-red-600 flex items-center space-x-2 text-base font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-red-200"
+                                >
+                                    <IconTrash width="18" height="18" />
+                                    <span>Eliminar Completadas ({tasks.filter(task => task.completed).length})</span>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="border-t-4 border-gray-100 mb-2 sm:my-4"></div>
+
+                {/* Main view content based on `view` state */}
+                {view === 'list' ? (
+                    <div id="taskListSection" className="space-y-6">
+                        <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-8 mb-4 sm:mb-8 mt-6 sm:mt-8">
+                            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-4 sm:mb-8">Lista de tareas</h2>
+                        </div>
+                        
+                        {[...tasks].sort((a, b) => {
+                            if (a.completed && !b.completed) return 1;
+                            if (!a.completed && b.completed) return -1;
+                            const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`);
+                            const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`);
+                            return dateA - dateB;
+                        }).map(task => {
+                            const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                            const cardStyle = getTaskCardStyle(status, task.completed);
+                            const isExpanded = expandedTasks.has(task.id);
+
+                            return (
+                                <div
+                                    key={task.id}
+                                    id={task.id}
+                                    className={`rounded-xl shadow-lg border-l-8 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} ${
+                                        isExpanded ? 'p-4 sm:p-8' : 'p-2 sm:p-4'
+                                    }`}
+                                >
+                                    {/* NUEVA FUNCIONALIDAD: Vista compacta por defecto */}
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center space-x-3 flex-1">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
+                                                className={`w-5 h-5 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                                                    task.completed
+                                                        ? 'bg-green-500 border-green-500 text-white'
+                                                        : 'border-gray-300 hover:border-gray-400'
+                                                }`}
+                                            >
+                                                {task.completed && <IconCheck width="14" height="14" />}
+                                            </button>
+
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className={`font-semibold text-sm sm:text-base ${
+                                                    task.completed ? 'line-through text-gray-500' : 
+                                                    status === 'overdue' ? 'line-through text-gray-700' : 'text-gray-900'
+                                                }`}>
+                                                    {task.subject}: {task.title}
+                                                </h3>
+                                                <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500">
+                                                    {/* NUEVA FUNCIONALIDAD: Solo clic en fecha lleva al calendario */}
+                                                    <span 
+                                                        onClick={(e) => handleDateClick(task, e)}
+                                                        className="cursor-pointer hover:text-blue-600 hover:underline"
+                                                    >
+                                                        📅 {formatDate(task.dueDate)}
+                                                    </span>
+                                                    <span>⏰ {getDaysUntilDue(task.dueDate)}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            onClick={() => toggleTaskExpansion(task.id)}
+                                            className="text-gray-400 hover:text-gray-600 p-1"
+                                        >
+                                            {isExpanded ? <IconChevronUp width="20" height="20" /> : <IconChevronDown width="20" height="20" />}
+                                        </button>
+                                    </div>
+
+                                    {/* NUEVA FUNCIONALIDAD: Vista expandida solo cuando se hace clic en chevron */}
+                                    {isExpanded && (
+                                        <div className="mt-4 pt-4 border-t border-gray-200">
+                                            <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-3">
+                                                <div className="flex items-center space-x-3">
+                                                    <span className="text-sm bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                                                        {task.type}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {task.description && (
+                                                <p className="text-gray-600 text-sm sm:text-base mb-3">{task.description}</p>
+                                            )}
+
+                                            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm sm:text-base text-gray-500 mb-4">
+                                                <span 
+                                                    onClick={(e) => handleDateClick(task, e)}
+                                                    className="cursor-pointer hover:text-blue-600 hover:underline"
+                                                >
+                                                    📅 {formatDateTime(task.dueDate, task.dueTime)}
+                                                </span>
+                                                <span>⏰ {getDaysUntilDue(task.dueDate)}</span>
+                                            </div>
+
+                                            <div className="flex items-center justify-end space-x-2">
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); startEditing(task); }}
+                                                    className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-xl transition-colors"
+                                                    title="Editar tarea"
+                                                >
+                                                    <IconEdit width="18" height="18" />
+                                                </button>
+
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
+                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-xl transition-colors"
+                                                    title="Eliminar tarea"
+                                                >
+                                                    <IconTrash width="18" height="18" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                ) : view === 'daily' ? (
+                    <DailyTasksCardView
+                        tasks={tasks}
+                        formatDate={formatDate}
+                        getTaskStatus={getTaskStatus}
+                        getTaskCardStyle={getTaskCardStyle}
+                        toggleTask={toggleTask}
+                        startEditing={startEditing}
+                        deleteTask={deleteTask}
+                        handleTaskCardClick={handleTaskCardClick}
+                    />
+                ) : (
+                    <CalendarView 
+                        highlightedDates={highlightedCalendarDates} 
+                        chileanHolidays={chileanHolidays}
+                        tasks={tasks}
+                        currentCalendarViewDate={currentCalendarViewDate}
+                        setCurrentCalendarViewDate={setCurrentCalendarViewDate}
+                        todayGlobal={todayGlobal}
+                        originTaskForCalendar={originTaskForCalendar}
+                        backToOriginTask={backToOriginTask}
+                        getTaskStatus={getTaskStatus}
+                    />
+                )}
+
+                {/* Footer */}
+                <div className="mt-8 sm:mt-10 bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                    <div className="text-center text-gray-600 space-y-2">
+                        <div className="border-b border-gray-200 pb-2">
+                            <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p>
+                            <p className="text-xs text-gray-700">
+                                Realizado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span>
+                            </p>
+                            <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Custom dialogs */}
+                <CustomAlertDialog
+                    message={alertDialogMessage}
+                    isOpen={isAlertDialogOpen}
+                    onClose={handleAlertDialogClose}
+                />
+
+                <CustomConfirmDialog
+                    message={confirmDialogMessage}
+                    isOpen={isConfirmDialogOpen}
+                    onConfirm={handleConfirmDialogConfirm}
+                    onCancel={handleConfirmDialogCancel}
+                />
+            </div>
+        </div>
+    );
+};
+
+// Use createRoot for React 18 to render the application
+const container = document.getElementById('root');
+const root = ReactDOM.createRoot(container);
+root.render(<AcademicTaskManager />);// React components and application logic for the Academic Task Manager
 
 const { useState, useEffect, useRef } = React;
 
@@ -210,6 +1116,11 @@ const AcademicTaskManager = () => {
         const today = new Date();
         const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
+        const dayAfterTomorrow = new Date(today);
+        dayAfterTomorrow.setDate(today.getDate() + 2);
+        const fourDaysLater = new Date(today);
+        fourDaysLater.setDate(today.getDate() + 4);
+
         const formatDateForInput = (date) => date.toISOString().split('T')[0];
 
         return [
@@ -232,6 +1143,36 @@ const AcademicTaskManager = () => {
                 dueTime: '14:30',
                 type: 'Ensayo',
                 completed: false
+            },
+            {
+                id: 3,
+                subject: 'Física',
+                title: 'Laboratorio de Óptica',
+                description: 'Informe de experimentos con lentes',
+                dueDate: formatDateForInput(dayAfterTomorrow),
+                dueTime: '11:00',
+                type: 'Laboratorio',
+                completed: false
+            },
+            {
+                id: 4,
+                subject: 'Literatura',
+                title: 'Análisis de "Cien años de soledad"',
+                description: 'Ensayo crítico sobre realismo mágico',
+                dueDate: formatDateForInput(fourDaysLater),
+                dueTime: '16:00',
+                type: 'Ensayo',
+                completed: false
+            },
+            {
+                id: 5,
+                subject: 'Química',
+                title: 'Proyecto de Reacciones',
+                description: 'Desarrollo de un modelo molecular',
+                dueDate: formatDateForInput(today),
+                dueTime: '13:15',
+                type: 'Proyecto',
+                completed: false
             }
         ];
     };
@@ -240,6 +1181,7 @@ const AcademicTaskManager = () => {
     const saveTasksToStorage = (tasksToSave) => {
         try {
             localStorage.setItem('academicTasks', JSON.stringify(tasksToSave));
+            localStorage.setItem('academicTasksLastSaved', new Date().toISOString());
         } catch (error) {
             console.error('Error saving tasks to storage:', error);
         }
@@ -249,14 +1191,28 @@ const AcademicTaskManager = () => {
     const loadSettingsFromStorage = () => {
         try {
             const savedView = localStorage.getItem('currentView');
-            return { view: savedView || 'list' };
+            const savedEmailNotifications = localStorage.getItem('emailNotifications');
+            return {
+                view: savedView || 'list',
+                emailNotifications: savedEmailNotifications === 'true'
+            };
         } catch (error) {
             console.error('Error loading settings from storage:', error);
-            return { view: 'list' };
+            return { view: 'list', emailNotifications: false };
         }
     };
 
-    // Initialize states
+    // Function to save settings
+    const saveSettingsToStorage = (currentView, emailNotificationsState) => {
+        try {
+            localStorage.setItem('currentView', currentView);
+            localStorage.setItem('emailNotifications', String(emailNotificationsState));
+        } catch (error) {
+            console.error('Error saving settings to storage:', error);
+        }
+    };
+
+    // Initialize states with saved data
     const [tasks, setTasks] = useState(() => loadTasksFromStorage());
     const [newTask, setNewTask] = useState({
         subject: '',
@@ -267,16 +1223,24 @@ const AcademicTaskManager = () => {
         type: 'Tarea'
     });
     const [editingTask, setEditingTask] = useState(null);
+
     const savedSettings = loadSettingsFromStorage();
     const [view, setView] = useState(savedSettings.view);
     const [notifications, setNotifications] = useState([]);
-    const [showAddTask, setShowAddTask] = useState(false);
-    const [showColorLegend, setShowColorLegend] = useState(false);
+    const [showAddTask, setShowAddTask] = useState(false); // Cerrado por defecto
+    const [showColorLegend, setShowColorLegend] = useState(false); // Cerrado por defecto
     const [showAlerts, setShowAlerts] = useState(true);
-    const [emailNotifications, setEmailNotifications] = useState(false);
+    const [emailNotifications, setEmailNotifications] = useState(savedSettings.emailNotifications);
+    const [highlightedCalendarDates, setHighlightedCalendarDates] = useState([]);
+    const [currentCalendarViewDate, setCurrentCalendarViewDate] = useState(new Date());
+    const todayGlobal = new Date();
+    const [originTaskForCalendar, setOriginTaskForCalendar] = useState(null);
+    const highlightTimeoutRef = useRef(null);
+    
+    // Add state for task expansion - NUEVA FUNCIONALIDAD SOLO PARA MÓVIL
     const [expandedTasks, setExpandedTasks] = useState(new Set());
 
-    // Toggle task expansion
+    // Toggle task expansion - NUEVA FUNCIONALIDAD SOLO PARA MÓVIL
     const toggleTaskExpansion = (taskId) => {
         const newExpanded = new Set(expandedTasks);
         if (newExpanded.has(taskId)) {
@@ -287,30 +1251,42 @@ const AcademicTaskManager = () => {
         setExpandedTasks(newExpanded);
     };
 
-    // Effects
+    // Effect to update time every minute for real-time status checks
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentTime(new Date());
         }, 60000);
+
         return () => clearInterval(interval);
     }, []);
 
+    // Effect to save tasks when they change
     useEffect(() => {
         saveTasksToStorage(tasks);
     }, [tasks]);
 
-    // Helper functions
+    // Effect to save settings when they change
+    useEffect(() => {
+        saveSettingsToStorage(view, emailNotifications);
+    }, [view, emailNotifications]);
+
+    // Helper to create a local date at midnight from ISO-MM-DD
     const createLocalDate = (dateString) => {
         const parts = dateString.split('-').map(Number);
         return new Date(parts[0], parts[1] - 1, parts[2]);
     };
 
+    // Function to calculate task status based on current date and time
     const getTaskStatus = (dueDate, dueTime, completed) => {
         if (completed) return 'completed';
+
         const now = new Date();
+        const todayMidnight = new Date(now);
+        todayMidnight.setHours(0, 0, 0, 0);
+
         const dueMidnight = createLocalDate(dueDate);
-        let dueDateTime = dueMidnight;
         
+        let dueDateTime = dueMidnight;
         if (dueTime) {
             const [hours, minutes] = dueTime.split(':').map(Number);
             dueDateTime = new Date(dueMidnight);
@@ -320,10 +1296,10 @@ const AcademicTaskManager = () => {
             dueDateTime.setHours(23, 59, 59, 999);
         }
 
-        if (dueDateTime < now) return 'overdue';
+        if (dueDateTime < now) {
+            return 'overdue';
+        }
 
-        const todayMidnight = new Date(now);
-        todayMidnight.setHours(0, 0, 0, 0);
         const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -333,30 +1309,105 @@ const AcademicTaskManager = () => {
         return 'on-time';
     };
 
+    // Function to get task card styles based on status
     const getTaskCardStyle = (status, completed) => {
+        let baseStyles = {};
+        let highlightClass = '';
+        let borderColorRgb = '0,0,0';
+
         if (completed) {
-            return {
+            baseStyles = {
                 bg: 'bg-gray-50',
                 border: 'border-gray-300',
-                text: 'text-gray-600'
+                text: 'text-gray-600',
             };
+            highlightClass = 'border-gray-500 ring-2 ring-gray-500 shadow-md';
+            borderColorRgb = '107,114,128';
+        } else {
+            switch (status) {
+                case 'overdue':
+                    baseStyles = {
+                        bg: 'bg-gray-100',
+                        border: 'border-gray-500',
+                        text: 'text-gray-800',
+                    };
+                    highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md';
+                    borderColorRgb = '75,85,99';
+                    break;
+                case 'due-today':
+                    baseStyles = {
+                        bg: 'bg-red-50',
+                        border: 'border-red-500',
+                        text: 'text-red-800',
+                    };
+                    highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
+                    borderColorRgb = '239,68,68';
+                    break;
+                case 'due-tomorrow':
+                    baseStyles = {
+                        bg: 'bg-orange-50',
+                        border: 'border-orange-400',
+                        text: 'text-orange-800',
+                    };
+                    highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
+                    borderColorRgb = '249,115,22';
+                    break;
+                case 'due-soon':
+                    baseStyles = {
+                        bg: 'bg-yellow-50',
+                        border: 'border-yellow-400',
+                        text: 'text-yellow-800',
+                    };
+                    highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
+                    borderColorRgb = '245,158,11';
+                    break;
+                case 'on-time':
+                default:
+                    baseStyles = {
+                        bg: 'bg-green-50',
+                        border: 'border-green-400',
+                        text: 'text-green-800',
+                    };
+                    highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
+                    borderColorRgb = '34,197,94';
+                    break;
+            }
         }
-        
-        switch (status) {
-            case 'overdue':
-                return { bg: 'bg-gray-100', border: 'border-gray-500', text: 'text-gray-800' };
-            case 'due-today':
-                return { bg: 'bg-red-50', border: 'border-red-500', text: 'text-red-800' };
-            case 'due-tomorrow':
-                return { bg: 'bg-orange-50', border: 'border-orange-400', text: 'text-orange-800' };
-            case 'due-soon':
-                return { bg: 'bg-yellow-50', border: 'border-yellow-400', text: 'text-yellow-800' };
-            default:
-                return { bg: 'bg-green-50', border: 'border-green-400', text: 'text-green-800' };
-        }
+        return { ...baseStyles, highlightClass: highlightClass, borderColorRgb: borderColorRgb };
     };
 
-    // Task management functions
+    // Simulate automatic notifications considering time
+    useEffect(() => {
+        const checkNotifications = () => {
+            const newNotifications = [];
+            tasks.forEach(task => {
+                if (!task.completed) {
+                    const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                    if (status === 'due-today' || status === 'due-tomorrow' || status === 'overdue') {
+                        let label = '';
+                        switch (status) {
+                            case 'overdue': label = 'Vencido'; break;
+                            case 'due-today': label = 'Vence hoy'; break;
+                            case 'due-tomorrow': label = 'Vence mañana'; break;
+                        }
+                        newNotifications.push({
+                            id: task.id,
+                            message: `${task.subject}: ${task.title} - ${label}`,
+                            type: status,
+                            dueDate: task.dueDate,
+                            timestamp: new Date()
+                        });
+                    }
+                }
+            });
+            setNotifications(newNotifications);
+        };
+
+        checkNotifications();
+        const interval = setInterval(checkNotifications, 60000);
+        return () => clearInterval(interval);
+    }, [tasks, currentTime]);
+
     const addTask = () => {
         if (newTask.subject && newTask.title && newTask.dueDate) {
             setTasks([...tasks, {
@@ -378,6 +1429,50 @@ const AcademicTaskManager = () => {
         }
     };
 
+    const startEditing = (task) => {
+        setEditingTask(task);
+        setNewTask(task);
+        setShowAddTask(true);
+        setView('list');
+        const formElement = document.getElementById('addTaskFormSection');
+        if (formElement) {
+            formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+
+    const updateTask = () => {
+        if (newTask.subject && newTask.title && newTask.dueDate) {
+            setTasks(tasks.map(task =>
+                task.id === editingTask.id ? { ...newTask } : task
+            ));
+            setEditingTask(null);
+            setNewTask({
+                subject: '',
+                title: '',
+                description: '',
+                dueDate: '',
+                dueTime: '',
+                type: 'Tarea'
+            });
+            setShowAddTask(false);
+        } else {
+            showAlert('Por favor, completa los campos de Asignatura, Título y Fecha de Vencimiento.');
+        }
+    };
+
+    const cancelEditing = () => {
+        setEditingTask(null);
+        setNewTask({
+            subject: '',
+            title: '',
+            description: '',
+            dueDate: '',
+            dueTime: '',
+            type: 'Tarea'
+        });
+        setShowAddTask(false);
+    };
+
     const toggleTask = (id) => {
         setTasks(tasks.map(task =>
             task.id === id ? { ...task, completed: !task.completed } : task
@@ -387,6 +1482,24 @@ const AcademicTaskManager = () => {
     const deleteTask = (id) => {
         showConfirm('¿Estás seguro de que quieres eliminar esta tarea?', () => {
             setTasks(tasks.filter(task => task.id !== id));
+            if (editingTask && editingTask.id === id) {
+                cancelEditing();
+            }
+        });
+    };
+
+    const deleteAllCompleted = () => {
+        const completedCount = tasks.filter(task => task.completed).length;
+        if (completedCount === 0) {
+            showAlert('No hay tareas completadas para eliminar.');
+            return;
+        }
+
+        showConfirm(`¿Estás seguro de que quieres eliminar ${completedCount} tarea${completedCount > 1 ? 's' : ''} completada${completedCount > 1 ? 's' : ''}?`, () => {
+            setTasks(tasks.filter(task => !task.completed));
+            if (editingTask && tasks.filter(task => task.completed).some(t => t.id === editingTask.id)) {
+                cancelEditing();
+            }
         });
     };
 
@@ -400,10 +1513,23 @@ const AcademicTaskManager = () => {
         });
     };
 
+    const formatTime = (timeString) => {
+        if (!timeString) return '';
+        return timeString;
+    };
+
+    const formatDateTime = (dateString, timeString) => {
+        const formattedDate = formatDate(dateString);
+        const formattedTime = formatTime(timeString);
+        return formattedTime ? `${formattedDate} a las ${formattedTime}` : formattedDate;
+    };
+
     const getDaysUntilDue = (dueDate) => {
         const todayMidnight = new Date();
         todayMidnight.setHours(0, 0, 0, 0);
+
         const dueMidnight = createLocalDate(dueDate);
+
         const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -413,249 +1539,35 @@ const AcademicTaskManager = () => {
         return `${diffDays} días restantes`;
     };
 
-    return (
-        <div className="min-h-screen bg-gray-200">
-            {/* Header */}
-            <div className="bg-white shadow-lg w-full py-4 sm:py-6 mb-6">
-                <div className="max-w-7xl mx-auto px-3 sm:px-6">
-                    <div className="flex items-start sm:items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                            <div className="text-blue-600">
-                                <IconBook width="28" height="28" />
-                            </div>
-                            <div>
-                                <h1 className="text-xl sm:text-4xl font-bold text-blue-600 leading-tight">
-                                    GESTOR ACADÉMICO
-                                </h1>
-                                <p className="text-xs sm:text-lg text-gray-600">
-                                    Organiza tus tareas académicas
-                                </p>
-                            </div>
-                        </div>
+    // Helper to animate date highlighting in the calendar
+    const animateCalendarDate = async (dateString, highlightClasses, borderColorRgb) => {
+        if (highlightTimeoutRef.current) {
+            clearTimeout(highlightTimeoutRef.current);
+            highlightTimeoutRef.current = null;
+        }
+        setHighlightedCalendarDates([]);
 
-                        <div className="flex-shrink-0 flex items-center space-x-3">
-                            <button
-                                onClick={() => setShowColorLegend(!showColorLegend)}
-                                className="text-gray-600 hover:text-blue-600 p-2 rounded-xl hover:bg-gray-100 transition-colors"
-                                title="Acceso Rápido a Tareas"
-                            >
-                                <IconHamburger width="28" height="28" />
-                            </button>
-                        </div>
-                    </div>
+        setHighlightedCalendarDates([{ date: dateString, classes: highlightClasses, borderColorRgb: borderColorRgb }]);
+        highlightTimeoutRef.current = setTimeout(() => {
+            setHighlightedCalendarDates([]);
+            highlightTimeoutRef.current = null;
+        }, 30000);
+    };
 
-                    {showColorLegend && (
-                        <div className="mt-6 pt-4 border-t border-gray-200">
-                            <h3 className="font-semibold text-blue-600 text-xl sm:text-2xl text-left mb-4">Acceso rápido a tareas</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                <button
-                                    onClick={() => {
-                                        setView('list');
-                                        setShowColorLegend(false);
-                                    }}
-                                    className="block w-full text-left p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-base flex items-center space-x-2"
-                                >
-                                    <IconBook width="20" height="20" />
-                                    <span>Tareas</span>
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
+    // Handle Active Alerts click
+    const handleAlertsClick = async () => {
+        if (highlightTimeoutRef.current) {
+            clearTimeout(highlightTimeoutRef.current);
+            highlightTimeoutRef.current = null;
+        }
+        setHighlightedCalendarDates([]);
+        setOriginTaskForCalendar(null);
 
-            {/* Main content area */}
-            <div className="max-w-7xl mx-auto px-3 sm:px-6">
-                {/* Form section */}
-                <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8 border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300 mt-4">
-                    <button
-                        onClick={() => setShowAddTask(!showAddTask)}
-                        className="w-full flex items-center justify-between text-left mb-4"
-                    >
-                        <h3 className="font-semibold text-blue-600 text-xl sm:text-2xl text-left">
-                            Agregar nueva tarea
-                        </h3>
-                        {showAddTask ? <IconChevronUp /> : <IconChevronDown />}
-                    </button>
-
-                    {showAddTask && (
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                                <input
-                                    type="text"
-                                    placeholder="Asignatura"
-                                    value={newTask.subject}
-                                    onChange={(e) => setNewTask({...newTask, subject: e.target.value})}
-                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Título de la tarea"
-                                    value={newTask.title}
-                                    onChange={(e) => setNewTask({...newTask, title: e.target.value})}
-                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
-                                <select
-                                    value={newTask.type}
-                                    onChange={(e) => setNewTask({...newTask, type: e.target.value})}
-                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                >
-                                    <option value="Tarea">Tarea</option>
-                                    <option value="Examen">Examen</option>
-                                    <option value="Ensayo">Ensayo</option>
-                                    <option value="Proyecto">Proyecto</option>
-                                    <option value="Laboratorio">Laboratorio</option>
-                                </select>
-                                <input
-                                    type="date"
-                                    value={newTask.dueDate}
-                                    onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
-                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
-                                <input
-                                    type="time"
-                                    value={newTask.dueTime}
-                                    onChange={(e) => setNewTask({...newTask, dueTime: e.target.value})}
-                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
-                            </div>
-                            <textarea
-                                placeholder="Descripción (opcional)"
-                                value={newTask.description}
-                                onChange={(e) => setNewTask({...newTask, description: e.target.value})}
-                                rows="3"
-                                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
-                            ></textarea>
-                            <div className="flex space-x-4">
-                                <button
-                                    onClick={addTask}
-                                    className="flex-1 bg-blue-600 text-white rounded-xl px-4 py-3 hover:bg-blue-700 flex items-center justify-center space-x-2 text-lg font-medium"
-                                >
-                                    <IconPlus width="20" height="20" />
-                                    <span>Agregar</span>
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                {/* Task List */}
-                <div id="taskListSection" className="space-y-6">
-                    <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-8 mb-4 sm:mb-8 mt-6 sm:mt-8">
-                        <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-4 sm:mb-8">Lista de tareas</h2>
-                    </div>
-                    
-                    {tasks.map(task => {
-                        const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-                        const cardStyle = getTaskCardStyle(status, task.completed);
-                        const isExpanded = expandedTasks.has(task.id);
-
-                        return (
-                            <div
-                                key={task.id}
-                                className={`rounded-xl shadow-lg border-l-8 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} ${
-                                    isExpanded ? 'p-4 sm:p-8' : 'p-2 sm:p-4'
-                                }`}
-                            >
-                                {/* Compact view */}
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-3 flex-1">
-                                        <button
-                                            onClick={() => toggleTask(task.id)}
-                                            className={`w-5 h-5 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                                                task.completed
-                                                    ? 'bg-green-500 border-green-500 text-white'
-                                                    : 'border-gray-300 hover:border-gray-400'
-                                            }`}
-                                        >
-                                            {task.completed && <IconCheck width="14" height="14" />}
-                                        </button>
-
-                                        <div className="flex-1 min-w-0">
-                                            <h3 className={`font-semibold text-sm sm:text-base ${
-                                                task.completed ? 'line-through text-gray-500' : 
-                                                status === 'overdue' ? 'line-through text-gray-700' : 'text-gray-900'
-                                            }`}>
-                                                {task.subject}: {task.title}
-                                            </h3>
-                                            <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500">
-                                                <span>📅 {formatDate(task.dueDate)}</span>
-                                                <span>⏰ {getDaysUntilDue(task.dueDate)}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <button
-                                        onClick={() => toggleTaskExpansion(task.id)}
-                                        className="text-gray-400 hover:text-gray-600 p-1"
-                                    >
-                                        {isExpanded ? <IconChevronUp width="20" height="20" /> : <IconChevronDown width="20" height="20" />}
-                                    </button>
-                                </div>
-
-                                {/* Expanded view */}
-                                {isExpanded && (
-                                    <div className="mt-4 pt-4 border-t border-gray-200">
-                                        <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-3">
-                                            <div className="flex items-center space-x-3">
-                                                <span className="text-sm bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                                                    {task.type}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        {task.description && (
-                                            <p className="text-gray-600 text-sm sm:text-base mb-3">{task.description}</p>
-                                        )}
-
-                                        <div className="flex items-center justify-end space-x-2">
-                                            <button
-                                                onClick={() => deleteTask(task.id)}
-                                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-xl transition-colors"
-                                                title="Eliminar tarea"
-                                            >
-                                                <IconTrash width="18" height="18" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-
-                {/* Footer */}
-                <div className="mt-8 sm:mt-10 bg-white rounded-xl shadow-lg p-4 sm:p-6">
-                    <div className="text-center text-gray-600 space-y-2">
-                        <div className="border-b border-gray-200 pb-2">
-                            <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p>
-                            <p className="text-xs text-gray-700">
-                                Realizado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span>
-                            </p>
-                            <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Custom dialogs */}
-                <CustomAlertDialog
-                    message={alertDialogMessage}
-                    isOpen={isAlertDialogOpen}
-                    onClose={handleAlertDialogClose}
-                />
-
-                <CustomConfirmDialog
-                    message={confirmDialogMessage}
-                    isOpen={isConfirmDialogOpen}
-                    onConfirm={handleConfirmDialogConfirm}
-                    onCancel={handleConfirmDialogCancel}
-                />
-            </div>
-        </div>
-    );
-};
-
-// Use createRoot for React 18 to render the application
-const container = document.getElementById('root');
-const root = ReactDOM.createRoot(container);
-root.render(<AcademicTaskManager />);
+        setView('calendar');
+        
+        setTimeout(() => {
+            const calendarSection = document.getElementById('calendarSection');
+            if (calendarSection) {
+                calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        },
