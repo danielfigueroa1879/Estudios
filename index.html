@@ -637,7 +637,7 @@
                     setNewTask({ subject: '', title: '', description: '', dueDate: '', dueTime: '', type: 'Tarea' });
                     showAlert("Tarea agregada con éxito.");
                 }
-                setShowAddTask(false);
+                setShowAddTask(false); // Cierra el formulario después de enviar
             };
 
             // Maneja la eliminación de una tarea
@@ -740,7 +740,6 @@
                         days.push(<div key={`empty-${i}`} className="p-2 text-center text-gray-400"></div>);
                     }
 
-                    // Renderiza cada día del mes
                     for (let day = 1; day <= totalDays; day++) {
                         const date = new Date(currentYear, currentMonth, day);
                         const dateString = date.toISOString().split('T')[0];
@@ -1178,9 +1177,15 @@
                                 </button>
                                 <button
                                     onClick={() => {
-                                        setShowAddTask(true);
-                                        setEditingTask(null);
-                                        setNewTask({ subject: '', title: '', description: '', dueDate: '', dueTime: '', type: 'Tarea' });
+                                        // Si el formulario ya está visible, lo ocultamos.
+                                        // Si está oculto, lo mostramos y reiniciamos el estado para una nueva tarea.
+                                        if (showAddTask) {
+                                            setShowAddTask(false);
+                                        } else {
+                                            setShowAddTask(true);
+                                            setEditingTask(null); // Asegura que no estamos en modo edición
+                                            setNewTask({ subject: '', title: '', description: '', dueDate: '', dueTime: '', type: 'Tarea' }); // Resetea el formulario para una nueva tarea
+                                        }
                                     }}
                                     className="p-2 rounded-full bg-blue-500 hover:bg-blue-600 shadow-md transition-colors"
                                     title="Agregar Nueva Tarea"
@@ -1226,7 +1231,7 @@
                                             task={task}
                                             onEdit={(id) => {
                                                 setEditingTask(tasks.find(t => t.id === id));
-                                                setShowAddTask(true);
+                                                setShowAddTask(true); // Abre el formulario en modo edición
                                             }}
                                             onDelete={handleDelete}
                                             onToggleComplete={toggleComplete}
