@@ -21,11 +21,14 @@
     
     <meta name="description" content="Organiza tus tareas académicas de manera eficiente."/>
 
+    <!-- React, ReactDOM, Babel y Tailwind CSS CDN -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -204,6 +207,305 @@
                             </button>
                         </div>
                     </div>
+                </div>
+            );
+        };
+
+        // Helper to create a local date at midnight fromiclopedia-MM-DD
+        const createLocalDate = (dateString) => {
+            const parts = dateString.split('-').map(Number);
+            // Month is 0-indexed in Date constructor
+            return new Date(parts[0], parts[1] - 1, parts[2]);
+        };
+
+        // --- Component for Daily Tasks Card View ---
+        // Moved outside AcademicTaskManager for better React practice and to avoid re-creation on every render.
+        const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, toggleTask, startEditing, deleteTask, handleTaskCardClick }) => {
+            const groupedTasks = tasks.reduce((acc, task) => {
+                const date = task.dueDate;
+                if (!acc[date]) acc[date] = [];
+                acc[date].push(task);
+                return acc;
+            }, {});
+
+            return (
+                <div className="space-y-8" id="dailyTasksSection">
+                    <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
+                        <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-8">Tareas por día</h2>
+                    </div>
+                    
+                    {/* Modified the grid for mobile: from sm:grid-cols-2 to grid-cols-1 */}
+                    {/* On small screens and below, it will now be a single column, making cards less wide vertically. */}
+                    {/* On medium screens and up, it will still show 2 columns, and on large screens, 3 columns. */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                        {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
+                            <div key={date} className="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer">
+                                <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 mb-3 sm:mb-4">
+                                    {formatDate(date)}
+                                </h3>
+                                <div className="space-y-3">
+                                    {dayTasks
+                                        .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')) // Order by time
+                                        .map(task => {
+                                        const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                                        const cardStyle = getTaskCardStyle(status, task.completed);
+                                        return (
+                                            <div
+                                                key={task.id}
+                                                onClick={() => handleTaskCardClick(task)}
+                                                className={`p-3 sm:p-4 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300 cursor-pointer hover:shadow-lg`}
+                                            >
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <div className="flex items-center space-x-2">
+                                                        <IconClock width="20" height="20" />
+                                                        <span className={`text-base px-3 py-1 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>
+                                                            {task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate)}
+                                                        </span>
+                                                    </div>
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
+                                                        className={`w-6 h-6 sm:w-7 sm:h-7 rounded border-2 flex items-center justify-center ${
+                                                            task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300'
+                                                        }`}
+                                                    >
+                                                        {task.completed && <IconCheck width="16" height="16" />}
+                                                    </button>
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-gray-800 text-lg sm:text-xl">{task.subject}</p>
+                                                    <p className="text-base sm:text-lg text-gray-600 mt-1">{task.title}</p>
+                                                    <p className="text-base text-gray-500 mt-2">{task.type}</p>
+                                                </div>
+                                                <div className="flex justify-end mt-4 space-x-2">
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); startEditing(task); }}
+                                                        className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-xl transition-colors"
+                                                        title="Editar tarea"
+                                                    >
+                                                        <IconEdit width="18" height="18" />
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
+                                                        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-xl transition-colors"
+                                                        title="Eliminar tarea"
+                                                    >
+                                                        <IconTrash width="18" height="18" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // Monthly Calendar Component
+        // Moved outside AcademicTaskManager for better React practice and to avoid re-creation on every render.
+        const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, originTaskForCalendar, backToOriginTask, getTaskStatus, chileanHolidays }) => {
+            const year = currentViewDate.getFullYear();
+            const month = currentViewDate.getMonth();
+
+            // Get first day of the month and number of days
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+
+            // Create array of days of the month
+            const daysArray = [];
+
+            // Empty days from previous month (adjusted for Monday as first day)
+            const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
+            for (let i = 0; i < adjustedStartingDay; i++) {
+                daysArray.push(null);
+            }
+
+            // Days of current month
+            for (let day = 1; day <= daysInMonth; day++) {
+                daysArray.push(day);
+            }
+
+            // Group tasks by date
+            const tasksByDate = tasks.reduce((acc, task) => {
+                const taskDate = createLocalDate(task.dueDate);
+                if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
+                    const day = taskDate.getDate();
+                    if (!acc[day]) acc[day] = [];
+                    acc[day].push(task);
+                }
+                return acc;
+            }, {});
+
+            const monthNames = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+
+            // Day names with Sat and Sun in red
+            const dayNames = [
+                'Lun', 'Mar', 'Mié', 'Jue', 'Vie',
+                <span key="sab" className="text-red-600">Sáb</span>,
+                <span key="dom" className="text-red-600">Dom</span>
+            ];
+
+            // Update parent component's state
+            const goToPreviousMonth = () => {
+                setCurrentViewDate(new Date(year, month - 1, 1));
+            };
+
+            const goToNextMonth = () => {
+                setCurrentViewDate(new Date(year, month + 1, 1));
+            };
+
+            const goToToday = () => {
+                setCurrentViewDate(todayGlobal); // Use global today instance
+            };
+
+            return (
+                <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 relative border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300">
+                    <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+                        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
+                            {monthNames[month]} {year}
+                        </h2>
+                        <div className="flex space-x-2">
+                            <button
+                                onClick={goToPreviousMonth}
+                                className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-base"
+                            >
+                                ←
+                            </button>
+                            <button
+                                onClick={goToToday}
+                                className="px-4 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-base"
+                            >
+                                Hoy
+                            </button>
+                            <button
+                                onClick={goToNextMonth}
+                                className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-base"
+                            >
+                                →
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Nombres de los días */}
+                    <div className="grid grid-cols-7 gap-1 mb-2">
+                        {dayNames.map((day, index) => (
+                            <div key={index} className="text-center font-semibold text-gray-600 py-2 text-base">
+                                {day}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Días del calendario */}
+                    <div className="grid grid-cols-7 gap-1">
+                        {daysArray.map((day, index) => {
+                            if (!day) {
+                                return <div key={index} className="h-20 sm:h-24"></div>;
+                            }
+
+                            const dayObj = new Date(year, month, day);
+                            const isToday = todayGlobal.getDate() === dayObj.getDate() &&
+                                            todayGlobal.getMonth() === dayObj.getMonth() &&
+                                            todayGlobal.getFullYear() === dayObj.getFullYear();
+                            
+                            const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                            // Check if it's a holiday
+                            const isHoliday = chileanHolidays.includes(currentDayFormatted);
+
+                            const highlightEntry = highlightedDates.find(h => h.date === currentDayFormatted);
+                            const highlightClassesToApply = highlightEntry ? highlightEntry.classes : '';
+                            const highlightBorderColorRgb = highlightEntry ? highlightEntry.borderColorRgb : '';
+
+                            return (
+                                <div
+                                    key={currentDayFormatted}
+                                    className={`h-20 sm:h-24 border border-gray-200 p-1 sm:p-2 transition-all duration-300 ease-in-out ${
+                                        isHoliday ? 'bg-red-50' : ''
+                                    } ${isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50'} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`}
+                                    style={highlightEntry ? {
+                                        '--highlight-color': highlightClassesToApply.match(/border-([\w-]+)-(\d+)/)?.[0].replace('border-', '') || '#3b82f6',
+                                        '--ring-color-rgb': highlightBorderColorRgb
+                                    } : {}}
+                                >
+                                    <div className={`text-sm sm:text-base font-medium ${
+                                        isToday ? 'text-blue-700' : (isHoliday ? 'text-red-600' : 'text-gray-800')
+                                    }`}>
+                                        {day}
+                                    </div>
+
+                                    <div className="mt-1 space-y-0.5">
+                                        {tasksByDate[day] && tasksByDate[day]
+                                            .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')) // Order by time
+                                            .map((task, taskIndex) => {
+                                            const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                                            let bgColor = '';
+                                            let title = '';
+                                            
+                                            switch (status) {
+                                                case 'overdue':
+                                                    bgColor = 'bg-gray-600';
+                                                    title = `${task.subject} - Vencida`;
+                                                    break;
+                                                case 'due-today':
+                                                    bgColor = 'bg-red-400';
+                                                    title = `${task.subject} - Vence hoy`;
+                                                    break;
+                                                case 'due-tomorrow':
+                                                    bgColor = 'bg-orange-400';
+                                                    title = `${task.subject} - Vence mañana`;
+                                                    break;
+                                                case 'due-soon':
+                                                    bgColor = 'bg-yellow-400';
+                                                    title = `${task.subject} - Por vencer`;
+                                                    break;
+                                                case 'completed':
+                                                    bgColor = 'bg-gray-400';
+                                                    title = `${task.subject} - Completada`;
+                                                    break;
+                                                default:
+                                                    bgColor = 'bg-green-400';
+                                                    title = `${task.subject} - A tiempo`;
+                                            }
+                                            
+                                            if (task.dueTime) {
+                                                title += ` - ${task.dueTime}`;
+                                            }
+                                            
+                                            return (
+                                                <div 
+                                                    key={`${task.id}-${taskIndex}`}
+                                                    className={`w-full h-1.5 ${bgColor} rounded text-xs text-white text-center leading-none`} 
+                                                    title={title}
+                                                >
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    <div className="mt-4 text-sm text-gray-600 text-center">
+                        Cada barra de color representa una tarea individual. Si hay múltiples tareas el mismo día, verás múltiples barras ordenadas por horario.
+                    </div>
+
+                    {/* Botón Volver a la Tarea (condicional) */}
+                    {originTaskForCalendar && (
+                        <button
+                            onClick={backToOriginTask}
+                            className="absolute bottom-4 right-4 p-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors flex items-center justify-center z-10"
+                            title="Volver a la tarea original"
+                        >
+                            <IconArrowBack width="24" height="24" />
+                        </button>
+                    )}
                 </div>
             );
         };
@@ -425,13 +727,6 @@
             useEffect(() => {
                 saveSettingsToStorage(view, emailNotifications);
             }, [view, emailNotifications]); // Added emailNotifications to dependency array
-
-            // Helper to create a local date at midnight fromiclopedia-MM-DD
-            const createLocalDate = (dateString) => {
-                const parts = dateString.split('-').map(Number);
-                // Month is 0-indexed in Date constructor
-                return new Date(parts[0], parts[1] - 1, parts[2]);
-            };
 
             // Function to calculate task status based on current date and time
             const getTaskStatus = (dueDate, dueTime, completed) => {
@@ -746,7 +1041,7 @@
                     let highlightClasses = '';
                     let borderColorRgb = '';
                     if (taskForColor) {
-                        const status = getTaskStatus(taskForColor.dueDate, taskForColor.dueTime, taskForColor.completed);
+                        const status = getTaskStatus(taskForColor.dueDate, task.dueTime, task.completed);
                         const style = getTaskCardStyle(status, taskForColor.completed);
                         highlightClasses = style.highlightClass;
                         borderColorRgb = style.borderColorRgb;
@@ -821,88 +1116,6 @@
                 }
             };
 
-
-            // --- Component for Daily Tasks Card View ---
-            const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, toggleTask, startEditing, deleteTask }) => {
-                const groupedTasks = tasks.reduce((acc, task) => {
-                    const date = task.dueDate;
-                    if (!acc[date]) acc[date] = [];
-                    acc[date].push(task);
-                    return acc;
-                }, {});
-
-                return (
-                    <div className="space-y-8" id="dailyTasksSection">
-                        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8">
-                            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-8">Tareas por día</h2>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                            {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
-                                <div key={date} className="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer">
-                                    <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 mb-3 sm:mb-4">
-                                        {formatDate(date)}
-                                    </h3>
-                                    <div className="space-y-3">
-                                        {dayTasks
-                                            .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')) // Order by time
-                                            .map(task => {
-                                            const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-                                            const cardStyle = getTaskCardStyle(status, task.completed);
-                                            return (
-                                                <div
-                                                    key={task.id}
-                                                    onClick={() => handleTaskCardClick(task)}
-                                                    className={`p-3 sm:p-4 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300 cursor-pointer hover:shadow-lg`}
-                                                >
-                                                    <div className="flex items-center justify-between mb-3">
-                                                        <div className="flex items-center space-x-2">
-                                                            <IconClock width="20" height="20" />
-                                                            <span className={`text-base px-3 py-1 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>
-                                                                {task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate)}
-                                                            </span>
-                                                        </div>
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
-                                                            className={`w-6 h-6 sm:w-7 sm:h-7 rounded border-2 flex items-center justify-center ${
-                                                                task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300'
-                                                            }`}
-                                                        >
-                                                            {task.completed && <IconCheck width="16" height="16" />}
-                                                        </button>
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-medium text-gray-800 text-lg sm:text-xl">{task.subject}</p>
-                                                        <p className="text-base sm:text-lg text-gray-600 mt-1">{task.title}</p>
-                                                        <p className="text-base text-gray-500 mt-2">{task.type}</p>
-                                                    </div>
-                                                    <div className="flex justify-end mt-4 space-x-2">
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); startEditing(task); }}
-                                                            className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-xl transition-colors"
-                                                            title="Editar tarea"
-                                                        >
-                                                            <IconEdit width="18" height="18" />
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
-                                                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-xl transition-colors"
-                                                            title="Eliminar tarea"
-                                                        >
-                                                            <IconTrash width="18" height="18" />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                );
-            };
-
             // Simplified calendar view
             const CalendarView = ({ highlightedDates, chileanHolidays }) => { // Pass chileanHolidays
                 return (
@@ -922,213 +1135,8 @@
                             backToOriginTask={backToOriginTask}
                             getTaskStatus={getTaskStatus}
                             chileanHolidays={chileanHolidays} // Pass chileanHolidays
+                            createLocalDate={createLocalDate} // Pass createLocalDate
                         />
-                    </div>
-                );
-            };
-
-            // Monthly Calendar Component
-            const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, originTaskForCalendar, backToOriginTask, getTaskStatus, chileanHolidays }) => {
-                const year = currentViewDate.getFullYear();
-                const month = currentViewDate.getMonth();
-
-                // Get first day of the month and number of days
-                const firstDay = new Date(year, month, 1);
-                const lastDay = new Date(year, month + 1, 0);
-                const daysInMonth = lastDay.getDate();
-                const startingDayOfWeek = firstDay.getDay();
-
-                // Create array of days of the month
-                const daysArray = [];
-
-                // Empty days from previous month (adjusted for Monday as first day)
-                const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
-                for (let i = 0; i < adjustedStartingDay; i++) {
-                    daysArray.push(null);
-                }
-
-                // Days of current month
-                for (let day = 1; day <= daysInMonth; day++) {
-                    daysArray.push(day);
-                }
-
-                // Group tasks by date
-                const tasksByDate = tasks.reduce((acc, task) => {
-                    const taskDate = createLocalDate(task.dueDate);
-                    if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
-                        const day = taskDate.getDate();
-                        if (!acc[day]) acc[day] = [];
-                        acc[day].push(task);
-                    }
-                    return acc;
-                }, {});
-
-                const monthNames = [
-                    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-                ];
-
-                // Day names with Sat and Sun in red
-                const dayNames = [
-                    'Lun', 'Mar', 'Mié', 'Jue', 'Vie',
-                    <span key="sab" className="text-red-600">Sáb</span>,
-                    <span key="dom" className="text-red-600">Dom</span>
-                ];
-
-                // Update parent component's state
-                const goToPreviousMonth = () => {
-                    setCurrentViewDate(new Date(year, month - 1, 1));
-                };
-
-                const goToNextMonth = () => {
-                    setCurrentViewDate(new Date(year, month + 1, 1));
-                };
-
-                const goToToday = () => {
-                    setCurrentViewDate(todayGlobal); // Use global today instance
-                };
-
-                return (
-                    <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 relative border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300">
-                        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
-                                {monthNames[month]} {year}
-                            </h2>
-                            <div className="flex space-x-2">
-                                <button
-                                    onClick={goToPreviousMonth}
-                                    className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-base"
-                                >
-                                    ←
-                                </button>
-                                <button
-                                    onClick={goToToday}
-                                    className="px-4 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-base"
-                                >
-                                    Hoy
-                                </button>
-                                <button
-                                    onClick={goToNextMonth}
-                                    className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-base"
-                                >
-                                    →
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Nombres de los días */}
-                        <div className="grid grid-cols-7 gap-1 mb-2">
-                            {dayNames.map((day, index) => (
-                                <div key={index} className="text-center font-semibold text-gray-600 py-2 text-base">
-                                    {day}
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Días del calendario */}
-                        <div className="grid grid-cols-7 gap-1">
-                            {daysArray.map((day, index) => {
-                                if (!day) {
-                                    return <div key={index} className="h-20 sm:h-24"></div>;
-                                }
-
-                                const dayObj = new Date(year, month, day);
-                                const isToday = todayGlobal.getDate() === dayObj.getDate() &&
-                                                todayGlobal.getMonth() === dayObj.getMonth() &&
-                                                todayGlobal.getFullYear() === dayObj.getFullYear();
-                                
-                                const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-                                // Check if it's a holiday
-                                const isHoliday = chileanHolidays.includes(currentDayFormatted);
-
-                                const highlightEntry = highlightedDates.find(h => h.date === currentDayFormatted);
-                                const highlightClassesToApply = highlightEntry ? highlightEntry.classes : '';
-                                const highlightBorderColorRgb = highlightEntry ? highlightEntry.borderColorRgb : '';
-
-                                return (
-                                    <div
-                                        key={currentDayFormatted}
-                                        className={`h-20 sm:h-24 border border-gray-200 p-1 sm:p-2 transition-all duration-300 ease-in-out ${
-                                            isHoliday ? 'bg-red-50' : ''
-                                        } ${isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50'} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`}
-                                        style={highlightEntry ? {
-                                            '--highlight-color': highlightClassesToApply.match(/border-([\w-]+)-(\d+)/)?.[0].replace('border-', '') || '#3b82f6',
-                                            '--ring-color-rgb': highlightBorderColorRgb
-                                        } : {}}
-                                    >
-                                        <div className={`text-sm sm:text-base font-medium ${
-                                            isToday ? 'text-blue-700' : (isHoliday ? 'text-red-600' : 'text-gray-800')
-                                        }`}>
-                                            {day}
-                                        </div>
-
-                                        <div className="mt-1 space-y-0.5">
-                                            {tasksByDate[day] && tasksByDate[day]
-                                                .sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')) // Order by time
-                                                .map((task, taskIndex) => {
-                                                const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-                                                let bgColor = '';
-                                                let title = '';
-                                                
-                                                switch (status) {
-                                                    case 'overdue':
-                                                        bgColor = 'bg-gray-600';
-                                                        title = `${task.subject} - Vencida`;
-                                                        break;
-                                                    case 'due-today':
-                                                        bgColor = 'bg-red-400';
-                                                        title = `${task.subject} - Vence hoy`;
-                                                        break;
-                                                    case 'due-tomorrow':
-                                                        bgColor = 'bg-orange-400';
-                                                        title = `${task.subject} - Vence mañana`;
-                                                        break;
-                                                    case 'due-soon':
-                                                        bgColor = 'bg-yellow-400';
-                                                        title = `${task.subject} - Por vencer`;
-                                                        break;
-                                                    case 'completed':
-                                                        bgColor = 'bg-gray-400';
-                                                        title = `${task.subject} - Completada`;
-                                                        break;
-                                                    default:
-                                                        bgColor = 'bg-green-400';
-                                                        title = `${task.subject} - A tiempo`;
-                                                }
-                                                
-                                                if (task.dueTime) {
-                                                    title += ` - ${task.dueTime}`;
-                                                }
-                                                
-                                                return (
-                                                    <div 
-                                                        key={`${task.id}-${taskIndex}`}
-                                                        className={`w-full h-1.5 ${bgColor} rounded text-xs text-white text-center leading-none`} 
-                                                        title={title}
-                                                    >
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-
-                        <div className="mt-4 text-sm text-gray-600 text-center">
-                            Cada barra de color representa una tarea individual. Si hay múltiples tareas el mismo día, verás múltiples barras ordenadas por horario.
-                        </div>
-
-                        {/* Botón Volver a la Tarea (condicional) */}
-                        {originTaskForCalendar && (
-                            <button
-                                onClick={backToOriginTask}
-                                className="absolute bottom-4 right-4 p-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors flex items-center justify-center z-10"
-                                title="Volver a la tarea original"
-                            >
-                                <IconArrowBack width="24" height="24" />
-                            </button>
-                        )}
                     </div>
                 );
             };
@@ -1582,6 +1590,7 @@
                                 toggleTask={toggleTask}
                                 startEditing={startEditing}
                                 deleteTask={deleteTask}
+                                handleTaskCardClick={handleTaskCardClick} // ¡Propiedad agregada aquí!
                             />
                         ) : (
                             <CalendarView highlightedDates={highlightedCalendarDates} chileanHolidays={chileanHolidays} />
@@ -1638,3 +1647,4 @@
     </script>
 </body>
 </html>
+
