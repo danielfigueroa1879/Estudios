@@ -608,8 +608,10 @@
             const handleChange = (e) => {
                 const { name, value } = e.target;
                 if (editingTask) {
+                    // Si estamos editando, actualiza el estado de editingTask
                     setEditingTask({ ...editingTask, [name]: value });
                 } else {
+                    // Si estamos añadiendo, actualiza el estado de newTask
                     setNewTask({ ...newTask, [name]: value });
                 }
             };
@@ -620,7 +622,7 @@
                 if (editingTask) {
                     // Actualiza tarea existente
                     setTasks(tasks.map(task => task.id === editingTask.id ? { ...editingTask, completed: editingTask.completed || false } : task));
-                    setEditingTask(null);
+                    setEditingTask(null); // Resetea editingTask
                     showAlert("Tarea actualizada con éxito.");
                 } else {
                     // Añade nueva tarea
@@ -1177,13 +1179,13 @@
                                 </button>
                                 <button
                                     onClick={() => {
-                                        // Si el formulario ya está visible, lo ocultamos.
-                                        // Si está oculto, lo mostramos y reiniciamos el estado para una nueva tarea.
-                                        if (showAddTask) {
+                                        // Si el formulario ya está visible o estamos editando una tarea, lo cerramos y reseteamos el estado.
+                                        // Si está oculto, lo mostramos y reseteamos el estado para una nueva tarea.
+                                        if (showAddTask || editingTask) {
                                             setShowAddTask(false);
+                                            setEditingTask(null);
                                         } else {
                                             setShowAddTask(true);
-                                            setEditingTask(null); // Asegura que no estamos en modo edición
                                             setNewTask({ subject: '', title: '', description: '', dueDate: '', dueTime: '', type: 'Tarea' }); // Resetea el formulario para una nueva tarea
                                         }
                                     }}
@@ -1215,6 +1217,9 @@
                     <main className="flex-grow container mx-auto p-4 sm:p-6">
                         {showAddTask || editingTask ? (
                             <TaskForm
+                                // La clave ayuda a React a mantener la instancia del formulario en el DOM
+                                // lo que puede ayudar a mantener el foco en los inputs al editar.
+                                key={editingTask ? editingTask.id : 'new-task-form'}
                                 task={editingTask || newTask}
                                 onChange={handleChange}
                                 onSubmit={handleSubmit}
