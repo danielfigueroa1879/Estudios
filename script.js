@@ -933,26 +933,29 @@ const AcademicTaskManager = () => {
             // Changed bg-white to bg-blue-50 for the outer calendar container
             <div className="bg-blue-50 rounded-2xl shadow-lg p-4 sm:p-6 relative border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-                    {/* Adjusted text size for month/year title */}
+                    {/* Adjusted text size for month/year title: text-lg for mobile, sm:text-2xl for larger screens */}
                     <h2 className="text-lg sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-0">
                         {monthNames[month]} {year}
                     </h2>
                     <div className="flex space-x-2">
                         <button
                             onClick={goToPreviousMonth}
-                            className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-xs" /* Adjusted text size */
+                            // Adjusted text size for navigation buttons: text-xs for mobile, sm:text-base for larger screens
+                            className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-xs sm:text-base"
                         >
                             ←
                         </button>
                         <button
                             onClick={goToToday}
-                            className="px-4 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-xs" /* Adjusted text size */
+                            // Adjusted text size for navigation buttons: text-xs for mobile, sm:text-base for larger screens
+                            className="px-4 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-xs sm:text-base"
                         >
                             Hoy
                         </button>
                         <button
                             onClick={goToNextMonth}
-                            className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-xs" /* Adjusted text size */
+                            // Adjusted text size for navigation buttons: text-xs for mobile, sm:text-base for larger screens
+                            className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-xs sm:text-base"
                         >
                             →
                         </button>
@@ -972,7 +975,7 @@ const AcademicTaskManager = () => {
                 <div className="grid grid-cols-7 gap-1">
                     {daysArray.map((day, index) => {
                         if (!day) {
-                            return <div key={index} className="h-[4.5rem] sm:h-[6rem]"></div>; /* Adjusted height */
+                            return <div key={index} className="h-[4.5rem] sm:h-[6rem]"></div>; /* Adjusted height for mobile and desktop */
                         }
 
                         const dayObj = new Date(year, month, day);
@@ -1060,7 +1063,7 @@ const AcademicTaskManager = () => {
                     })}
                 </div>
 
-                {/* Modified text size for the descriptive text */}
+                {/* Modified text size for the descriptive text: text-xs for all screens */}
                 <div className="mt-4 text-xs text-gray-600 text-center">
                     Cada barra de color representa una tarea individual. Si hay múltiples tareas el mismo día, verás múltiples barras ordenadas por horario.
                 </div>
@@ -1356,4 +1359,3 @@ const AcademicTaskManager = () => {
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 root.render(<AcademicTaskManager />);
-
