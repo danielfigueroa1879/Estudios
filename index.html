@@ -56,7 +56,7 @@
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-900 text-gray-100 sm:bg-gray-200 sm:text-gray-900">
     <div id="root"></div>
 
     <script type="text/babel">
@@ -169,9 +169,9 @@
             if (!isOpen) return null;
             return (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-blue-500">
+                    <div className="bg-gray-800 rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-blue-500 sm:bg-white">
                         <IconAlert width="40" height="40" className="text-blue-500 mx-auto mb-4" />
-                        <p className="text-lg text-gray-800 mb-6">{message}</p>
+                        <p className="text-gray-100 text-lg mb-6 sm:text-gray-800">{message}</p>
                         <button
                             onClick={onClose}
                             className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors text-lg font-medium"
@@ -187,9 +187,9 @@
             if (!isOpen) return null;
             return (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-red-500">
+                    <div className="bg-gray-800 rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-red-500 sm:bg-white">
                         <IconTrash width="40" height="40" className="text-red-500 mx-auto mb-4" />
-                        <p className="text-lg text-gray-800 mb-6">{message}</p>
+                        <p className="text-gray-100 text-lg mb-6 sm:text-gray-800">{message}</p>
                         <div className="flex space-x-4">
                             <button
                                 onClick={onCancel}
@@ -470,66 +470,85 @@
                 return 'on-time'; // On time
             };
 
-            // Function to get task card styles based on status
+            // Function to get task card styles based on status (mobile-first dark mode)
             const getTaskCardStyle = (status, completed) => {
                 let baseStyles = {};
                 let highlightClass = '';
                 let borderColorRgb = '0,0,0'; // Default black for calculation
 
+                // Mobile-first dark theme colors
+                const darkBgColors = {
+                    'completed': 'bg-gray-700',
+                    'overdue': 'bg-red-900', // Keep red for overdue, but darker
+                    'due-today': 'bg-red-700',
+                    'due-tomorrow': 'bg-orange-700',
+                    'due-soon': 'bg-yellow-700',
+                    'on-time': 'bg-green-700'
+                };
+
+                const darkTextColors = {
+                    'completed': 'text-gray-300',
+                    'overdue': 'text-red-100',
+                    'due-today': 'text-red-100',
+                    'due-tomorrow': 'text-orange-100',
+                    'due-soon': 'text-yellow-100',
+                    'on-time': 'text-green-100'
+                };
+
+                // Desktop light theme colors (sm: prefix)
+                const lightBgColors = {
+                    'completed': 'sm:bg-gray-50',
+                    'overdue': 'sm:bg-gray-100', // Revert to light gray for overdue on desktop
+                    'due-today': 'sm:bg-red-50',
+                    'due-tomorrow': 'sm:bg-orange-50',
+                    'due-soon': 'sm:bg-yellow-50',
+                    'on-time': 'sm:bg-green-50'
+                };
+
+                const lightTextColors = {
+                    'completed': 'sm:text-gray-600',
+                    'overdue': 'sm:text-gray-800',
+                    'due-today': 'sm:text-red-800',
+                    'due-tomorrow': 'sm:text-orange-800',
+                    'due-soon': 'sm:text-yellow-800',
+                    'on-time': 'sm:text-green-800'
+                };
+
+                // Apply mobile-first dark colors
+                baseStyles.bg = darkBgColors[completed ? 'completed' : status];
+                baseStyles.text = darkTextColors[completed ? 'completed' : status];
+                baseStyles.border = darkBgColors[completed ? 'completed' : status].replace('bg-', 'border-'); // Assuming border matches bg for now
+
+                // Apply light mode overrides for larger screens
+                baseStyles.bg += ' ' + lightBgColors[completed ? 'completed' : status];
+                baseStyles.text += ' ' + lightTextColors[completed ? 'completed' : status];
+                baseStyles.border += ' ' + lightBgColors[completed ? 'completed' : status].replace('sm:bg-', 'sm:border-');
+
+                // Handle highlight class (could be simplified with conditional dark variants too, but let's focus on base colors)
                 if (completed) {
-                    baseStyles = {
-                        bg: 'bg-gray-50',
-                        border: 'border-gray-300',
-                        text: 'text-gray-600',
-                    };
-                    highlightClass = 'border-gray-500 ring-2 ring-gray-500 shadow-md';
+                    highlightClass = 'border-gray-500 ring-2 ring-gray-500 shadow-md sm:border-gray-500 sm:ring-2 sm:ring-gray-500';
                     borderColorRgb = '107,114,128'; // gray-500
                 } else {
                     switch (status) {
                         case 'overdue':
-                            baseStyles = {
-                                bg: 'bg-gray-100',
-                                border: 'border-gray-500',
-                                text: 'text-gray-800',
-                            };
-                            highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md';
+                            highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md sm:border-gray-600 sm:ring-2 sm:ring-gray-600';
                             borderColorRgb = '75,85,99'; // gray-600
                             break;
                         case 'due-today':
-                            baseStyles = {
-                                bg: 'bg-red-50',
-                                border: 'border-red-500',
-                                text: 'text-red-800',
-                            };
-                            highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
+                            highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md sm:border-red-500 sm:ring-2 sm:ring-red-500';
                             borderColorRgb = '239,68,68'; // red-500
                             break;
                         case 'due-tomorrow':
-                            baseStyles = {
-                                bg: 'bg-orange-50',
-                                border: 'border-orange-400',
-                                text: 'text-orange-800',
-                            };
-                            highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
+                            highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md sm:border-orange-500 sm:ring-2 sm:ring-orange-500';
                             borderColorRgb = '249,115,22'; // orange-500
                             break;
                         case 'due-soon':
-                            baseStyles = {
-                                bg: 'bg-yellow-50',
-                                border: 'border-yellow-400',
-                                text: 'text-yellow-800',
-                            };
-                            highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
+                            highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md sm:border-yellow-500 sm:ring-2 sm:ring-yellow-500';
                             borderColorRgb = '245,158,11'; // yellow-500
                             break;
                         case 'on-time':
                         default:
-                            baseStyles = {
-                                bg: 'bg-green-50',
-                                border: 'border-green-400',
-                                text: 'text-green-800',
-                            };
-                            highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
+                            highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md sm:border-green-500 sm:ring-2 sm:ring-green-500';
                             borderColorRgb = '34,197,94'; // green-500
                             break;
                     }
@@ -859,13 +878,13 @@
 
                 return (
                     // Daily Tasks Card View Container
-                    <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6" id="dailyTasksSection"> {/* Main container with styling */}
+                    <div className="bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 sm:bg-white" id="dailyTasksSection"> {/* Main container with styling */}
                         <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-6">Tareas por día</h2>
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                             {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
-                                <div key={date} className="bg-white rounded-xl shadow-lg p-2.5 sm:p-5 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer">
-                                    <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 mb-2 sm:mb-3">
+                                <div key={date} className="rounded-xl shadow-lg p-2.5 sm:p-5 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer">
+                                    <h3 className="font-semibold text-gray-100 text-xl sm:text-2xl sm:text-gray-800 mb-2 sm:mb-3">
                                         {formatDate(date)}
                                     </h3>
                                     <div className="space-y-1"> {/* Reduced space-y */}
@@ -878,7 +897,7 @@
                                                 <div
                                                     key={task.id}
                                                     onClick={() => handleTaskCardClick(task)}
-                                                    className={`p-1.5 sm:p-3 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300 cursor-pointer hover:shadow-lg`}
+                                                    className={`p-1.5 sm:p-3 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} ${cardStyle.text} transition-all duration-300 cursor-pointer hover:shadow-lg`}
                                                 >
                                                     <div className="flex items-center justify-between mb-2">
                                                         <div className="flex items-center space-x-1">
@@ -897,9 +916,9 @@
                                                         </button>
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-sm sm:text-lg text-gray-800">{task.subject}</p> {/* Adjusted text size */}
-                                                        <p className="text-xs sm:text-base text-gray-600 mt-0.5">{task.title}</p> {/* Adjusted text size */}
-                                                        <p className="text-xs text-gray-500 mt-1">{task.type}</p> {/* Adjusted text size */}
+                                                        <p className="font-medium text-sm sm:text-lg">{task.subject}</p> {/* Adjusted text size */}
+                                                        <p className="text-xs sm:text-base mt-0.5">{task.title}</p> {/* Adjusted text size */}
+                                                        <p className="text-xs mt-1">{task.type}</p> {/* Adjusted text size */}
                                                     </div>
                                                     <div className="flex justify-end mt-3 space-x-1">
                                                         <button
@@ -932,7 +951,7 @@
             const CalendarView = ({ highlightedDates, chileanHolidays, originTaskForCalendar, backToOriginTask }) => {
                 return (
                     // Calendar View Container
-                    <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative" id="calendarSection"> {/* Added relative for absolute positioning of back button */}
+                    <div className="bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative sm:bg-white" id="calendarSection"> {/* Added relative for absolute positioning of back button */}
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left">Calendario</h2>
                             {/* Botón Volver a la Tarea (condicional) - Always absolute top-right, now inside CalendarView */}
@@ -1053,7 +1072,7 @@
                         {/* Nombres de los días */}
                         <div className="grid grid-cols-7 gap-0.5 mb-1">
                             {dayNames.map((day, index) => (
-                                <div key={index} className="text-center font-semibold text-gray-600 py-1 text-sm">
+                                <div key={index} className="text-center font-semibold text-gray-300 sm:text-gray-600 py-1 text-sm">
                                     {day}
                                 </div>
                             ))}
@@ -1082,16 +1101,16 @@
                                 return (
                                     <div
                                         key={currentDayFormatted}
-                                        className={`h-14 sm:h-20 lg:h-28 border border-gray-200 p-0.5 sm:p-1 transition-all duration-300 ease-in-out ${ /* Adjusted height for desktop */
-                                            isHoliday ? 'bg-red-50' : ''
-                                        } ${isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50'} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`}
+                                        className={`h-14 sm:h-20 lg:h-28 border border-gray-700 sm:border-gray-200 p-0.5 sm:p-1 transition-all duration-300 ease-in-out ${ /* Adjusted border for dark mode */
+                                            isHoliday ? 'bg-red-800 sm:bg-red-50' : ''
+                                        } ${isToday ? 'bg-blue-800 sm:bg-blue-50 border-blue-600 sm:border-blue-500' : 'bg-gray-800 sm:bg-white hover:bg-gray-700 sm:hover:bg-gray-50'} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`}
                                         style={highlightEntry ? {
                                             '--highlight-color': highlightClassesToApply.match(/border-([\w-]+)-(\d+)/)?.[0].replace('border-', '') || '#3b82f6',
                                             '--ring-color-rgb': highlightBorderColorRgb
                                         } : {}}
                                     >
                                         <div className={`text-xs sm:text-sm font-medium ${
-                                            isToday ? 'text-blue-700' : (isHoliday ? 'text-red-600' : 'text-gray-800')
+                                            isToday ? 'text-blue-300 sm:text-blue-700' : (isHoliday ? 'text-red-200 sm:text-red-600' : 'text-gray-100 sm:text-gray-800')
                                         }`}>
                                             {day}
                                         </div>
@@ -1110,23 +1129,23 @@
                                                         title = `${task.subject} - Vencida`;
                                                         break;
                                                     case 'due-today':
-                                                        bgColor = 'bg-red-400';
+                                                        bgColor = 'bg-red-600';
                                                         title = `${task.subject} - Vence hoy`;
                                                         break;
                                                     case 'due-tomorrow':
-                                                        bgColor = 'bg-orange-400';
+                                                        bgColor = 'bg-orange-600';
                                                         title = `${task.subject} - Vence mañana`;
                                                         break;
                                                     case 'due-soon':
-                                                        bgColor = 'bg-yellow-400';
+                                                        bgColor = 'bg-yellow-600';
                                                         title = `${task.subject} - Por vencer`;
                                                         break;
                                                     case 'completed':
-                                                        bgColor = 'bg-gray-400';
+                                                        bgColor = 'bg-gray-500';
                                                         title = `${task.subject} - Completada`;
                                                         break;
                                                     default:
-                                                        bgColor = 'bg-green-400';
+                                                        bgColor = 'bg-green-600';
                                                         title = `${task.subject} - A tiempo`;
                                                 }
                                                 
@@ -1153,7 +1172,7 @@
             };
 
             return (
-                <div className="min-h-screen bg-gray-200">
+                <div className="min-h-screen bg-gray-900 sm:bg-gray-200"> {/* Base background: dark on mobile, light on desktop */}
                     {/* Contenedor del Encabezado (ancho completo) */}
                     <div className="bg-blue-700 shadow-lg w-full py-4 sm:py-4 mb-5"> {/* Fondo azul, increased py-4 for mobile */}
                         <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Contenido centrado dentro del encabezado */}
@@ -1219,8 +1238,8 @@
 
                             {/* Acceso Rápido a Tareas - Conditionally rendered */}
                             {showColorLegend && (
-                                <div className="mt-4 pt-3 border-t border-gray-200">
-                                    <h3 className="font-semibold text-blue-600 text-lg sm:text-xl text-left mb-3">Acceso rápido a tareas</h3>
+                                <div className="mt-4 pt-3 border-t border-gray-700 sm:border-gray-200"> {/* Border adjusts for dark/light */}
+                                    <h3 className="font-semibold text-blue-300 text-lg sm:text-xl text-left mb-3 sm:text-blue-600">Acceso rápido a tareas</h3> {/* Text adjusts */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
                                         <button
                                             onClick={() => {
@@ -1234,7 +1253,7 @@
                                                     }
                                                 }, 0);
                                             }}
-                                            className="block w-full text-left p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-sm flex items-center space-x-1.5"
+                                            className="block w-full text-left p-2.5 rounded-xl bg-blue-900 hover:bg-blue-800 transition-colors text-blue-200 font-medium text-sm flex items-center space-x-1.5 sm:bg-blue-50 sm:hover:bg-blue-100 sm:text-blue-800"
                                         >
                                             <IconBook width="18" height="18" />
                                             <span>Tareas</span>
@@ -1252,7 +1271,7 @@
                                                     }
                                                 }, 0);
                                             }}
-                                            className="block w-full text-left p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-sm flex items-center space-x-1.5"
+                                            className="block w-full text-left p-2.5 rounded-xl bg-blue-900 hover:bg-blue-800 transition-colors text-blue-200 font-medium text-sm flex items-center space-x-1.5 sm:bg-blue-50 sm:hover:bg-blue-100 sm:text-blue-800"
                                         >
                                             <IconCalendar width="18" height="18" />
                                             <span>Tareas por Día</span>
@@ -1269,7 +1288,7 @@
                                                     }
                                                 }, 100);
                                             }}
-                                            className="block w-full text-left p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-sm flex items-center space-x-1.5"
+                                            className="block w-full text-left p-2.5 rounded-xl bg-blue-900 hover:bg-blue-800 transition-colors text-blue-200 font-medium text-sm flex items-center space-x-1.5 sm:bg-blue-50 sm:hover:bg-blue-100 sm:text-blue-800"
                                         >
                                             <IconCalendar width="20" height="20" /> {/* Increased size for Calendar icon */}
                                             <span>Calendario</span>
@@ -1293,23 +1312,23 @@
                                         alertHideTimeoutRef.current = null;
                                     }
                                 }}
-                                className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out"
+                                className="bg-orange-900 border border-orange-700 text-orange-200 rounded-xl shadow-lg shadow-red-900 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out sm:bg-orange-50 sm:border-orange-400 sm:text-orange-800 sm:shadow-red-200"
                                 style={{marginTop: '0.75rem'}} /* Pequeño margen superior para separar de la navegación */
                             >
                                 <div className="flex items-center justify-between mb-2">
-                                    <h3 className="font-semibold text-orange-800 text-lg sm:text-xl text-left">Alertas activas</h3>
-                                    <div className="text-orange-600">
+                                    <h3 className="font-semibold text-orange-200 text-lg sm:text-xl text-left sm:text-orange-800">Alertas activas</h3>
+                                    <div className="text-orange-200 sm:text-orange-600">
                                         <IconAlert width="18" height="18" />
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-0.5">
                                     {notifications.slice(0, 3).map((notif, index) => (
-                                        <p key={notif.id || index} className="text-sm text-orange-700 w-full text-left">
+                                        <p key={notif.id || index} className="text-sm w-full text-left">
                                             • {notif.message}
                                         </p>
                                     ))}
                                     {notifications.length > 3 && (
-                                        <p className="text-sm text-orange-600 w-full text-left">
+                                        <p className="text-sm w-full text-left">
                                             ... y {notifications.length - 3} alertas más
                                         </p>
                                     )}
@@ -1318,15 +1337,15 @@
                         )}
 
                         {/* Formulario con título azul y efecto de iluminación azul */}
-                        <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300 mt-3">
+                        <div id="addTaskFormSection" className="bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 border border-gray-700 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300 mt-3 sm:bg-white sm:border-gray-200">
                             <button
                                 onClick={() => setShowAddTask(!showAddTask)}
                                 className="w-full flex items-center justify-between text-left mb-3"
                             >
-                                <h3 className="font-semibold text-blue-600 text-lg sm:text-xl text-left">
+                                <h3 className="font-semibold text-blue-300 text-lg sm:text-xl text-left sm:text-blue-600">
                                     {editingTask ? 'Editar tarea' : 'Agregar nueva tarea'}
                                 </h3>
-                                {showAddTask ? <div className="text-blue-600"><IconChevronUp width="20" height="20" /></div> : <div className="text-blue-600"><IconChevronDown width="20" height="20" /></div>}
+                                {showAddTask ? <div className="text-blue-300 sm:text-blue-600"><IconChevronUp width="20" height="20" /></div> : <div className="text-blue-300 sm:text-blue-600"><IconChevronDown width="20" height="20" /></div>}
                             </button>
 
                             {showAddTask && (
@@ -1337,19 +1356,19 @@
                                             placeholder="Asignatura"
                                             value={newTask.subject}
                                             onChange={(e) => setNewTask({...newTask, subject: e.target.value})}
-                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full border border-gray-600 rounded-xl px-3 py-2 text-gray-100 bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-gray-900 sm:bg-white sm:border-gray-300"
                                         />
                                         <input
                                             type="text"
                                             placeholder="Título de la tarea"
                                             value={newTask.title}
                                             onChange={(e) => setNewTask({...newTask, title: e.target.value})}
-                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full border border-gray-600 rounded-xl px-3 py-2 text-gray-100 bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-gray-900 sm:bg-white sm:border-gray-300"
                                         />
                                         <select
                                             value={newTask.type}
                                             onChange={(e) => setNewTask({...newTask, type: e.target.value})}
-                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full border border-gray-600 rounded-xl px-3 py-2 text-gray-100 bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-gray-900 sm:bg-white sm:border-gray-300"
                                         >
                                             <option value="Tarea">Tarea</option>
                                             <option value="Examen">Examen</option>
@@ -1361,14 +1380,14 @@
                                             type="date"
                                             value={newTask.dueDate}
                                             onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
-                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full border border-gray-600 rounded-xl px-3 py-2 text-gray-100 bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-gray-900 sm:bg-white sm:border-gray-300"
                                         />
                                         <input
                                             type="time"
                                             placeholder="Hora (opcional)"
                                             value={newTask.dueTime}
                                             onChange={(e) => setNewTask({...newTask, dueTime: e.target.value})}
-                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full border border-gray-600 rounded-xl px-3 py-2 text-gray-100 bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-gray-900 sm:bg-white sm:border-gray-300"
                                         />
                                     </div>
                                     <textarea
@@ -1376,7 +1395,7 @@
                                         value={newTask.description}
                                         onChange={(e) => setNewTask({...newTask, description: e.target.value})}
                                         rows="2"
-                                        className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+                                        className="w-full border border-gray-600 rounded-xl px-3 py-2 text-gray-100 bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y sm:text-gray-900 sm:bg-white sm:border-gray-300"
                                     ></textarea>
                                     <div className="flex space-x-3">
                                         <button
@@ -1409,9 +1428,9 @@
                         </div>
 
                         {/* Contenedor de la Navegación (ancho completo) */}
-                        <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl"> {/* Adjusted py for smaller height on desktop */}
+                        <div className="bg-gray-800 shadow-lg border-b border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-blue-900/50 ring-1 ring-blue-800/30 transition-all duration-500 rounded-2xl sm:bg-gradient-to-r sm:from-blue-50 sm:via-white sm:to-blue-50 sm:border-blue-100 sm:shadow-blue-200/50 sm:ring-blue-200/30"> {/* Adjusted for dark mode, light mode on sm */}
                             <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Contenido centrado dentro de la navegación */}
-                                <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-5">Tareas</h2>
+                                <h2 className="text-lg sm:text-xl font-semibold text-blue-300 text-left mb-5 sm:text-blue-600">Tareas</h2> {/* Adjusted text color for dark mode */}
                                 
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
                                     <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
@@ -1429,8 +1448,8 @@
                                                 }}
                                                 className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
                                                     view === 'list' 
-                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
-                                                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
+                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 ring-2 ring-blue-800/30' // Adjusted shadow/ring for dark
+                                                    : 'bg-gray-700 text-gray-200 hover:bg-blue-800 hover:text-white border border-gray-600 hover:border-blue-700 sm:bg-white sm:text-gray-600 sm:hover:bg-blue-50 sm:hover:text-blue-700 sm:border-gray-200 sm:hover:border-blue-300' // Adjusted for dark mobile
                                                 }`}
                                             >
                                                 <IconBook width="18" height="18" />
@@ -1450,8 +1469,8 @@
                                                 }}
                                                 className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
                                                     view === 'daily' 
-                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
-                                                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
+                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 ring-2 ring-blue-800/30' // Adjusted shadow/ring for dark
+                                                    : 'bg-gray-700 text-gray-200 hover:bg-blue-800 hover:text-white border border-gray-600 hover:border-blue-700 sm:bg-white sm:text-gray-600 sm:hover:bg-blue-50 sm:hover:text-blue-700 sm:border-gray-200 sm:hover:border-blue-300' // Adjusted for dark mobile
                                                 }`}
                                             >
                                                 <IconCalendar width="18" height="18" />
@@ -1471,8 +1490,8 @@
                                                 }}
                                                 className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
                                                     view === 'calendar' 
-                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
-                                                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
+                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 ring-2 ring-blue-800/30' // Adjusted shadow/ring for dark
+                                                    : 'bg-gray-700 text-gray-200 hover:bg-blue-800 hover:text-white border border-gray-600 hover:border-blue-700 sm:bg-white sm:text-gray-600 sm:hover:bg-blue-50 sm:hover:text-blue-700 sm:border-gray-200 sm:hover:border-blue-300' // Adjusted for dark mobile
                                                 }`}
                                             >
                                                 <IconCalendar width="20" height="20" /> {/* Increased size for Calendar icon */}
@@ -1496,13 +1515,13 @@
                         </div>
 
                         {/* Nueva: Línea de separación más compacta en móvil */}
-                        <div className="border-t-4 border-gray-100 mb-2 sm:my-3"></div>
+                        <div className="border-t-4 border-gray-700 mb-2 sm:my-3 sm:border-gray-100"></div> {/* Border adjusts for dark/light */}
 
                         {/* Vista principal */}
                         {view === 'list' ? (
                             // List View Container
-                            <div id="taskListSection" className="bg-white rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4">
-                                <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-3 sm:mb-6">Lista de tareas</h2>
+                            <div id="taskListSection" className="bg-gray-800 rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4 sm:bg-white">
+                                <h2 className="text-xl sm:text-2xl font-semibold text-blue-300 text-left mb-3 sm:mb-6 sm:text-blue-600">Lista de tareas</h2> {/* Adjusted text color for dark mode */}
                                 
                                 {/* Sorted tasks rendering */}
                                 {[...tasks].sort((a, b) => {
@@ -1544,23 +1563,24 @@
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex flex-col sm:flex-row sm:items-center space-y-1.5 sm:space-y-0 sm:space-x-3 mb-1.5">
                                                             <h3 className={`font-semibold text-sm sm:text-lg ${ /* Smaller text for mobile */
-                                                                task.completed ? 'line-through text-gray-500' : 
-                                                                status === 'overdue' ? 'line-through text-gray-700' : 'text-gray-900'
+                                                                task.completed ? 'line-through text-gray-400 sm:text-gray-500' : // Darker gray for line-through in dark mode
+                                                                status === 'overdue' ? 'line-through text-gray-400 sm:text-gray-700' : // Darker gray for line-through in dark mode
+                                                                `${cardStyle.text}` // Use dynamic text color for others
                                                             }`}>
                                                                 {task.subject}: {task.title}
                                                             </h3>
                                                             <div className="flex items-center space-x-2">
-                                                                <span className="text-xs sm:text-sm bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded"> {/* Smaller text for mobile */}
+                                                                <span className={`text-xs sm:text-sm px-2.5 py-0.5 rounded ${cardStyle.bg} ${cardStyle.text} font-medium`}> {/* Adjusted text size */}
                                                                     {task.type}
                                                                 </span>
                                                             </div>
                                                         </div>
 
                                                         {task.description && (
-                                                            <p className="text-xs sm:text-base text-gray-600 mb-1.5">{task.description}</p> /* Smaller text for mobile */
+                                                            <p className={`text-xs sm:text-base ${cardStyle.text} mb-1.5`}>{task.description}</p> /* Smaller text for mobile */
                                                         )}
 
-                                                        <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-5 text-xs sm:text-base text-gray-500"> {/* Smaller text for mobile */}
+                                                        <div className={`flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-5 text-xs sm:text-base ${cardStyle.text}`}> {/* Smaller text for mobile */}
                                                             <span>📅 {formatDateTime(task.dueDate, task.dueTime)}</span>
                                                             <span>⏰ {getDaysUntilDue(task.dueDate)}</span>
                                                         </div>
@@ -1568,13 +1588,13 @@
                                                 </div>
 
                                                 <div className="flex items-center space-x-2.5">
-                                                    <div className="w-4.5 h-4.5 sm:w-6 sm:h-6">
+                                                    <div className={`w-4.5 h-4.5 sm:w-6 sm:h-6 ${cardStyle.text}`}>
                                                         <IconClock width="22" height="22" />
                                                     </div>
 
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); startEditing(task); }}
-                                                        className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1.5 sm:p-3 rounded-xl transition-colors"
+                                                        className="text-blue-300 hover:text-blue-200 hover:bg-blue-700 p-1.5 sm:p-3 rounded-xl transition-colors sm:text-blue-500 sm:hover:text-blue-700 sm:hover:bg-blue-50"
                                                         title="Editar tarea"
                                                     >
                                                         <div className="w-4.5 h-4.5 sm:w-6 sm:h-6">
@@ -1584,7 +1604,7 @@
 
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
-                                                        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 sm:p-3 rounded-xl transition-colors"
+                                                        className="text-red-300 hover:text-red-200 hover:bg-red-700 p-1.5 sm:p-3 rounded-xl transition-colors sm:text-red-500 sm:hover:text-red-700 sm:hover:bg-red-50"
                                                         title="Eliminar tarea"
                                                     >
                                                         <div className="w-4.5 h-4.5 sm:w-6 sm:h-6">
@@ -1615,14 +1635,14 @@
                         )}
 
                         {/* Footer con información */}
-                        <div className="mt-7 sm:mt-9 bg-white rounded-xl shadow-lg p-3 sm:p-5">
-                            <div className="text-center text-gray-600 space-y-1.5">
-                                <div className="border-b border-gray-200 pb-1.5">
-                                    <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p>
-                                    <p className="text-xs text-gray-700">
-                                        Realizado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span>
+                        <div className="mt-7 sm:mt-9 bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5 sm:bg-white">
+                            <div className="text-center space-y-1.5">
+                                <div className="border-b border-gray-700 pb-1.5 sm:border-gray-200">
+                                    <p className="text-sm font-semibold text-gray-200 mb-0.5 sm:text-gray-800">© Derechos Reservados</p>
+                                    <p className="text-xs text-gray-300 sm:text-gray-700">
+                                        Realizado por <span className="font-semibold text-blue-300 sm:text-blue-600">Daniel Figueroa Chacama</span>
                                     </p>
-                                    <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p>
+                                    <p className="text-xs text-gray-400 mt-0.5 sm:text-gray-600">Ingeniero en Informática</p>
                                 </div>
                             </div>
                         </div>
