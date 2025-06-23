@@ -470,85 +470,66 @@
                 return 'on-time'; // On time
             };
 
-            // Function to get task card styles based on status (mobile-first dark mode)
+            // Function to get task card styles based on status (colors fixed for both modes)
             const getTaskCardStyle = (status, completed) => {
                 let baseStyles = {};
                 let highlightClass = '';
                 let borderColorRgb = '0,0,0'; // Default black for calculation
 
-                // Mobile-first dark theme colors
-                const darkBgColors = {
-                    'completed': 'bg-gray-700',
-                    'overdue': 'bg-red-900', // Keep red for overdue, but darker
-                    'due-today': 'bg-red-700',
-                    'due-tomorrow': 'bg-orange-700',
-                    'due-soon': 'bg-yellow-700',
-                    'on-time': 'bg-green-700'
-                };
-
-                const darkTextColors = {
-                    'completed': 'text-gray-300',
-                    'overdue': 'text-red-100',
-                    'due-today': 'text-red-100',
-                    'due-tomorrow': 'text-orange-100',
-                    'due-soon': 'text-yellow-100',
-                    'on-time': 'text-green-100'
-                };
-
-                // Desktop light theme colors (sm: prefix)
-                const lightBgColors = {
-                    'completed': 'sm:bg-gray-50',
-                    'overdue': 'sm:bg-gray-100', // Revert to light gray for overdue on desktop
-                    'due-today': 'sm:bg-red-50',
-                    'due-tomorrow': 'sm:bg-orange-50',
-                    'due-soon': 'sm:bg-yellow-50',
-                    'on-time': 'sm:bg-green-50'
-                };
-
-                const lightTextColors = {
-                    'completed': 'sm:text-gray-600',
-                    'overdue': 'sm:text-gray-800',
-                    'due-today': 'sm:text-red-800',
-                    'due-tomorrow': 'sm:text-orange-800',
-                    'due-soon': 'sm:text-yellow-800',
-                    'on-time': 'sm:text-green-800'
-                };
-
-                // Apply mobile-first dark colors
-                baseStyles.bg = darkBgColors[completed ? 'completed' : status];
-                baseStyles.text = darkTextColors[completed ? 'completed' : status];
-                baseStyles.border = darkBgColors[completed ? 'completed' : status].replace('bg-', 'border-'); // Assuming border matches bg for now
-
-                // Apply light mode overrides for larger screens
-                baseStyles.bg += ' ' + lightBgColors[completed ? 'completed' : status];
-                baseStyles.text += ' ' + lightTextColors[completed ? 'completed' : status];
-                baseStyles.border += ' ' + lightBgColors[completed ? 'completed' : status].replace('sm:bg-', 'sm:border-');
-
-                // Handle highlight class (could be simplified with conditional dark variants too, but let's focus on base colors)
                 if (completed) {
-                    highlightClass = 'border-gray-500 ring-2 ring-gray-500 shadow-md sm:border-gray-500 sm:ring-2 sm:ring-gray-500';
+                    baseStyles = {
+                        bg: 'bg-gray-50',
+                        border: 'border-gray-300',
+                        text: 'text-gray-600',
+                    };
+                    highlightClass = 'border-gray-500 ring-2 ring-gray-500 shadow-md';
                     borderColorRgb = '107,114,128'; // gray-500
                 } else {
                     switch (status) {
                         case 'overdue':
-                            highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md sm:border-gray-600 sm:ring-2 sm:ring-gray-600';
+                            baseStyles = {
+                                bg: 'bg-gray-100',
+                                border: 'border-gray-500',
+                                text: 'text-gray-800',
+                            };
+                            highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md';
                             borderColorRgb = '75,85,99'; // gray-600
                             break;
                         case 'due-today':
-                            highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md sm:border-red-500 sm:ring-2 sm:ring-red-500';
+                            baseStyles = {
+                                bg: 'bg-red-50',
+                                border: 'border-red-500',
+                                text: 'text-red-800',
+                            };
+                            highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
                             borderColorRgb = '239,68,68'; // red-500
                             break;
                         case 'due-tomorrow':
-                            highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md sm:border-orange-500 sm:ring-2 sm:ring-orange-500';
+                            baseStyles = {
+                                bg: 'bg-orange-50',
+                                border: 'border-orange-400',
+                                text: 'text-orange-800',
+                            };
+                            highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
                             borderColorRgb = '249,115,22'; // orange-500
                             break;
                         case 'due-soon':
-                            highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md sm:border-yellow-500 sm:ring-2 sm:ring-yellow-500';
+                            baseStyles = {
+                                bg: 'bg-yellow-50',
+                                border: 'border-yellow-400',
+                                text: 'text-yellow-800',
+                            };
+                            highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
                             borderColorRgb = '245,158,11'; // yellow-500
                             break;
                         case 'on-time':
                         default:
-                            highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md sm:border-green-500 sm:ring-2 sm:ring-green-500';
+                            baseStyles = {
+                                bg: 'bg-green-50',
+                                border: 'border-green-400',
+                                text: 'text-green-800',
+                            };
+                            highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
                             borderColorRgb = '34,197,94'; // green-500
                             break;
                     }
@@ -792,7 +773,7 @@
                     let borderColorRgb = '';
                     if (taskForColor) {
                         const status = getTaskStatus(taskForColor.dueDate, task.dueTime, task.completed);
-                        const style = getTaskCardStyle(status, task.completed);
+                        const style = getTaskCardStyle(status, taskForColor.completed);
                         highlightClasses = style.highlightClass;
                         borderColorRgb = style.borderColorRgb;
                     }
@@ -1563,8 +1544,8 @@
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex flex-col sm:flex-row sm:items-center space-y-1.5 sm:space-y-0 sm:space-x-3 mb-1.5">
                                                             <h3 className={`font-semibold text-sm sm:text-lg ${ /* Smaller text for mobile */
-                                                                task.completed ? 'line-through text-gray-400 sm:text-gray-500' : // Darker gray for line-through in dark mode
-                                                                status === 'overdue' ? 'line-through text-gray-400 sm:text-gray-700' : // Darker gray for line-through in dark mode
+                                                                task.completed ? 'line-through text-gray-400' : // Darker gray for line-through in dark mode
+                                                                status === 'overdue' ? 'line-through text-gray-700' : // Darker gray for line-through in dark mode
                                                                 `${cardStyle.text}` // Use dynamic text color for others
                                                             }`}>
                                                                 {task.subject}: {task.title}
