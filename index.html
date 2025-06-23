@@ -773,7 +773,7 @@
                     let borderColorRgb = '';
                     if (taskForColor) {
                         const status = getTaskStatus(taskForColor.dueDate, task.dueTime, task.completed);
-                        const style = getTaskCardStyle(status, taskForColor.completed);
+                        const style = getTaskCardStyle(status, task.completed);
                         highlightClasses = style.highlightClass;
                         borderColorRgb = style.borderColorRgb;
                     }
@@ -1164,7 +1164,8 @@
                                             <IconBook width="26" height="26" />
                                         </div>
                                         <div>
-                                            <h1 className="text-xl sm:text-3xl font-bold text-white leading-tight"> {/* Texto blanco */}
+                                            {/* Título más pequeño en móvil */}
+                                            <h1 className="text-lg sm:text-3xl font-bold text-white leading-tight"> {/* Texto blanco, adjusted text size for smallest screens */}
                                                 GESTOR ACADÉMICO
                                             </h1>
                                             <p className="text-xs sm:text-base text-white"> {/* Texto blanco */}
