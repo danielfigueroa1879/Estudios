@@ -473,8 +473,10 @@
             // Function to get task card styles based on status (colors fixed for both modes)
             const getTaskCardStyle = (status, completed) => {
                 let baseStyles = {};
-                let highlightClass = '';
-                let borderColorRgb = '0,0,0'; // Default black for calculation
+                let hoverBorderColor = ''; // New property for hover border
+                let hoverRingColor = '';
+                let hoverShadowColor = '';
+                let borderColorRgb = '0,0,0'; // Default black for animation pulse
 
                 if (completed) {
                     baseStyles = {
@@ -482,7 +484,9 @@
                         border: 'border-gray-300',
                         text: 'text-gray-600',
                     };
-                    highlightClass = 'border-gray-500 ring-2 ring-gray-500 shadow-md';
+                    hoverBorderColor = 'hover:border-gray-500'; // Match ring color
+                    hoverRingColor = 'hover:ring-gray-500';
+                    hoverShadowColor = 'hover:shadow-gray-200';
                     borderColorRgb = '107,114,128'; // gray-500
                 } else {
                     switch (status) {
@@ -492,7 +496,9 @@
                                 border: 'border-gray-500',
                                 text: 'text-gray-800',
                             };
-                            highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md';
+                            hoverBorderColor = 'hover:border-gray-600';
+                            hoverRingColor = 'hover:ring-gray-600';
+                            hoverShadowColor = 'hover:shadow-gray-300';
                             borderColorRgb = '75,85,99'; // gray-600
                             break;
                         case 'due-today':
@@ -501,7 +507,9 @@
                                 border: 'border-red-500',
                                 text: 'text-red-800',
                             };
-                            highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
+                            hoverBorderColor = 'hover:border-red-500';
+                            hoverRingColor = 'hover:ring-red-500';
+                            hoverShadowColor = 'hover:shadow-red-200';
                             borderColorRgb = '239,68,68'; // red-500
                             break;
                         case 'due-tomorrow':
@@ -510,7 +518,9 @@
                                 border: 'border-orange-400',
                                 text: 'text-orange-800',
                             };
-                            highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
+                            hoverBorderColor = 'hover:border-orange-500';
+                            hoverRingColor = 'hover:ring-orange-500';
+                            hoverShadowColor = 'hover:shadow-orange-200';
                             borderColorRgb = '249,115,22'; // orange-500
                             break;
                         case 'due-soon':
@@ -519,7 +529,9 @@
                                 border: 'border-yellow-400',
                                 text: 'text-yellow-800',
                             };
-                            highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
+                            hoverBorderColor = 'hover:border-yellow-500';
+                            hoverRingColor = 'hover:ring-yellow-500';
+                            hoverShadowColor = 'hover:shadow-yellow-200';
                             borderColorRgb = '245,158,11'; // yellow-500
                             break;
                         case 'on-time':
@@ -529,12 +541,18 @@
                                 border: 'border-green-400',
                                 text: 'text-green-800',
                             };
-                            highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
+                            hoverBorderColor = 'hover:border-green-500';
+                            hoverRingColor = 'hover:ring-green-500';
+                            hoverShadowColor = 'hover:shadow-green-200';
                             borderColorRgb = '34,197,94'; // green-500
                             break;
                     }
                 }
-                return { ...baseStyles, highlightClass: highlightClass, borderColorRgb: borderColorRgb };
+                return {
+                    ...baseStyles,
+                    hoverClasses: `${hoverBorderColor} hover:ring-2 ${hoverRingColor} hover:shadow-md ${hoverShadowColor} hover:scale-[1.01]`,
+                    borderColorRgb: borderColorRgb
+                };
             };
 
 
@@ -878,7 +896,7 @@
                                                 <div
                                                     key={task.id}
                                                     onClick={() => handleTaskCardClick(task)}
-                                                    className={`p-1.5 sm:p-3 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} ${cardStyle.text} transition-all duration-300 cursor-pointer hover:shadow-lg`}
+                                                    className={`p-1.5 sm:p-3 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} ${cardStyle.text} ${cardStyle.hoverClasses} transition-all duration-300 cursor-pointer`}
                                                 >
                                                     <div className="flex items-center justify-between mb-2">
                                                         <div className="flex items-center space-x-1">
@@ -1526,7 +1544,7 @@
                                                     handleTaskCardClick(task);
                                                 }
                                             }}
-                                            className={`rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} hover:border-red-500 hover:ring-2 hover:ring-red-500 hover:shadow-lg hover:shadow-red-200 cursor-pointer`}
+                                            className={`rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} ${cardStyle.text} ${cardStyle.hoverClasses} cursor-pointer`}
                                         >
                                             <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0"> {/* Adjusted space-y */}
                                                 <div className="flex items-start space-x-2.5 sm:space-x-4 flex-1">
