@@ -14,10 +14,10 @@
     
     <!-- Favicons e iconos táctiles para diferentes dispositivos/contextos -->
     <!-- Asegúrate de que estos archivos existan en la carpeta /icons/ -->
-    <link rel="icon" type="image/x-icon" href="https://placehold.co/16x16/aabbcc/ffffff?text=F"/>
-    <link rel="icon" type="image/svg+xml" href="https://placehold.co/16x16/aabbcc/ffffff?text=F"/>
-    <link rel="icon" type="image/png" sizes="96x96" href="https://placehold.co/96x96/aabbcc/ffffff?text=F"/>
-    <link rel="apple-touch-icon" href="https://placehold.co/180x180/aabbcc/ffffff?text=A"/> <!-- Icono principal para iOS -->
+    <link rel="icon" type="image/x-icon" href="/icons/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+    <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"> <!-- Icono principal para iOS -->
     
     <meta name="description" content="Organiza tus tareas académicas de manera eficiente."/>
 
@@ -56,22 +56,22 @@
         }
     </style>
 </head>
-<body class="bg-gray-200 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+<body>
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
         // --- Iconos simples en SVG ---
-        const IconBook = ({ width = "20", height = "20", className = "" }) => (
-            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        const IconBook = ({ width = "20", height = "20" }) => (
+            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
             </svg>
         );
 
-        const IconCalendar = ({ width = "20", height = "20", className = "" }) => (
-            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        const IconCalendar = ({ width = "20", height = "20" }) => (
+            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                 <line x1="16" y1="2" x2="16" y2="6"/>
                 <line x1="8" y1="2" x2="8" y2="6"/>
@@ -79,56 +79,56 @@
             </svg>
         );
 
-        const IconPlus = ({ width = "20", height = "20", className = "" }) => (
-            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        const IconPlus = ({ width = "20", height = "20" }) => (
+            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"/>
                 <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
         );
 
-        const IconClock = ({ width = "20", height = "20", className = "" }) => (
-            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        const IconClock = ({ width = "20", height = "20" }) => (
+            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"/>
                 <polyline points="12,6 12,12 16,14"/>
             </svg>
         );
 
-        const IconMail = ({ width = "20", height = "20", className = "" }) => (
-            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        const IconMail = ({ width = "20", height = "20" }) => (
+            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                 <polyline points="22,6 12,13 2,6"/>
             </svg>
         );
 
-        const IconBell = ({ width = "22", height = "22", className = "" }) => (
-            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        const IconBell = ({ width = "22", height = "22" }) => (
+            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
             </svg>
         );
 
-        const IconAlert = ({ width = "20", height = "20", className = "" }) => (
-            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        const IconAlert = ({ width = "20", height = "20" }) => (
+            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
                 <line x1="12" y1="9" x2="12" y2="13"/>
                 <line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
         );
 
-        const IconChevronDown = ({ width = "24", height = "24", className = "" }) => (
-            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        const IconChevronDown = ({ width = "24", height = "24" }) => (
+            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="6,9 12,15 18,9"/>
             </svg>
         );
 
-        const IconChevronUp = ({ width = "24", height = "24", className = "" }) => (
-            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        const IconChevronUp = ({ width = "24", height = "24" }) => (
+            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="18,15 12,9 6,15"/>
             </svg>
         );
 
-        const IconTrash = ({ width = "18", height = "18", className = "" }) => (
-            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        const IconTrash = ({ width = "18", height = "18" }) => (
+            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="3,6 5,6 21,6"/>
                 <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
                 <line x1="10" y1="11" x2="10" y2="17"/>
@@ -136,29 +136,29 @@
             </svg>
         );
 
-        const IconCheck = ({ width = "18", height = "18", className = "" }) => (
-            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        const IconCheck = ({ width = "18", height = "18" }) => (
+            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20,6 9,17 4,12"/>
             </svg>
         );
 
-        const IconEdit = ({ width = "18", height = "18", className = "" }) => (
-            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        const IconEdit = ({ width = "18", height = "18" }) => (
+            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
             </svg>
         );
 
-        const IconHamburger = ({ width = "24", height = "24", className = "" }) => (
-            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        const IconHamburger = ({ width = "24", height = "24" }) => (
+            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="3" y1="12" x2="21" y2="12"></line>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
                 <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
         );
 
-        const IconArrowBack = ({ width = "24", height = "24", className = "" }) => (
-            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        const IconArrowBack = ({ width = "24", height = "24" }) => (
+            <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M19 12H5"/>
                 <polyline points="12 19 5 12 12 5"/>
             </svg>
@@ -169,9 +169,9 @@
             if (!isOpen) return null;
             return (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-blue-500 dark:bg-gray-800">
+                    <div className="bg-white rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-blue-500">
                         <IconAlert width="40" height="40" className="text-blue-500 mx-auto mb-4" />
-                        <p className="text-gray-800 text-lg mb-6 dark:text-gray-100">{message}</p>
+                        <p className="text-lg text-gray-800 mb-6">{message}</p>
                         <button
                             onClick={onClose}
                             className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors text-lg font-medium"
@@ -187,9 +187,9 @@
             if (!isOpen) return null;
             return (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-red-500 dark:bg-gray-800">
+                    <div className="bg-white rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-red-500">
                         <IconTrash width="40" height="40" className="text-red-500 mx-auto mb-4" />
-                        <p className="text-gray-800 text-lg mb-6 dark:text-gray-100">{message}</p>
+                        <p className="text-lg text-gray-800 mb-6">{message}</p>
                         <div className="flex space-x-4">
                             <button
                                 onClick={onCancel}
@@ -218,7 +218,6 @@
             const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
             const [confirmDialogMessage, setConfirmDialogMessage] = useState("");
             const confirmCallbackRef = useRef(null); // Ref to store the callback for confirmation
-            const [pendingCalendarHighlight, setPendingCalendarHighlight] = useState(null); // New state for pending calendar highlight
 
             // Chilean holidays for 2025 (YYYY-MM-DD format)
             // Sourced from feriados.cl, universal-assistance.com, gob.cl, and timeanddate.com
@@ -474,8 +473,8 @@
             // Function to get task card styles based on status
             const getTaskCardStyle = (status, completed) => {
                 let baseStyles = {};
-                let hoverColorClass = ''; // This will store the color for ring/shadow/border hover
-                let borderColorRgb = '0,0,0'; // Default black for calculation (used for highlight-animation css variable)
+                let highlightClass = '';
+                let borderColorRgb = '0,0,0'; // Default black for calculation
 
                 if (completed) {
                     baseStyles = {
@@ -483,8 +482,8 @@
                         border: 'border-gray-300',
                         text: 'text-gray-600',
                     };
-                    hoverColorClass = 'gray'; // For hover:ring-gray-500, hover:shadow-gray-200 etc.
-                    borderColorRgb = '107,114,128'; // gray-500 RGB (example: 107,114,128 for gray-500)
+                    highlightClass = 'border-gray-500 ring-2 ring-gray-500 shadow-md';
+                    borderColorRgb = '107,114,128'; // gray-500
                 } else {
                     switch (status) {
                         case 'overdue':
@@ -493,8 +492,8 @@
                                 border: 'border-gray-500',
                                 text: 'text-gray-800',
                             };
-                            hoverColorClass = 'gray';
-                            borderColorRgb = '75,85,99'; // gray-600 RGB (example: 75,85,99 for gray-600)
+                            highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md';
+                            borderColorRgb = '75,85,99'; // gray-600
                             break;
                         case 'due-today':
                             baseStyles = {
@@ -502,8 +501,8 @@
                                 border: 'border-red-500',
                                 text: 'text-red-800',
                             };
-                            hoverColorClass = 'red';
-                            borderColorRgb = '239,68,68'; // red-500 RGB
+                            highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
+                            borderColorRgb = '239,68,68'; // red-500
                             break;
                         case 'due-tomorrow':
                             baseStyles = {
@@ -511,8 +510,8 @@
                                 border: 'border-orange-400',
                                 text: 'text-orange-800',
                             };
-                            hoverColorClass = 'orange';
-                            borderColorRgb = '249,115,22'; // orange-500 RGB
+                            highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
+                            borderColorRgb = '249,115,22'; // orange-500
                             break;
                         case 'due-soon':
                             baseStyles = {
@@ -520,8 +519,8 @@
                                 border: 'border-yellow-400',
                                 text: 'text-yellow-800',
                             };
-                            hoverColorClass = 'yellow';
-                            borderColorRgb = '245,158,11'; // yellow-500 RGB
+                            highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
+                            borderColorRgb = '245,158,11'; // yellow-500
                             break;
                         case 'on-time':
                         default:
@@ -530,24 +529,12 @@
                                 border: 'border-green-400',
                                 text: 'text-green-800',
                             };
-                            hoverColorClass = 'green';
-                            borderColorRgb = '34,197,94'; // green-500 RGB
+                            highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
+                            borderColorRgb = '34,197,94'; // green-500
                             break;
                     }
                 }
-
-                // Construct full Tailwind classes for hover effect
-                // Using specific shades for ring and shadow for better effect
-                const hoverClasses = `hover:ring-2 hover:ring-${hoverColorClass}-500 hover:shadow-md hover:shadow-${hoverColorClass}-200 hover:scale-[1.01] hover:border-transparent`;
-
-
-                return {
-                    ...baseStyles,
-                    hoverClasses: hoverClasses,
-                    borderColorRgb: borderColorRgb,
-                    // The CSS variable --highlight-color expects a direct color value like rgb(r,g,b) or #hex
-                    highlightColorValue: `rgb(${borderColorRgb})`
-                };
+                return { ...baseStyles, highlightClass: highlightClass, borderColorRgb: borderColorRgb };
             };
 
 
@@ -740,7 +727,7 @@
             };
 
             // Helper to animate date highlighting in the calendar
-            const animateCalendarDate = async (dateString, highlightColorValue, borderColorRgb) => {
+            const animateCalendarDate = async (dateString, highlightClasses, borderColorRgb) => {
                 // Clear any previous animation
                 if (highlightTimeoutRef.current) {
                     clearTimeout(highlightTimeoutRef.current);
@@ -749,7 +736,7 @@
                 setHighlightedCalendarDates([]); // Immediately turn off any highlighted date
 
                 // Highlight the date
-                setHighlightedCalendarDates([{ date: dateString, highlightColorValue: highlightColorValue, borderColorRgb: borderColorRgb }]);
+                setHighlightedCalendarDates([{ date: dateString, classes: highlightClasses, borderColorRgb: borderColorRgb }]);
                 highlightTimeoutRef.current = setTimeout(() => { // Store timeout ID
                     setHighlightedCalendarDates([]);
                     highlightTimeoutRef.current = null;
@@ -770,50 +757,50 @@
                 setView('calendar');
                 
                 // Scroll to calendar after a small delay to ensure view is ready
-                setTimeout(async () => { // Make this setTimeout async to await inside
+                setTimeout(() => {
                     const calendarSection = document.getElementById('calendarSection');
                     if (calendarSection) {
                         calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
+                }, 100); // Small delay for view to change first
 
-                    const alertDates = [...new Set(notifications.map(n => n.dueDate))].sort(); // Get unique and sorted dates from alerts
+                const alertDates = [...new Set(notifications.map(n => n.dueDate))].sort(); // Get unique and sorted dates from alerts
 
-                    let delay = 0;
-                    for (const dateString of alertDates) { // Use for...of for flow control with await
-                        const taskForColor = tasks.find(t => t.dueDate === dateString);
-                        let highlightColorValue = '';
-                        let borderColorRgb = '';
-                        if (taskForColor) {
-                            const status = getTaskStatus(taskForColor.dueDate, taskForColor.dueTime, taskForColor.completed);
-                            const style = getTaskCardStyle(status, taskForColor.completed);
-                            highlightColorValue = style.highlightColorValue;
-                            borderColorRgb = style.borderColorRgb;
-                        }
-                        
-                        // Highlight the date
-                        await new Promise(resolve => {
-                            highlightTimeoutRef.current = setTimeout(() => {
-                                setHighlightedCalendarDates([{ date: dateString, highlightColorValue: highlightColorValue, borderColorRgb: borderColorRgb }]);
-                                resolve();
-                            }, delay);
-                        });
-                        delay += 1500; // Illumination duration (1.5 seconds)
-
-                        // Turn off illumination (or prepare for next)
-                        await new Promise(resolve => {
-                            highlightTimeoutRef.current = setTimeout(() => {
-                                setHighlightedCalendarDates([]);
-                                resolve();
-                            }, delay);
-                        });
-                        delay += 750; // Pause before next illumination (0.75 seconds)
+                let delay = 0;
+                for (const dateString of alertDates) { // Use for...of for flow control with await
+                    const taskForColor = tasks.find(t => t.dueDate === dateString);
+                    let highlightClasses = '';
+                    let borderColorRgb = '';
+                    if (taskForColor) {
+                        const status = getTaskStatus(taskForColor.dueDate, task.dueTime, task.completed);
+                        const style = getTaskCardStyle(status, task.completed);
+                        highlightClasses = style.highlightClass;
+                        borderColorRgb = style.borderColorRgb;
                     }
-                    highlightTimeoutRef.current = null; // Mark end of sequence
-                }, 100); // Give enough time for the calendar view to be rendered initially
+                    
+                    // Highlight the date
+                    await new Promise(resolve => {
+                        highlightTimeoutRef.current = setTimeout(() => {
+                            setHighlightedCalendarDates([{ date: dateString, classes: highlightClasses, borderColorRgb: borderColorRgb }]);
+                            resolve();
+                        }, delay);
+                    });
+                    delay += 1500; // Illumination duration (1.5 seconds)
+
+                    // Turn off illumination (or prepare for next)
+                    await new Promise(resolve => {
+                        highlightTimeoutRef.current = setTimeout(() => {
+                            setHighlightedCalendarDates([]);
+                            resolve();
+                        }, delay);
+                    });
+                    delay += 750; // Pause before next illumination (0.75 seconds)
+                }
+                highlightTimeoutRef.current = null; // Mark end of sequence
             };
 
             // Handle task card click to navigate to calendar and highlight
-            const handleTaskCardClick = (task) => {
+            const handleTaskCardClick = async (task) => {
                 // Clear any previous animation and highlights
                 if (highlightTimeoutRef.current) {
                     clearTimeout(highlightTimeoutRef.current);
@@ -824,26 +811,23 @@
                 // Store task info that originated the query
                 setOriginTaskForCalendar({ taskId: task.id, scrollY: window.scrollY });
 
-                // Calculate style immediately
-                const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-                const cardStyle = getTaskCardStyle(status, task.completed);
-
-                // Set pending highlight and switch view
-                setPendingCalendarHighlight({
-                    date: task.dueDate,
-                    highlightColorValue: cardStyle.highlightColorValue,
-                    borderColorRgb: cardStyle.borderColorRgb
-                });
+                // Always force calendar view
                 setView('calendar');
+                
+                // Update calendar month to task's date
                 setCurrentCalendarViewDate(createLocalDate(task.dueDate));
 
-                // Scroll to calendar section after a slight delay to ensure the view has updated
+                // Scroll to calendar after a small delay
                 setTimeout(() => {
                     const calendarSection = document.getElementById('calendarSection');
                     if (calendarSection) {
                         calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
-                }, 100); // Small delay to ensure the calendar view has mounted
+                }, 100);
+
+                const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                const cardStyle = getTaskCardStyle(status, task.completed);
+                await animateCalendarDate(task.dueDate, cardStyle.highlightClass, cardStyle.borderColorRgb);
             };
 
             // Function to go back to original task in list view
@@ -851,7 +835,6 @@
                 if (originTaskForCalendar) {
                     setView('list'); // Go back to list view
                     setHighlightedCalendarDates([]); // Clear any highlight
-                    setPendingCalendarHighlight(null); // Clear any pending highlight
                     
                     // Scroll to original task
                     setTimeout(() => {
@@ -866,8 +849,7 @@
 
 
             // --- Component for Daily Tasks Card View ---
-            const DailyTasksCardView = ({ tasks = [], formatDate, getTaskStatus, getTaskCardStyle, toggleTask, startEditing, deleteTask, handleTaskCardClick }) => {
-                // Added default [] to tasks prop destructuring for safety
+            const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, toggleTask, startEditing, deleteTask }) => {
                 const groupedTasks = tasks.reduce((acc, task) => {
                     const date = task.dueDate;
                     if (!acc[date]) acc[date] = [];
@@ -877,16 +859,13 @@
 
                 return (
                     // Daily Tasks Card View Container
-                    <div id="dailyTasksSection" className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 transition-all duration-500
-                            dark:bg-gray-800 dark:text-gray-100
-                            hover:ring-2 hover:ring-blue-300 hover:shadow-lg hover:shadow-blue-400/60 hover:scale-[1.005] hover:border-transparent
-                            dark:hover:ring-blue-700 dark:hover:shadow-lg dark:hover:shadow-blue-900/50 dark:hover:scale-[1.005] dark:hover:border-transparent">
-                        <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-6 dark:text-blue-300">Tareas por día</h2>
+                    <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6" id="dailyTasksSection"> {/* Main container with styling */}
+                        <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-6">Tareas por día</h2>
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                             {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
-                                <div key={date} className="rounded-xl shadow-lg p-2.5 sm:p-5 transition-all duration-300 cursor-pointer">
-                                    <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 mb-2 sm:mb-3 dark:text-gray-100">
+                                <div key={date} className="bg-white rounded-xl shadow-lg p-2.5 sm:p-5 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer">
+                                    <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 mb-2 sm:mb-3">
                                         {formatDate(date)}
                                     </h3>
                                     <div className="space-y-1"> {/* Reduced space-y */}
@@ -899,11 +878,11 @@
                                                 <div
                                                     key={task.id}
                                                     onClick={() => handleTaskCardClick(task)}
-                                                    className={`p-1.5 sm:p-3 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} ${cardStyle.text} ${cardStyle.hoverClasses} transition-all duration-300 cursor-pointer`}
+                                                    className={`p-1.5 sm:p-3 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300 cursor-pointer hover:shadow-lg`}
                                                 >
                                                     <div className="flex items-center justify-between mb-2">
                                                         <div className="flex items-center space-x-1">
-                                                            <IconClock width="18" height="18" className={cardStyle.text} /> {/* Added class for color */}
+                                                            <IconClock width="18" height="18" />
                                                             <span className={`text-xs sm:text-sm px-2 py-0.5 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}> {/* Adjusted text size */}
                                                                 {task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate)}
                                                             </span>
@@ -918,21 +897,21 @@
                                                         </button>
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-sm sm:text-lg text-gray-800 dark:text-gray-100">{task.subject}</p> {/* Adjusted text size */}
-                                                        <p className="text-xs sm:text-base mt-0.5 text-gray-600 dark:text-gray-300">{task.title}</p> {/* Adjusted text size */}
-                                                        <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">{task.type}</p> {/* Adjusted text size */}
+                                                        <p className="font-medium text-sm sm:text-lg text-gray-800">{task.subject}</p> {/* Adjusted text size */}
+                                                        <p className="text-xs sm:text-base text-gray-600 mt-0.5">{task.title}</p> {/* Adjusted text size */}
+                                                        <p className="text-xs text-gray-500 mt-1">{task.type}</p> {/* Adjusted text size */}
                                                     </div>
                                                     <div className="flex justify-end mt-3 space-x-1">
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); startEditing(task); }}
-                                                            className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-xl transition-colors"
+                                                            className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1 rounded-xl transition-colors"
                                                             title="Editar tarea"
                                                         >
                                                             <IconEdit width="16" height="16" />
                                                         </button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
-                                                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-xl transition-colors"
+                                                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded-xl transition-colors"
                                                             title="Eliminar tarea"
                                                         >
                                                             <IconTrash width="16" height="16" />
@@ -950,33 +929,12 @@
             };
 
             // Simplified calendar view
-            const CalendarView = ({ tasks, highlightedDates, chileanHolidays, originTaskForCalendar, backToOriginTask, currentCalendarViewDate, setCurrentCalendarViewDate, todayGlobal, getTaskStatus, pendingCalendarHighlight, setPendingCalendarHighlight, animateCalendarDate }) => {
-                // Effect to trigger highlight animation when pendingCalendarHighlight changes
-                useEffect(() => {
-                    if (pendingCalendarHighlight) {
-                        // Ensure the calendar is showing the correct month for the highlight
-                        const targetDate = createLocalDate(pendingCalendarHighlight.date);
-                        if (targetDate.getFullYear() === currentCalendarViewDate.getFullYear() &&
-                            targetDate.getMonth() === currentCalendarViewDate.getMonth()) {
-                            
-                            animateCalendarDate(
-                                pendingCalendarHighlight.date,
-                                pendingCalendarHighlight.highlightColorValue,
-                                pendingCalendarHighlight.borderColorRgb
-                            );
-                            setPendingCalendarHighlight(null); // Clear the pending state after animation
-                        }
-                    }
-                }, [pendingCalendarHighlight, currentCalendarViewDate, animateCalendarDate, setPendingCalendarHighlight]);
-
+            const CalendarView = ({ highlightedDates, chileanHolidays, originTaskForCalendar, backToOriginTask }) => {
                 return (
                     // Calendar View Container
-                    <div id="calendarSection" className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative transition-all duration-500
-                            dark:bg-gray-800 dark:text-gray-100
-                            hover:ring-2 hover:ring-blue-300 hover:shadow-lg hover:shadow-blue-400/60 hover:scale-[1.005] hover:border-transparent
-                            dark:hover:ring-blue-700 dark:hover:shadow-lg dark:hover:shadow-blue-900/50 dark:hover:scale-[1.005] dark:hover:border-transparent">
+                    <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative" id="calendarSection"> {/* Added relative for absolute positioning of back button */}
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left dark:text-blue-300">Calendario</h2>
+                            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left">Calendario</h2>
                             {/* Botón Volver a la Tarea (condicional) - Always absolute top-right, now inside CalendarView */}
                             {originTaskForCalendar && (
                                 <button
@@ -1004,7 +962,7 @@
             };
 
             // Monthly Calendar Component
-            const MonthlyCalendar = ({ tasks = [], highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays }) => { // Removed originTaskForCalendar, backToOriginTask
+            const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays }) => { // Removed originTaskForCalendar, backToOriginTask
                 const year = currentViewDate.getFullYear();
                 const month = currentViewDate.getMonth();
 
@@ -1029,7 +987,6 @@
                 }
 
                 // Group tasks by date
-                // Safely access tasks using tasks.reduce, assuming tasks is an array
                 const tasksByDate = tasks.reduce((acc, task) => {
                     const taskDate = createLocalDate(task.dueDate);
                     if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
@@ -1096,7 +1053,7 @@
                         {/* Nombres de los días */}
                         <div className="grid grid-cols-7 gap-0.5 mb-1">
                             {dayNames.map((day, index) => (
-                                <div key={index} className="text-center font-semibold text-gray-600 py-1 text-sm dark:text-gray-300">
+                                <div key={index} className="text-center font-semibold text-gray-600 py-1 text-sm">
                                     {day}
                                 </div>
                             ))}
@@ -1111,31 +1068,30 @@
 
                                 const dayObj = new Date(year, month, day);
                                 const isToday = todayGlobal.getDate() === dayObj.getDate() &&
-                                                todayGlobal.getMonth() === dayObj.getMonth() &&
-                                                todayGlobal.getFullYear() === dayObj.getFullYear();
+                                                        todayGlobal.getMonth() === dayObj.getMonth() &&
+                                                        todayGlobal.getFullYear() === dayObj.getFullYear();
                                 
                                 const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                                 // Check if it's a holiday
                                 const isHoliday = chileanHolidays.includes(currentDayFormatted);
 
                                 const highlightEntry = highlightedDates.find(h => h.date === currentDayFormatted);
-                                // CORRECTED: Use highlightColorValue and borderColorRgb from highlightEntry
-                                const highlightColorValue = highlightEntry ? highlightEntry.highlightColorValue : ''; 
+                                const highlightClassesToApply = highlightEntry ? highlightEntry.classes : '';
                                 const highlightBorderColorRgb = highlightEntry ? highlightEntry.borderColorRgb : '';
 
                                 return (
                                     <div
                                         key={currentDayFormatted}
-                                        className={`h-14 sm:h-20 lg:h-28 border border-gray-200 p-0.5 sm:p-1 transition-all duration-300 ease-in-out dark:border-gray-700 ${ /* Adjusted border for dark mode */
-                                            isHoliday ? 'bg-red-50 dark:bg-red-800' : ''
-                                        } ${isToday ? 'bg-blue-50 border-blue-500 dark:bg-blue-800 dark:border-blue-600' : 'bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700'} ${highlightEntry ? 'highlight-animation' : ''}`}
+                                        className={`h-14 sm:h-20 lg:h-28 border border-gray-200 p-0.5 sm:p-1 transition-all duration-300 ease-in-out ${ /* Adjusted height for desktop */
+                                            isHoliday ? 'bg-red-50' : ''
+                                        } ${isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50'} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`}
                                         style={highlightEntry ? {
-                                            '--highlight-color': highlightColorValue, // Use the direct color value (rgb string)
+                                            '--highlight-color': highlightClassesToApply.match(/border-([\w-]+)-(\d+)/)?.[0].replace('border-', '') || '#3b82f6',
                                             '--ring-color-rgb': highlightBorderColorRgb
                                         } : {}}
                                     >
                                         <div className={`text-xs sm:text-sm font-medium ${
-                                            isToday ? 'text-blue-700 dark:text-blue-300' : (isHoliday ? 'text-red-600 dark:text-red-200' : 'text-gray-800 dark:text-gray-100')
+                                            isToday ? 'text-blue-700' : (isHoliday ? 'text-red-600' : 'text-gray-800')
                                         }`}>
                                             {day}
                                         </div>
@@ -1154,23 +1110,23 @@
                                                         title = `${task.subject} - Vencida`;
                                                         break;
                                                     case 'due-today':
-                                                        bgColor = 'bg-red-600';
+                                                        bgColor = 'bg-red-400';
                                                         title = `${task.subject} - Vence hoy`;
                                                         break;
                                                     case 'due-tomorrow':
-                                                        bgColor = 'bg-orange-600';
+                                                        bgColor = 'bg-orange-400';
                                                         title = `${task.subject} - Vence mañana`;
                                                         break;
                                                     case 'due-soon':
-                                                        bgColor = 'bg-yellow-600';
+                                                        bgColor = 'bg-yellow-400';
                                                         title = `${task.subject} - Por vencer`;
                                                         break;
                                                     case 'completed':
-                                                        bgColor = 'bg-gray-500';
+                                                        bgColor = 'bg-gray-400';
                                                         title = `${task.subject} - Completada`;
                                                         break;
                                                     default:
-                                                        bgColor = 'bg-green-600';
+                                                        bgColor = 'bg-green-400';
                                                         title = `${task.subject} - A tiempo`;
                                                 }
                                                 
@@ -1197,7 +1153,7 @@
             };
 
             return (
-                <div className="min-h-screen bg-gray-200 dark:bg-gray-900"> {/* Base background: light by default, dark on system dark */}
+                <div className="min-h-screen bg-gray-200">
                     {/* Contenedor del Encabezado (ancho completo) */}
                     <div className="bg-blue-700 shadow-lg w-full py-4 sm:py-4 mb-5"> {/* Fondo azul, increased py-4 for mobile */}
                         <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Contenido centrado dentro del encabezado */}
@@ -1263,15 +1219,14 @@
 
                             {/* Acceso Rápido a Tareas - Conditionally rendered */}
                             {showColorLegend && (
-                                <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700"> {/* Border adjusts for dark/light */}
-                                    <h3 className="font-semibold text-blue-600 text-lg sm:text-xl text-left mb-3 dark:text-blue-300">Acceso rápido a tareas</h3> {/* Text adjusts */}
+                                <div className="mt-4 pt-3 border-t border-gray-200">
+                                    <h3 className="font-semibold text-blue-600 text-lg sm:text-xl text-left mb-3">Acceso rápido a tareas</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
                                         <button
                                             onClick={() => {
                                                 setView('list');
                                                 setShowColorLegend(false);
                                                 setOriginTaskForCalendar(null);
-                                                setPendingCalendarHighlight(null); // Clear pending highlight
                                                 setTimeout(() => {
                                                     const taskListSection = document.getElementById('taskListSection');
                                                     if (taskListSection) {
@@ -1279,7 +1234,7 @@
                                                     }
                                                 }, 0);
                                             }}
-                                            className="block w-full text-left p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-sm flex items-center space-x-1.5 dark:bg-blue-900 dark:hover:bg-blue-800 dark:text-blue-200"
+                                            className="block w-full text-left p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-sm flex items-center space-x-1.5"
                                         >
                                             <IconBook width="18" height="18" />
                                             <span>Tareas</span>
@@ -1289,7 +1244,6 @@
                                                 setView('daily');
                                                 setShowColorLegend(false);
                                                 setOriginTaskForCalendar(null);
-                                                setPendingCalendarHighlight(null); // Clear pending highlight
                                                 setTimeout(() => {
                                                     const dailyTasksSection = document.getElementById('dailyTasksSection');
                                                     if (dailyTasksSection) {
@@ -1298,7 +1252,7 @@
                                                     }
                                                 }, 0);
                                             }}
-                                            className="block w-full text-left p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-sm flex items-center space-x-1.5 dark:bg-blue-900 dark:hover:bg-blue-800 dark:text-blue-200"
+                                            className="block w-full text-left p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-sm flex items-center space-x-1.5"
                                         >
                                             <IconCalendar width="18" height="18" />
                                             <span>Tareas por Día</span>
@@ -1307,8 +1261,6 @@
                                             onClick={() => {
                                                 setView('calendar');
                                                 setShowColorLegend(false);
-                                                setOriginTaskForCalendar(null);
-                                                setPendingCalendarHighlight(null); // Clear pending highlight
                                                 setTimeout(() => {
                                                     const calendarSection = document.getElementById('calendarSection');
                                                     if (calendarSection) {
@@ -1317,7 +1269,7 @@
                                                     }
                                                 }, 100);
                                             }}
-                                            className="block w-full text-left p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-sm flex items-center space-x-1.5 dark:bg-blue-900 dark:hover:bg-blue-800 dark:text-blue-200"
+                                            className="block w-full text-left p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-sm flex items-center space-x-1.5"
                                         >
                                             <IconCalendar width="20" height="20" /> {/* Increased size for Calendar icon */}
                                             <span>Calendario</span>
@@ -1341,12 +1293,12 @@
                                         alertHideTimeoutRef.current = null;
                                     }
                                 }}
-                                className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out dark:bg-orange-900 dark:border-orange-700 dark:text-orange-200 dark:shadow-red-900"
+                                className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out"
                                 style={{marginTop: '0.75rem'}} /* Pequeño margen superior para separar de la navegación */
                             >
                                 <div className="flex items-center justify-between mb-2">
-                                    <h3 className="font-semibold text-orange-800 text-lg sm:text-xl text-left dark:text-orange-200">Alertas activas</h3>
-                                    <div className="text-orange-600 dark:text-orange-200">
+                                    <h3 className="font-semibold text-orange-800 text-lg sm:text-xl text-left">Alertas activas</h3>
+                                    <div className="text-orange-600">
                                         <IconAlert width="18" height="18" />
                                     </div>
                                 </div>
@@ -1366,18 +1318,15 @@
                         )}
 
                         {/* Formulario con título azul y efecto de iluminación azul */}
-                        <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 border border-gray-200 transition-all duration-500 mt-3
-                                    hover:ring-2 hover:ring-blue-300 hover:shadow-lg hover:shadow-blue-400/60 hover:scale-[1.005] hover:border-transparent
-                                    dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100
-                                    dark:hover:ring-blue-700 dark:hover:shadow-lg dark:hover:shadow-blue-900/50 dark:hover:scale-[1.005] dark:hover:border-transparent">
+                        <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300 mt-3">
                             <button
                                 onClick={() => setShowAddTask(!showAddTask)}
                                 className="w-full flex items-center justify-between text-left mb-3"
                             >
-                                <h3 className="font-semibold text-blue-600 text-lg sm:text-xl text-left dark:text-blue-300">
+                                <h3 className="font-semibold text-blue-600 text-lg sm:text-xl text-left">
                                     {editingTask ? 'Editar tarea' : 'Agregar nueva tarea'}
                                 </h3>
-                                {showAddTask ? <div className="text-blue-600 dark:text-blue-300"><IconChevronUp width="20" height="20" /></div> : <div className="text-blue-600 dark:text-blue-300"><IconChevronDown width="20" height="20" /></div>}
+                                {showAddTask ? <div className="text-blue-600"><IconChevronUp width="20" height="20" /></div> : <div className="text-blue-600"><IconChevronDown width="20" height="20" /></div>}
                             </button>
 
                             {showAddTask && (
@@ -1388,19 +1337,19 @@
                                             placeholder="Asignatura"
                                             value={newTask.subject}
                                             onChange={(e) => setNewTask({...newTask, subject: e.target.value})}
-                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-gray-100 dark:bg-gray-700 dark:border-gray-600"
+                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         />
                                         <input
                                             type="text"
                                             placeholder="Título de la tarea"
                                             value={newTask.title}
                                             onChange={(e) => setNewTask({...newTask, title: e.target.value})}
-                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-gray-100 dark:bg-gray-700 dark:border-gray-600"
+                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         />
                                         <select
                                             value={newTask.type}
                                             onChange={(e) => setNewTask({...newTask, type: e.target.value})}
-                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-gray-100 dark:bg-gray-700 dark:border-gray-600"
+                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         >
                                             <option value="Tarea">Tarea</option>
                                             <option value="Examen">Examen</option>
@@ -1412,14 +1361,14 @@
                                             type="date"
                                             value={newTask.dueDate}
                                             onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
-                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-gray-100 dark:bg-gray-700 dark:border-gray-600"
+                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         />
                                         <input
                                             type="time"
                                             placeholder="Hora (opcional)"
                                             value={newTask.dueTime}
                                             onChange={(e) => setNewTask({...newTask, dueTime: e.target.value})}
-                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-gray-100 dark:bg-gray-700 dark:border-gray-600"
+                                            className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         />
                                     </div>
                                     <textarea
@@ -1427,12 +1376,12 @@
                                         value={newTask.description}
                                         onChange={(e) => setNewTask({...newTask, description: e.target.value})}
                                         rows="2"
-                                        className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y dark:text-gray-100 dark:bg-gray-700 dark:border-gray-600"
+                                        className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
                                     ></textarea>
-                                    <div className="flex space-x-3 flex-wrap"> {/* Added flex-wrap for small screens */}
+                                    <div className="flex space-x-3">
                                         <button
                                             onClick={editingTask ? updateTask : addTask}
-                                            className="flex-1 bg-blue-600 text-white rounded-xl px-3 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-1.5 text-base font-medium flex-grow min-w-[120px] mb-2 sm:mb-0"
+                                            className="flex-1 bg-blue-600 text-white rounded-xl px-3 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-1.5 text-base font-medium"
                                         >
                                             {editingTask ? (
                                                 <>
@@ -1449,7 +1398,7 @@
                                         {editingTask && (
                                             <button
                                                 onClick={cancelEditing}
-                                                className="flex-1 bg-gray-500 text-white rounded-xl px-3 py-2.5 hover:bg-gray-600 flex items-center justify-center space-x-1.5 text-base font-medium flex-grow min-w-[120px]"
+                                                className="flex-1 bg-gray-500 text-white rounded-xl px-3 py-2.5 hover:bg-gray-600 flex items-center justify-center space-x-1.5 text-base font-medium"
                                             >
                                                 <span>Cancelar</span>
                                             </button>
@@ -1460,9 +1409,9 @@
                         </div>
 
                         {/* Contenedor de la Navegación (ancho completo) */}
-                        <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl dark:bg-gray-800 dark:border-gray-700 dark:shadow-blue-900/50 dark:ring-blue-800/30"> {/* Adjusted for dark mode, light mode on sm */}
+                        <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl"> {/* Adjusted py for smaller height on desktop */}
                             <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Contenido centrado dentro de la navegación */}
-                                <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-5 dark:text-blue-300">Tareas</h2>
+                                <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-5">Tareas</h2>
                                 
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
                                     <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
@@ -1471,7 +1420,6 @@
                                                 onClick={() => {
                                                     setView('list');
                                                     setOriginTaskForCalendar(null);
-                                                    setPendingCalendarHighlight(null); // Clear pending highlight
                                                     setTimeout(() => {
                                                         const taskListSection = document.getElementById('taskListSection');
                                                         if (taskListSection) {
@@ -1481,8 +1429,8 @@
                                                 }}
                                                 className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
                                                     view === 'list' 
-                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300 dark:shadow-blue-900/50 dark:ring-blue-800/30' // Adjusted shadow/ring for dark
-                                                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-blue-800 dark:hover:text-white dark:border-gray-600 dark:hover:border-blue-700' // Adjusted for dark mobile
+                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                                                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
                                                 }`}
                                             >
                                                 <IconBook width="18" height="18" />
@@ -1492,8 +1440,6 @@
                                                 onClick={() => {
                                                     setView('daily');
                                                     setShowColorLegend(false);
-                                                    setOriginTaskForCalendar(null);
-                                                    setPendingCalendarHighlight(null); // Clear pending highlight
                                                     setTimeout(() => {
                                                         const dailyTasksSection = document.getElementById('dailyTasksSection');
                                                         if (dailyTasksSection) {
@@ -1504,8 +1450,8 @@
                                                 }}
                                                 className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
                                                     view === 'daily' 
-                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300 dark:shadow-blue-900/50 dark:ring-blue-800/30' // Adjusted shadow/ring for dark
-                                                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-blue-800 dark:hover:text-white dark:border-gray-600 dark:hover:border-blue-700' // Adjusted for dark mobile
+                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                                                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
                                                 }`}
                                             >
                                                 <IconCalendar width="18" height="18" />
@@ -1515,8 +1461,6 @@
                                                 onClick={() => {
                                                     setView('calendar');
                                                     setShowColorLegend(false);
-                                                    setOriginTaskForCalendar(null);
-                                                    setPendingCalendarHighlight(null); // Clear pending highlight
                                                     setTimeout(() => {
                                                         const calendarSection = document.getElementById('calendarSection');
                                                         if (calendarSection) {
@@ -1527,7 +1471,7 @@
                                                 }}
                                                 className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
                                                     view === 'calendar' 
-                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300 dark:shadow-blue-900/50 dark:ring-blue-800/30' // Adjusted shadow/ring for dark
+                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
                                                     : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
                                                 }`}
                                             >
@@ -1552,16 +1496,13 @@
                         </div>
 
                         {/* Nueva: Línea de separación más compacta en móvil */}
-                        <div className="border-t-4 border-gray-100 mb-2 sm:my-3 dark:border-gray-700"></div>
+                        <div className="border-t-4 border-gray-100 mb-2 sm:my-3"></div>
 
                         {/* Vista principal */}
                         {view === 'list' ? (
                             // List View Container
-                            <div id="taskListSection" className="bg-white rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4 transition-all duration-500
-                                    dark:bg-gray-800 dark:text-gray-100
-                                    hover:ring-2 hover:ring-blue-300 hover:shadow-lg hover:shadow-blue-400/60 hover:scale-[1.005] hover:border-transparent
-                                    dark:hover:ring-blue-700 dark:hover:shadow-lg dark:hover:shadow-blue-900/50 dark:hover:scale-[1.005] dark:hover:border-transparent">
-                                <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-3 sm:mb-6 dark:text-blue-300">Lista de tareas</h2>
+                            <div id="taskListSection" className="bg-white rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4">
+                                <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-3 sm:mb-6">Lista de tareas</h2>
                                 
                                 {/* Sorted tasks rendering */}
                                 {[...tasks].sort((a, b) => {
@@ -1585,7 +1526,7 @@
                                                     handleTaskCardClick(task);
                                                 }
                                             }}
-                                            className={`rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} ${cardStyle.text} ${cardStyle.hoverClasses} cursor-pointer`}
+                                            className={`rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} hover:border-red-500 hover:ring-2 hover:ring-red-500 hover:shadow-lg hover:shadow-red-200 cursor-pointer`}
                                         >
                                             <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0"> {/* Adjusted space-y */}
                                                 <div className="flex items-start space-x-2.5 sm:space-x-4 flex-1">
@@ -1602,37 +1543,38 @@
 
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex flex-col sm:flex-row sm:items-center space-y-1.5 sm:space-y-0 sm:space-x-3 mb-1.5">
-                                                            <h3 className={`font-semibold text-sm sm:text-lg ${cardStyle.text} ${ // Use fixed cardStyle.text for content
-                                                                task.completed ? 'line-through' : ''
+                                                            <h3 className={`font-semibold text-sm sm:text-lg ${ /* Smaller text for mobile */
+                                                                task.completed ? 'line-through text-gray-500' : 
+                                                                status === 'overdue' ? 'line-through text-gray-700' : 'text-gray-900'
                                                             }`}>
                                                                 {task.subject}: {task.title}
                                                             </h3>
                                                             <div className="flex items-center space-x-2">
-                                                                <span className={`text-xs sm:text-sm px-2.5 py-0.5 rounded ${cardStyle.bg} ${cardStyle.text} font-medium`}> {/* Adjusted text size */}
+                                                                <span className="text-xs sm:text-sm bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded"> {/* Smaller text for mobile */}
                                                                     {task.type}
                                                                 </span>
                                                             </div>
                                                         </div>
 
                                                         {task.description && (
-                                                            <p className={`text-xs sm:text-base ${cardStyle.text} mb-1.5`}>{task.description}</p> /* Smaller text for mobile */
+                                                            <p className="text-xs sm:text-base text-gray-600 mb-1.5">{task.description}</p> /* Smaller text for mobile */
                                                         )}
 
-                                                        <div className={`flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-5 text-xs sm:text-base ${cardStyle.text}`}> {/* Smaller text for mobile */}
+                                                        <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-5 text-xs sm:text-base text-gray-500"> {/* Smaller text for mobile */}
                                                             <span>📅 {formatDateTime(task.dueDate, task.dueTime)}</span>
                                                             <span>⏰ {getDaysUntilDue(task.dueDate)}</span>
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center space-x-2.5 mt-2 sm:mt-0"> {/* Added margin top for small screens */}
-                                                    <div className={`w-4.5 h-4.5 sm:w-6 sm:h-6 ${cardStyle.text}`}>
-                                                        <IconClock width="22" height="22" className={cardStyle.text} />
+                                                <div className="flex items-center space-x-2.5">
+                                                    <div className="w-4.5 h-4.5 sm:w-6 sm:h-6">
+                                                        <IconClock width="22" height="22" />
                                                     </div>
 
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); startEditing(task); }}
-                                                        className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-xl transition-colors"
+                                                        className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1.5 sm:p-3 rounded-xl transition-colors"
                                                         title="Editar tarea"
                                                     >
                                                         <div className="w-4.5 h-4.5 sm:w-6 sm:h-6">
@@ -1642,7 +1584,7 @@
 
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
-                                                        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-xl transition-colors"
+                                                        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 sm:p-3 rounded-xl transition-colors"
                                                         title="Eliminar tarea"
                                                     >
                                                         <div className="w-4.5 h-4.5 sm:w-6 sm:h-6">
@@ -1664,31 +1606,23 @@
                                 toggleTask={toggleTask}
                                 startEditing={startEditing}
                                 deleteTask={deleteTask}
-                                handleTaskCardClick={handleTaskCardClick}
                             />
                         ) : (
                             <CalendarView highlightedDates={highlightedCalendarDates} chileanHolidays={chileanHolidays}
                                 originTaskForCalendar={originTaskForCalendar}
                                 backToOriginTask={backToOriginTask}
-                                currentCalendarViewDate={currentCalendarViewDate}
-                                setCurrentCalendarViewDate={setCurrentCalendarViewDate}
-                                todayGlobal={todayGlobal}
-                                getTaskStatus={getTaskStatus}
-                                pendingCalendarHighlight={pendingCalendarHighlight}
-                                setPendingCalendarHighlight={setPendingCalendarHighlight}
-                                animateCalendarDate={animateCalendarDate}
                             />
                         )}
 
                         {/* Footer con información */}
-                        <div className="mt-7 sm:mt-9 bg-white rounded-xl shadow-lg p-3 sm:p-5 dark:bg-gray-800">
-                            <div className="text-center text-gray-600 space-y-1.5 dark:text-gray-100">
-                                <div className="border-b border-gray-200 pb-1.5 dark:border-gray-700">
-                                    <p className="text-sm font-semibold text-gray-800 mb-0.5 dark:text-gray-200">© Derechos Reservados</p>
-                                    <p className="text-xs text-gray-700 dark:text-gray-300">
-                                        Realizado por <span className="font-semibold text-blue-600 dark:text-blue-300">Daniel Figueroa Chacama</span>
+                        <div className="mt-7 sm:mt-9 bg-white rounded-xl shadow-lg p-3 sm:p-5">
+                            <div className="text-center text-gray-600 space-y-1.5">
+                                <div className="border-b border-gray-200 pb-1.5">
+                                    <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p>
+                                    <p className="text-xs text-gray-700">
+                                        Realizado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span>
                                     </p>
-                                    <p className="text-xs text-gray-600 mt-0.5 dark:text-gray-400">Ingeniero en Informática</p>
+                                    <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p>
                                 </div>
                             </div>
                         </div>
