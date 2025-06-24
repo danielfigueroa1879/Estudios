@@ -1053,7 +1053,7 @@
             };
 
             // Monthly Calendar Component
-            const MonthlyCalendar = ({ tasks = [], highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays }) => { // Removed originTaskForCalendar, backToOriginTask
+            const MonthlyCalendar = ({ tasks = [], highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays }) => { 
                 const year = currentViewDate.getFullYear();
                 const month = currentViewDate.getMonth();
 
@@ -1427,9 +1427,9 @@
 
                         {/* Formulario con título azul y efecto de iluminación azul */}
                         <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 border border-gray-200 transition-all duration-500 mt-3
-                                    hover:ring-2 hover:ring-blue-300 hover:shadow-lg hover:shadow-blue-400/60 hover:scale-[1.005] hover:border-transparent
                                     dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100
-                                    dark:hover:ring-blue-700 dark:hover:shadow-lg dark:hover:shadow-blue-900/50 dark:hover:scale-[1.005] dark:hover:border-transparent">
+                                    hover:ring-2 hover:ring-blue-300 hover:shadow-lg hover:shadow-blue-400/60 hover:scale-[1.005] hover:border-transparent
+                                    dark:hover:ring-blue-700 dark:hover:shadow-lg dark:hover:shadow-blue-900/50 dark:hover:border-transparent">
                             <button
                                 onClick={() => setShowAddTask(!showAddTask)}
                                 className="w-full flex items-center justify-between text-left mb-3"
@@ -1799,5 +1799,3 @@
     </script>
 </body>
 </html>
-
-
