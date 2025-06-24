@@ -1027,6 +1027,7 @@
                             hover:ring-2 hover:ring-blue-300 hover:shadow-lg hover:shadow-blue-400/60 hover:scale-[1.005] hover:border-transparent
                             dark:hover:ring-blue-700 dark:hover:shadow-lg dark:hover:shadow-blue-900/50 dark:hover:border-transparent">
                         <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left dark:text-blue-300">Calendario</h2>
+                        <div className="flex items-center justify-between mb-6"> {/* Moved the div here for correct JSX structure */}
                             {/* Botón Volver a la Tarea (condicional) - Always absolute top-right, now inside CalendarView */}
                             {originTaskForCalendar && (
                                 <button
@@ -1375,7 +1376,6 @@
                                                     const calendarSection = document.getElementById('calendarSection');
                                                     if (calendarSection) {
                                                         calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                                        setOriginTaskForCalendar(null);
                                                     }
                                                 }, 100);
                                             }}
@@ -1522,7 +1522,7 @@
                         </div>
 
                         {/* Contenedor de la Navegación (ancho completo) - AHORA CON FONDO OSCURO PREDETERMINADO */}
-                        <div className="bg-gray-800 shadow-lg border-b border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-gray-700/50 ring-1 ring-gray-600/30 transition-all duration-500 rounded-2xl dark:bg-gray-900 dark:border-gray-800 dark:shadow-gray-900/50 dark:ring-gray-800/30">
+                        <div className="bg-gray-800 shadow-lg border-b border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-gray-700/50 ring-1 ring-gray-600/30 transition-all duration-500 rounded-2xl dark:bg-gray-900 dark:border-gray-800 dark:shadow-gray-900/50 dark:ring-gray-800/30 hover:ring-2 hover:ring-blue-300 hover:shadow-lg hover:shadow-blue-400/60 hover:scale-[1.005] hover:border-transparent dark:hover:ring-blue-700 dark:hover:shadow-lg dark:hover:shadow-blue-900/50">
                             <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Contenido centrado dentro de la navegación */}
                                 <h2 className="text-lg sm:text-xl font-semibold text-blue-300 text-left mb-5">Tareas</h2>
                                 
@@ -1582,7 +1582,6 @@
                                                     const calendarSection = document.getElementById('calendarSection');
                                                     if (calendarSection) {
                                                         calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                                        setOriginTaskForCalendar(null);
                                                     }
                                                 }, 100);
                                             }}
@@ -1619,7 +1618,7 @@
                             // List View Container - NO background color, uses body background
                             <div id="taskListSection" className="rounded-2xl p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4 transition-all duration-500
                                     hover:ring-2 hover:ring-blue-300 hover:shadow-lg hover:shadow-blue-400/60 hover:scale-[1.005] hover:border-transparent
-                                    dark:hover:ring-blue-700 dark:hover:shadow-lg dark:hover:shadow-blue-900/50 dark:hover:scale-[1.005] dark:hover:border-transparent">
+                                    dark:hover:ring-blue-700 dark:hover:shadow-lg dark:hover:shadow-blue-900/50 dark:hover:border-transparent">
                                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-3 sm:mb-6 dark:text-blue-300">Lista de tareas</h2>
                                 
                                 {/* Sorted tasks rendering */}
