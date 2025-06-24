@@ -22,8 +22,8 @@
     <meta name="description" content="Organiza tus tareas académicas de manera eficiente."/>
 
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <!-- Actualización: Especificando la versión de Tailwind CSS para consistencia con Service Worker -->
     <script src="https://cdn.tailwindcss.com/3.4.0"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -220,6 +220,17 @@
             const confirmCallbackRef = useRef(null); // Ref to store the callback for confirmation
             const [pendingCalendarHighlight, setPendingCalendarHighlight] = useState(null); // New state for pending calendar highlight
 
+            // Initialize tasks as an empty array first
+            const [tasks, setTasks] = useState([]); // Initialize with empty array
+            
+            // Effect to load tasks from localStorage only once on component mount
+            useEffect(() => {
+                const loadedTasks = loadTasksFromStorage();
+                // loadTasksFromStorage now guarantees an array, so no need for 'if (loadedTasks)'
+                setTasks(loadedTasks); 
+            }, []); // Empty dependency array means this runs once on mount
+
+
             // Chilean holidays for 2025 (YYYY-MM-DD format)
             // Sourced from feriados.cl, universal-assistance.com, gob.cl, and timeanddate.com
             const chileanHolidays = [
@@ -279,12 +290,28 @@
                 try {
                     const savedTasks = localStorage.getItem('academicTasks');
                     if (savedTasks) {
-                        return JSON.parse(savedTasks);
+                        const parsedTasks = JSON.parse(savedTasks);
+                        // Ensure parsedTasks is an array, otherwise return default
+                        if (Array.isArray(parsedTasks)) {
+                            // Validate each task within the parsed array
+                            const validTasks = parsedTasks.filter(task => 
+                                task && typeof task.id !== 'undefined' && 
+                                typeof task.subject === 'string' && 
+                                typeof task.title === 'string' && 
+                                typeof task.dueDate === 'string' && 
+                                typeof task.completed === 'boolean'
+                            );
+                            if (validTasks.length !== parsedTasks.length) {
+                                console.warn('Some tasks loaded from storage were invalid and were filtered out.');
+                            }
+                            return validTasks;
+                        }
+                        console.warn('Parsed tasks from storage was not an array. Returning default tasks.');
                     }
                 } catch (error) {
-                    console.error('Error loading tasks from storage:', error);
+                    console.error('Error loading tasks from storage or parsing JSON:', error);
                 }
-                // If no saved data, return default tasks
+                // If no saved data, or parsing failed, or not an array, return default tasks
                 const today = new Date();
                 const tomorrow = new Date(today);
                 tomorrow.setDate(today.getDate() + 1);
@@ -368,7 +395,8 @@
                         view: savedView || 'list',
                         emailNotifications: savedEmailNotifications === 'true' // Convert string to boolean
                     };
-                } catch (error) {
+                }
+                catch (error) {
                     console.error('Error loading settings from storage:', error);
                     return { view: 'list', emailNotifications: false };
                 }
@@ -384,8 +412,7 @@
                 }
             };
 
-            // Initialize states with saved data
-            const [tasks, setTasks] = useState(() => loadTasksFromStorage());
+            // Initialize other states
             const [newTask, setNewTask] = useState({
                 subject: '',
                 title: '',
@@ -432,6 +459,11 @@
 
             // Helper to create a local date at midnight fromiclopedia-MM-DD
             const createLocalDate = (dateString) => {
+                // Ensure dateString is a valid string before splitting
+                if (!dateString || typeof dateString !== 'string') {
+                    console.error('Invalid dateString provided to createLocalDate:', dateString);
+                    return new Date(NaN); // Return an invalid date
+                }
                 const parts = dateString.split('-').map(Number);
                 // Month is 0-indexed in Date constructor
                 return new Date(parts[0], parts[1] - 1, parts[2]);
@@ -445,7 +477,14 @@
                 const todayMidnight = new Date(now);
                 todayMidnight.setHours(0, 0, 0, 0);
 
+                // Defensive check for dueDate before creating date object
+                if (!dueDate) {
+                    return 'invalid-date'; // Or any other appropriate status
+                }
                 const dueMidnight = createLocalDate(dueDate);
+                if (isNaN(dueMidnight.getTime())) { // Check if date is invalid
+                    return 'invalid-date';
+                }
                 
                 let dueDateTime = dueMidnight;
                 if (dueTime) {
@@ -503,7 +542,7 @@
                                 text: 'text-red-800',
                             };
                             hoverColorClass = 'red';
-                            borderColorRgb = '239,68,68'; // red-500 RGB
+                            borderColorRgb = '239,68,68'; // red-500 RGB (Fixed typo here from 'borderColorRbs')
                             break;
                         case 'due-tomorrow':
                             baseStyles = {
@@ -555,7 +594,8 @@
             useEffect(() => {
                 const checkNotifications = () => {
                     const newNotifications = [];
-                    tasks.forEach(task => {
+                    // Ensure tasks is an array before using forEach
+                    (tasks || []).forEach(task => {
                         if (!task.completed) {
                             const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
                             // Notify if due today, tomorrow or overdue
@@ -689,15 +729,15 @@
             };
 
             const deleteAllCompleted = () => {
-                const completedCount = tasks.filter(task => task.completed).length;
+                const completedCount = (tasks || []).filter(task => task.completed).length; // Ensure tasks is array
                 if (completedCount === 0) {
                     showAlert('No hay tareas completadas para eliminar.');
                     return;
                 }
 
                 showConfirm(`¿Estás seguro de que quieres eliminar ${completedCount} tarea${completedCount > 1 ? 's' : ''} completada${completedCount > 1 ? 's' : ''}?`, () => {
-                    setTasks(tasks.filter(task => !task.completed));
-                    if (editingTask && tasks.filter(task => task.completed).some(t => t.id === editingTask.id)) {
+                    setTasks((tasks || []).filter(task => !task.completed)); // Ensure tasks is array
+                    if (editingTask && (tasks || []).filter(task => task.completed).some(t => t.id === editingTask.id)) {
                         cancelEditing(); // Cancel edit if edited task is completed and deleted
                     }
                 });
@@ -728,7 +768,14 @@
                 const todayMidnight = new Date();
                 todayMidnight.setHours(0, 0, 0, 0); // Midnight of *today* in local time
 
-                const dueMidnight = createLocalDate(dueDate); // Midnight of *due date* in local time
+                // Defensive check for dueDate before creating date object
+                if (!dueDate) {
+                    return 'Fecha inválida'; // Or any other appropriate message
+                }
+                const dueMidnight = createLocalDate(dueDate);
+                if (isNaN(dueMidnight.getTime())) { // Check if date is invalid
+                    return 'Fecha inválida';
+                }
 
                 const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -776,11 +823,11 @@
                         calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
 
-                    const alertDates = [...new Set(notifications.map(n => n.dueDate))].sort(); // Get unique and sorted dates from alerts
+                    const alertDates = [...new Set((notifications || []).map(n => n.dueDate))].sort(); // Ensure notifications is an array
 
                     let delay = 0;
                     for (const dateString of alertDates) { // Use for...of for flow control with await
-                        const taskForColor = tasks.find(t => t.dueDate === dateString);
+                        const taskForColor = (tasks || []).find(t => t.dueDate === dateString); // Ensure tasks is an array
                         let highlightColorValue = '';
                         let borderColorRgb = '';
                         if (taskForColor) {
@@ -867,7 +914,14 @@
 
             // --- Component for Daily Tasks Card View ---
             const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, toggleTask, startEditing, deleteTask, handleTaskCardClick }) => {
-                const groupedTasks = tasks.reduce((acc, task) => {
+                // Ensure tasks is an array before using reduce
+                const groupedTasks = (tasks || []).reduce((acc, task) => {
+                    // Defensive check: ensure task and task.dueDate are not null/undefined
+                    if (!task || !task.dueDate) {
+                        console.warn('Skipping task due to missing data:', task);
+                        return acc;
+                    }
+
                     const date = task.dueDate;
                     if (!acc[date]) acc[date] = [];
                     acc[date].push(task);
@@ -875,8 +929,10 @@
                 }, {});
 
                 return (
-                    // Daily Tasks Card View Container
-                    <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 dark:bg-gray-800" id="dailyTasksSection"> {/* Main container with styling */}
+                    // Daily Tasks Card View Container - NO background color, uses body background
+                    <div id="dailyTasksSection" className="rounded-2xl p-3 sm:p-6 mb-4 sm:mb-6 transition-all duration-500
+                            hover:ring-2 hover:ring-blue-300 hover:shadow-lg hover:shadow-blue-400/60 hover:scale-[1.005] hover:border-transparent
+                            dark:hover:ring-blue-700 dark:hover:shadow-lg dark:hover:shadow-blue-900/50 dark:hover:border-transparent">
                         <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-6 dark:text-blue-300">Tareas por día</h2>
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -966,10 +1022,11 @@
                 }, [pendingCalendarHighlight, currentCalendarViewDate, animateCalendarDate, setPendingCalendarHighlight]);
 
                 return (
-                    // Calendar View Container
-                    <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative dark:bg-gray-800" id="calendarSection"> {/* Added relative for absolute positioning of back button */}
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left dark:text-blue-300">Calendario</h2>
+                    // Calendar View Container - NO background color, uses body background
+                    <div id="calendarSection" className="rounded-2xl p-3 sm:p-6 mb-4 sm:mb-6 relative transition-all duration-500
+                            hover:ring-2 hover:ring-blue-300 hover:shadow-lg hover:shadow-blue-400/60 hover:scale-[1.005] hover:border-transparent
+                            dark:hover:ring-blue-700 dark:hover:shadow-lg dark:hover:shadow-blue-900/50 dark:hover:border-transparent">
+                        <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left dark:text-blue-300">Calendario</h2>
                             {/* Botón Volver a la Tarea (condicional) - Always absolute top-right, now inside CalendarView */}
                             {originTaskForCalendar && (
                                 <button
@@ -1023,8 +1080,20 @@
 
                 // Group tasks by date
                 // Safely access tasks using tasks.reduce, assuming tasks is an array
-                const tasksByDate = tasks.reduce((acc, task) => {
+                const tasksByDate = (tasks || []).reduce((acc, task) => {
+                    // Defensive check: ensure task and task.dueDate are not null/undefined
+                    if (!task || !task.dueDate) {
+                        console.warn('Skipping task due to missing data:', task);
+                        return acc;
+                    }
+
                     const taskDate = createLocalDate(task.dueDate);
+                    // Check if the date parsing resulted in an invalid date
+                    if (isNaN(taskDate.getTime())) {
+                        console.warn('Skipping task due to invalid dueDate format:', task);
+                        return acc;
+                    }
+
                     if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
                         const day = taskDate.getDate();
                         if (!acc[day]) acc[day] = [];
@@ -1190,7 +1259,7 @@
             };
 
             return (
-                <div className="min-h-screen bg-gray-200 dark:bg-gray-900"> {/* Base background: light by default, dark on system dark */}
+                <div className="min-h-screen bg-gray-200 text-gray-900 dark:bg-gray-900 dark:text-gray-100"> {/* Base background: light by default, dark on system dark */}
                     {/* Contenedor del Encabezado (ancho completo) */}
                     <div className="bg-blue-700 shadow-lg w-full py-4 sm:py-4 mb-5"> {/* Fondo azul, increased py-4 for mobile */}
                         <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Contenido centrado dentro del encabezado */}
@@ -1214,7 +1283,7 @@
 
                                 {/* Contenido Derecho: Campana (visible siempre), Toggle de email (oculto en móvil), Menú Hamburguesa */}
                                 <div className="flex-shrink-0 flex items-center space-x-2">
-                                    {notifications.length > 0 && (
+                                    {notifications.length > 0 && showAlerts && (
                                         <button
                                             onClick={() => setShowAlerts(!showAlerts)}
                                             className="relative hover:bg-blue-600 p-1.5 rounded-xl transition-colors" /* Hover ajustado a azul más oscuro */
@@ -1452,95 +1521,93 @@
                             )}
                         </div>
 
-                        {/* Contenedor de la Navegación (ancho completo) */}
-                        <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl dark:bg-gray-800 dark:border-gray-700 dark:shadow-blue-900/50 dark:ring-blue-800/30"> {/* Adjusted for dark mode, light mode on sm */}
+                        {/* Contenedor de la Navegación (ancho completo) - AHORA CON FONDO OSCURO PREDETERMINADO */}
+                        <div className="bg-gray-800 shadow-lg border-b border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-gray-700/50 ring-1 ring-gray-600/30 transition-all duration-500 rounded-2xl dark:bg-gray-900 dark:border-gray-800 dark:shadow-gray-900/50 dark:ring-gray-800/30">
                             <div className="max-w-7xl mx-auto px-3 sm:px-6"> {/* Contenido centrado dentro de la navegación */}
-                                <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-5 dark:text-blue-300">Tareas</h2>
+                                <h2 className="text-lg sm:text-xl font-semibold text-blue-300 text-left mb-5">Tareas</h2>
                                 
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
-                                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
-                                        <div className="grid grid-cols-3 gap-1.5 sm:flex sm:gap-3 w-full sm:w-auto">
-                                            <button
-                                                onClick={() => {
-                                                    setView('list');
-                                                    setOriginTaskForCalendar(null);
-                                                    setPendingCalendarHighlight(null); // Clear pending highlight
-                                                    setTimeout(() => {
-                                                        const taskListSection = document.getElementById('taskListSection');
-                                                        if (taskListSection) {
-                                                            taskListSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                                        }
-                                                    }, 100);
-                                                }}
-                                                className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
-                                                    view === 'list' 
-                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300 dark:shadow-blue-900/50 dark:ring-blue-800/30' // Adjusted shadow/ring for dark
-                                                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-blue-800 dark:hover:text-white dark:border-gray-600 dark:hover:border-blue-700' // Adjusted for dark mobile
-                                                }`}
-                                            >
-                                                <IconBook width="18" height="18" />
-                                                <span className="font-medium text-center sm:text-center">Lista</span>
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setView('daily');
-                                                    setShowColorLegend(false);
-                                                    setOriginTaskForCalendar(null);
-                                                    setPendingCalendarHighlight(null); // Clear pending highlight
-                                                    setTimeout(() => {
-                                                        const dailyTasksSection = document.getElementById('dailyTasksSection');
-                                                        if (dailyTasksSection) {
-                                                            dailyTasksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                                            setOriginTaskForCalendar(null);
-                                                        }
-                                                    }, 100);
-                                                }}
-                                                className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
-                                                    view === 'daily' 
-                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300 dark:shadow-blue-900/50 dark:ring-blue-800/30' // Adjusted shadow/ring for dark
-                                                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-blue-800 dark:hover:text-white dark:border-gray-600 dark:hover:border-blue-700' // Adjusted for dark mobile
-                                                }`}
-                                            >
-                                                <IconCalendar width="18" height="18" />
-                                                <span className="font-medium text-center sm:text-center">Por Día</span>
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setView('calendar');
-                                                    setShowColorLegend(false);
-                                                    setOriginTaskForCalendar(null);
-                                                    setPendingCalendarHighlight(null); // Clear pending highlight
-                                                    setTimeout(() => {
-                                                        const calendarSection = document.getElementById('calendarSection');
-                                                        if (calendarSection) {
-                                                            calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                                            setOriginTaskForCalendar(null);
-                                                        }
-                                                    }, 100);
-                                                }}
-                                                className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
-                                                    view === 'calendar' 
-                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300 dark:shadow-blue-900/50 dark:ring-blue-800/30' // Adjusted shadow/ring for dark
-                                                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'
-                                                }`}
-                                            >
-                                                <IconCalendar width="20" height="20" /> {/* Increased size for Calendar icon */}
-                                                <span className="font-medium text-center sm:text-center">Calendario</span>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* Botón para eliminar tareas completadas */}
-                                    {tasks.filter(task => task.completed).length > 0 && (
+                                    <div className="grid grid-cols-3 gap-1.5 sm:flex sm:gap-3 w-full sm:w-auto">
                                         <button
-                                            onClick={deleteAllCompleted}
-                                            className="px-3 py-2 bg-red-500 text-white rounded-2xl hover:bg-red-600 flex items-center space-x-1.5 text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-red-200"
+                                            onClick={() => {
+                                                setView('list');
+                                                setOriginTaskForCalendar(null);
+                                                setPendingCalendarHighlight(null); // Clear pending highlight
+                                                setTimeout(() => {
+                                                    const taskListSection = document.getElementById('taskListSection');
+                                                    if (taskListSection) {
+                                                        taskListSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                    }
+                                                }, 100);
+                                            }}
+                                            className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                                                view === 'list' 
+                                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                                                : 'bg-gray-700 text-gray-200 hover:bg-blue-700 hover:text-white border border-gray-600 hover:border-blue-800'
+                                            }`}
                                         >
-                                            <IconTrash width="16" height="16" />
-                                            <span>Eliminar Completadas ({tasks.filter(task => task.completed).length})</span>
+                                            <IconBook width="18" height="18" className={view === 'list' ? 'text-white' : 'text-gray-200'} />
+                                            <span className="font-medium text-center sm:text-center">Lista</span>
                                         </button>
-                                    )}
+                                        <button
+                                            onClick={() => {
+                                                setView('daily');
+                                                setShowColorLegend(false);
+                                                setOriginTaskForCalendar(null);
+                                                setPendingCalendarHighlight(null); // Clear pending highlight
+                                                setTimeout(() => {
+                                                    const dailyTasksSection = document.getElementById('dailyTasksSection');
+                                                    if (dailyTasksSection) {
+                                                        dailyTasksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                        setOriginTaskForCalendar(null);
+                                                    }
+                                                }, 100);
+                                            }}
+                                            className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                                                view === 'daily' 
+                                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                                                : 'bg-gray-700 text-gray-200 hover:bg-blue-700 hover:text-white border border-gray-600 hover:border-blue-800'
+                                            }`}
+                                        >
+                                            <IconCalendar width="18" height="18" className={view === 'daily' ? 'text-white' : 'text-gray-200'}/>
+                                            <span className="font-medium text-center sm:text-center">Por Día</span>
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setView('calendar');
+                                                setShowColorLegend(false);
+                                                setOriginTaskForCalendar(null);
+                                                setPendingCalendarHighlight(null); // Clear pending highlight
+                                                setTimeout(() => {
+                                                    const calendarSection = document.getElementById('calendarSection');
+                                                    if (calendarSection) {
+                                                        calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                        setOriginTaskForCalendar(null);
+                                                    }
+                                                }, 100);
+                                            }}
+                                            className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${
+                                                view === 'calendar' 
+                                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' 
+                                                : 'bg-gray-700 text-gray-200 hover:bg-blue-700 hover:text-white border border-gray-600 hover:border-blue-800'
+                                            }`}
+                                        >
+                                            <IconCalendar width="20" height="20" className={view === 'calendar' ? 'text-white' : 'text-gray-200'}/> {/* Increased size for Calendar icon */}
+                                            <span className="font-medium text-center sm:text-center">Calendario</span>
+                                        </button>
+                                    </div>
                                 </div>
+
+                                {/* Botón para eliminar tareas completadas */}
+                                {(tasks || []).filter(task => task.completed).length > 0 && (
+                                    <button
+                                        onClick={deleteAllCompleted}
+                                        className="px-3 py-2 bg-red-500 text-white rounded-2xl hover:bg-red-600 flex items-center space-x-1.5 text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-red-200"
+                                    >
+                                        <IconTrash width="16" height="16" />
+                                        <span>Eliminar Completadas ({(tasks || []).filter(task => task.completed).length})</span>
+                                    </button>
+                                )}
                             </div>
                         </div>
 
@@ -1549,12 +1616,20 @@
 
                         {/* Vista principal */}
                         {view === 'list' ? (
-                            // List View Container
-                            <div id="taskListSection" className="bg-white rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4 dark:bg-gray-800">
+                            // List View Container - NO background color, uses body background
+                            <div id="taskListSection" className="rounded-2xl p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4 transition-all duration-500
+                                    hover:ring-2 hover:ring-blue-300 hover:shadow-lg hover:shadow-blue-400/60 hover:scale-[1.005] hover:border-transparent
+                                    dark:hover:ring-blue-700 dark:hover:shadow-lg dark:hover:shadow-blue-900/50 dark:hover:scale-[1.005] dark:hover:border-transparent">
                                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-3 sm:mb-6 dark:text-blue-300">Lista de tareas</h2>
                                 
                                 {/* Sorted tasks rendering */}
-                                {[...tasks].sort((a, b) => {
+                                {(tasks || []).sort((a, b) => {
+                                    // Defensive checks for task properties
+                                    if (!a || !a.dueDate || !b || !b.dueDate) {
+                                        // Handle cases where a task or its dueDate might be invalid
+                                        return 0; // Keep original order for invalid tasks or handle as needed
+                                    }
+
                                     // Completed tasks go to the end
                                     if (a.completed && !b.completed) return 1;
                                     if (!a.completed && b.completed) return -1;
@@ -1563,6 +1638,11 @@
                                     const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`);
                                     return dateA - dateB;
                                 }).map(task => {
+                                    // Defensive check for task.dueDate before passing to getTaskStatus
+                                    if (!task || !task.dueDate) {
+                                        console.warn('Skipping task in list view due to missing data:', task);
+                                        return null; // Skip rendering this task
+                                    }
                                     const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
                                     const cardStyle = getTaskCardStyle(status, task.completed);
 
@@ -1721,4 +1801,3 @@
     </script>
 </body>
 </html>
-
