@@ -397,7 +397,7 @@ const AcademicTaskManager = ({ user }) => {
                                 <div className="text-white"><IconBook width="26" height="26" /></div>
                                 <div>
                                     <h1 className="text-lg sm:text-3xl font-bold text-white leading-tight">GESTOR ACADÉMICO</h1>
-                                    <p className="text-xs sm:text-base text-white">Usuario: <span className="font-semibold">{user.email}</span></p>
+                                    <p className="text-xs sm:text-base text-white mt-1">Usuario: <span className="font-semibold">{user.email}</span></p>
                                 </div>
                             </div>
                         </div>
