@@ -171,6 +171,124 @@ const LoginScreen = ({ showAlert }) => {
     );
 };
 
+// --- Componentes de Vista (Refactorizados) ---
+
+const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, toggleTask, startEditing, deleteTask, handleTaskCardClick }) => {
+    const groupedTasks = tasks.reduce((acc, task) => {
+        const date = task.dueDate;
+        if (!acc[date]) acc[date] = [];
+        acc[date].push(task);
+        return acc;
+    }, {});
+
+    return (
+        <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6" id="dailyTasksSection">
+            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-6">Tareas por día</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
+                    <div key={date} className="bg-white rounded-xl shadow-lg p-2.5 sm:p-5 hover:border-2 hover:border-red-500 hover:shadow-xl hover:shadow-red-200 transition-all duration-300 cursor-pointer">
+                        <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 mb-2 sm:mb-3">{formatDate(date)}</h3>
+                        <div className="space-y-1">
+                            {dayTasks.sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')).map(task => {
+                                const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                                const cardStyle = getTaskCardStyle(status, task.completed);
+                                return (
+                                    <div key={task.id} onClick={() => handleTaskCardClick(task)} className={`p-1.5 sm:p-3 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300 cursor-pointer hover:shadow-lg`}>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center space-x-1"><IconClock width="18" height="18" /><span className={`text-xs sm:text-sm px-2 py-0.5 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>{task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate)}</span></div>
+                                            <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id, task.completed); }} className={`w-5 h-5 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center ${task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300'}`}>{task.completed && <IconCheck width="14" height="14" />}</button>
+                                        </div>
+                                        <div><p className="font-medium text-sm sm:text-lg text-gray-800">{task.subject}</p><p className="text-xs sm:text-base text-gray-600 mt-0.5">{task.title}</p><p className="text-xs text-gray-500 mt-1">{task.type}</p></div>
+                                        <div className="flex justify-end mt-3 space-x-1">
+                                            <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1 rounded-xl transition-colors" title="Editar tarea"><IconEdit width="16" height="16" /></button>
+                                            <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded-xl transition-colors" title="Eliminar tarea"><IconTrash width="16" height="16" /></button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate }) => {
+    const year = currentViewDate.getFullYear();
+    const month = currentViewDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    const daysArray = [];
+    const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
+    for (let i = 0; i < adjustedStartingDay; i++) { daysArray.push(null); }
+    for (let day = 1; day <= daysInMonth; day++) { daysArray.push(day); }
+    const tasksByDate = tasks.reduce((acc, task) => {
+        const taskDate = createLocalDate(task.dueDate);
+        if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
+            const day = taskDate.getDate();
+            if (!acc[day]) acc[day] = [];
+            acc[day].push(task);
+        }
+        return acc;
+    }, {});
+    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', <span key="sab" className="text-red-600">Sáb</span>, <span key="dom" className="text-red-600">Dom</span>];
+    const goToPreviousMonth = () => setCurrentViewDate(new Date(year, month - 1, 1));
+    const goToNextMonth = () => setCurrentViewDate(new Date(year, month + 1, 1));
+    const goToToday = () => setCurrentViewDate(todayGlobal);
+    return (
+        <div className="relative">
+            <h2 className="text-xl sm:text-2xl font-bold text-red-600 text-center mb-1 sm:mb-0">{monthNames[month]} {year}</h2>
+            <div className="flex justify-center space-x-1 sm:space-x-2 w-full mt-1 sm:mt-2 mb-4">
+                <button onClick={goToPreviousMonth} className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm">←</button>
+                <button onClick={goToToday} className="px-3 py-1.5 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm">Hoy</button>
+                <button onClick={goToNextMonth} className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm">→</button>
+            </div>
+            <div className="grid grid-cols-7 gap-0.5 mb-1">{dayNames.map((day, index) => <div key={index} className="text-center font-semibold text-gray-600 py-1 text-sm">{day}</div>)}</div>
+            <div className="grid grid-cols-7 gap-0.5">
+                {daysArray.map((day, index) => {
+                    if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28"></div>;
+                    const dayObj = new Date(year, month, day);
+                    const isToday = todayGlobal.getDate() === dayObj.getDate() && todayGlobal.getMonth() === dayObj.getMonth() && todayGlobal.getFullYear() === dayObj.getFullYear();
+                    const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                    const isHoliday = chileanHolidays.includes(currentDayFormatted);
+                    const highlightEntry = highlightedDates.find(h => h.date === currentDayFormatted);
+                    const highlightClassesToApply = highlightEntry ? highlightEntry.classes : '';
+                    const highlightBorderColorRgb = highlightEntry ? highlightEntry.borderColorRgb : '';
+                    return (
+                        <div key={currentDayFormatted} className={`h-14 sm:h-20 lg:h-28 border border-gray-200 p-0.5 sm:p-1 transition-all duration-300 ease-in-out ${isHoliday ? 'bg-red-50' : ''} ${isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50'} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`} style={highlightEntry ? { '--highlight-color': highlightClassesToApply.match(/border-([\w-]+)-(\d+)/)?.[0].replace('border-', '') || '#3b82f6', '--ring-color-rgb': highlightBorderColorRgb } : {}}>
+                            <div className={`text-xs sm:text-sm font-medium ${isToday ? 'text-blue-700' : (isHoliday ? 'text-red-600' : 'text-gray-800')}`}>{day}</div>
+                            <div className="mt-0.5 space-y-0.5">
+                                {tasksByDate[day] && tasksByDate[day].sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')).map((task, taskIndex) => {
+                                    const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                                    let bgColor = '', title = '';
+                                    switch (status) { case 'overdue': bgColor = 'bg-gray-600'; title = `${task.subject} - Vencida`; break; case 'due-today': bgColor = 'bg-red-400'; title = `${task.subject} - Vence hoy`; break; case 'due-tomorrow': bgColor = 'bg-orange-400'; title = `${task.subject} - Vence mañana`; break; case 'due-soon': bgColor = 'bg-yellow-400'; title = `${task.subject} - Por vencer`; break; case 'completed': bgColor = 'bg-gray-400'; title = `${task.subject} - Completada`; break; default: bgColor = 'bg-green-400'; title = `${task.subject} - A tiempo`; }
+                                    if (task.dueTime) title += ` - ${task.dueTime}`;
+                                    return <div key={`${task.id}-${taskIndex}`} className={`w-full h-1.5 ${bgColor} rounded text-xs text-white text-center leading-none`} title={title}></div>;
+                                })}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
+
+const CalendarView = ({ tasks, highlightedDates, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate, originTaskForCalendar, backToOriginTask }) => {
+    return (
+        <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative" id="calendarSection">
+            <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left">Calendario</h2>
+                {originTaskForCalendar && (<button onClick={backToOriginTask} className="p-2 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center z-10" title="Volver a la tarea original"><IconArrowBack width="20" height="20" /></button>)}
+            </div>
+            <MonthlyCalendar tasks={tasks} highlightedDates={highlightedDates} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} />
+        </div>
+    );
+};
 
 // --- Academic Task Manager Component (Actualizado con Firestore) ---
 const AcademicTaskManager = ({ user }) => {
@@ -178,44 +296,23 @@ const AcademicTaskManager = ({ user }) => {
     const [loading, setLoading] = useState(true);
     const [settings, setSettings] = useState({ view: 'list', emailNotifications: false });
 
-    // Referencias a la base de datos de Firestore
     const tasksCollectionRef = db.collection('users').doc(user.uid).collection('tasks');
     const settingsDocRef = db.collection('users').doc(user.uid).collection('settings').doc('appSettings');
 
-    // Cargar tareas y configuraciones desde Firestore en tiempo real
     useEffect(() => {
         setLoading(true);
         const unsubscribeTasks = tasksCollectionRef.onSnapshot(snapshot => {
             const tasksData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setTasks(tasksData);
             setLoading(false);
-        }, error => {
-            console.error("Error fetching tasks:", error);
-            setLoading(false);
-        });
-
-        const unsubscribeSettings = settingsDocRef.onSnapshot(doc => {
-            if (doc.exists) {
-                setSettings(doc.data());
-            }
-        }, error => {
-            console.error("Error fetching settings:", error);
-        });
-
-        // Limpiar las suscripciones al desmontar el componente
-        return () => {
-            unsubscribeTasks();
-            unsubscribeSettings();
-        };
+        }, error => { console.error("Error fetching tasks:", error); setLoading(false); });
+        const unsubscribeSettings = settingsDocRef.onSnapshot(doc => { if (doc.exists) { setSettings(doc.data()); } }, error => { console.error("Error fetching settings:", error); });
+        return () => { unsubscribeTasks(); unsubscribeSettings(); };
     }, [user.uid]);
 
-    // Guardar configuraciones en Firestore
     useEffect(() => {
-        // No guardar en el primer render si son los valores por defecto
         if (settings.view !== 'list' || settings.emailNotifications !== false) {
-             settingsDocRef.set(settings, { merge: true }).catch(error => {
-                console.error("Error saving settings:", error);
-             });
+             settingsDocRef.set(settings, { merge: true }).catch(error => { console.error("Error saving settings:", error); });
         }
     }, [settings]);
 
@@ -328,14 +425,6 @@ const AcademicTaskManager = ({ user }) => {
     const handleTaskCardClick = async (task) => { if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current); setHighlightedCalendarDates([]); setOriginTaskForCalendar({ taskId: task.id, scrollY: window.scrollY }); setView('calendar'); setCurrentCalendarViewDate(createLocalDate(task.dueDate)); setTimeout(() => { const calendarSection = document.getElementById('calendarSection'); if (calendarSection) calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); const cardStyle = getTaskCardStyle(status, task.completed); await animateCalendarDate(task.dueDate, cardStyle.highlightClass, cardStyle.borderColorRgb); };
     const backToOriginTask = () => { if (originTaskForCalendar) { setView('list'); setHighlightedCalendarDates([]); setTimeout(() => { const taskElement = document.getElementById(originTaskForCalendar.taskId); if (taskElement) taskElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); setOriginTaskForCalendar(null); }, 0); } };
     
-    // El resto de los componentes (DailyTasksCardView, CalendarView, MonthlyCalendar) y el JSX del return
-    // son idénticos a la versión anterior, solo que ahora operan sobre los datos de Firestore.
-    // Para brevedad, no se repiten aquí, pero están en el código funcional.
-
-    // El resto del componente es idéntico al anterior, solo que ahora los datos vienen de `tasks` (Firestore)
-    // y las funciones de manipulación (addTask, deleteTask, etc.) interactúan con Firestore.
-    // El código completo se encuentra en el bloque final.
-
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-200 flex items-center justify-center">
@@ -386,13 +475,11 @@ const AcademicTaskManager = ({ user }) => {
 
             {/* Main Content */}
             <div className="max-w-7xl mx-auto px-3 sm:px-6">
-                {/* El resto de la UI es idéntica a la versión anterior */}
-                {/* ... (Alertas, Formulario, Vistas, etc.) ... */}
                  {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
                  <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300 mt-3"> <button onClick={() => setShowAddTask(!showAddTask)} className="w-full flex items-center justify-between text-left mb-3"> <h3 className="font-semibold text-blue-600 text-lg sm:text-xl text-left">{editingTask ? 'Editar tarea' : 'Agregar nueva tarea'}</h3> {showAddTask ? <div className="text-blue-600"><IconChevronUp width="20" height="20" /></div> : <div className="text-blue-600"><IconChevronDown width="20" height="20" /></div>} </button> {showAddTask && ( <div className="space-y-3"> <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3"> <input type="text" placeholder="Asignatura" value={newTask.subject} onChange={(e) => setNewTask({...newTask, subject: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <input type="text" placeholder="Título de la tarea" value={newTask.title} onChange={(e) => setNewTask({...newTask, title: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <select value={newTask.type} onChange={(e) => setNewTask({...newTask, type: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="Tarea">Tarea</option> <option value="Examen">Examen</option> <option value="Ensayo">Ensayo</option> <option value="Proyecto">Proyecto</option> <option value="Laboratorio">Laboratorio</option> </select> <input type="date" value={newTask.dueDate} onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <input type="time" placeholder="Hora (opcional)" value={newTask.dueTime} onChange={(e) => setNewTask({...newTask, dueTime: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> </div> <textarea placeholder="Descripción (opcional)" value={newTask.description} onChange={(e) => setNewTask({...newTask, description: e.target.value})} rows="2" className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea> <div className="flex space-x-3"> <button onClick={editingTask ? updateTask : addTask} className="flex-1 bg-blue-600 text-white rounded-xl px-3 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-1.5 text-base font-medium"> {editingTask ? <><IconCheck width="18" height="18" /><span>Actualizar</span></> : <><IconPlus width="18" height="18" /><span>Agregar</span></>} </button> {editingTask && <button onClick={cancelEditing} className="flex-1 bg-gray-500 text-white rounded-xl px-3 py-2.5 hover:bg-gray-600 flex items-center justify-center space-x-1.5 text-base font-medium"><span>Cancelar</span></button>} </div> </div> )} </div>
                  <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl"> <div className="max-w-7xl mx-auto px-3 sm:px-6"> <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-5">Tareas</h2> <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0"> <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto"> <div className="grid grid-cols-3 gap-1.5 sm:flex sm:gap-3 w-full sm:w-auto"> <button onClick={() => { setView('list'); setOriginTaskForCalendar(null); setTimeout(() => document.getElementById('taskListSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'list' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconBook width="18" height="18" /><span className="font-medium text-center sm:text-center">Lista</span></button> <button onClick={() => { setView('daily'); setShowColorLegend(false); setTimeout(() => document.getElementById('dailyTasksSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'daily' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center sm:text-center">Por Día</span></button> <button onClick={() => { setView('calendar'); setShowColorLegend(false); setTimeout(() => document.getElementById('calendarSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'calendar' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center sm:text-center">Calendario</span></button> </div> </div> {tasks.filter(task => task.completed).length > 0 && <button onClick={deleteAllCompleted} className="px-3 py-2 bg-red-500 text-white rounded-2xl hover:bg-red-600 flex items-center space-x-1.5 text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-red-200"><IconTrash width="16" height="16" /><span>Eliminar Completadas ({tasks.filter(task => task.completed).length})</span></button>} </div> </div> </div>
                  <div className="border-t-4 border-gray-100 mb-2 sm:my-3"></div>
-                 {view === 'list' ? ( <div id="taskListSection" className="bg-white rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4"> <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-3 sm:mb-6">Lista de tareas</h2> {[...tasks].sort((a, b) => { if (a.completed && !b.completed) return 1; if (!a.completed && b.completed) return -1; const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`); const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`); return dateA - dateB; }).map(task => { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); const cardStyle = getTaskCardStyle(status, task.completed); return ( <div key={task.id} id={task.id} onClick={(e) => { if (e.target.tagName !== 'BUTTON' && e.target.closest('button') === null) handleTaskCardClick(task); }} className={`rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} hover:border-red-500 hover:ring-2 hover:ring-red-500 hover:shadow-lg hover:shadow-red-200 cursor-pointer`}> <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0"> <div className="flex items-start space-x-2.5 sm:space-x-4 flex-1"> <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id, task.completed); }} className={`mt-0.5 w-6 h-6 sm:w-6.5 sm:h-6.5 rounded border-2 flex items-center justify-center flex-shrink-0 ${task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 hover:border-gray-400'}`}>{task.completed && <IconCheck width="15" height="15" />}</button> <div className="flex-1 min-w-0"> <div className="flex flex-col sm:flex-row sm:items-center space-y-1.5 sm:space-y-0 sm:space-x-3 mb-1.5"> <h3 className={`font-semibold text-sm sm:text-lg ${task.completed ? 'line-through text-gray-500' : status === 'overdue' ? 'line-through text-gray-700' : 'text-gray-900'}`}>{task.subject}: {task.title}</h3> <div className="flex items-center space-x-2"><span className="text-xs sm:text-sm bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded">{task.type}</span></div> </div> {task.description && <p className="text-xs sm:text-base text-gray-600 mb-1.5">{task.description}</p>} <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-5 text-xs sm:text-base text-gray-500"> <span>📅 {formatDateTime(task.dueDate, task.dueTime)}</span> <span>⏰ {getDaysUntilDue(task.dueDate)}</span> </div> </div> </div> <div className="flex items-center space-x-2.5"> <div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconClock width="22" height="22" /></div> <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Editar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconEdit width="22" height="22" /></div></button> <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Eliminar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconTrash width="22" height="22" /></div></button> </div> </div> </div> ); })} </div> ) : view === 'daily' ? ( <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} /> ) : ( <CalendarView highlightedDates={highlightedCalendarDates} chileanHolidays={chileanHolidays} originTaskForCalendar={originTaskForCalendar} backToOriginTask={backToOriginTask} /> )}
+                 {view === 'list' ? ( <div id="taskListSection" className="bg-white rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4"> <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-3 sm:mb-6">Lista de tareas</h2> {[...tasks].sort((a, b) => { if (a.completed && !b.completed) return 1; if (!a.completed && b.completed) return -1; const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`); const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`); return dateA - dateB; }).map(task => { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); const cardStyle = getTaskCardStyle(status, task.completed); return ( <div key={task.id} id={task.id} onClick={(e) => { if (e.target.tagName !== 'BUTTON' && e.target.closest('button') === null) handleTaskCardClick(task); }} className={`rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} hover:border-red-500 hover:ring-2 hover:ring-red-500 hover:shadow-lg hover:shadow-red-200 cursor-pointer`}> <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0"> <div className="flex items-start space-x-2.5 sm:space-x-4 flex-1"> <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id, task.completed); }} className={`mt-0.5 w-6 h-6 sm:w-6.5 sm:h-6.5 rounded border-2 flex items-center justify-center flex-shrink-0 ${task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 hover:border-gray-400'}`}>{task.completed && <IconCheck width="15" height="15" />}</button> <div className="flex-1 min-w-0"> <div className="flex flex-col sm:flex-row sm:items-center space-y-1.5 sm:space-y-0 sm:space-x-3 mb-1.5"> <h3 className={`font-semibold text-sm sm:text-lg ${task.completed ? 'line-through text-gray-500' : status === 'overdue' ? 'line-through text-gray-700' : 'text-gray-900'}`}>{task.subject}: {task.title}</h3> <div className="flex items-center space-x-2"><span className="text-xs sm:text-sm bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded">{task.type}</span></div> </div> {task.description && <p className="text-xs sm:text-base text-gray-600 mb-1.5">{task.description}</p>} <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-5 text-xs sm:text-base text-gray-500"> <span>📅 {formatDateTime(task.dueDate, task.dueTime)}</span> <span>⏰ {getDaysUntilDue(task.dueDate)}</span> </div> </div> </div> <div className="flex items-center space-x-2.5"> <div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconClock width="22" height="22" /></div> <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Editar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconEdit width="22" height="22" /></div></button> <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Eliminar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconTrash width="22" height="22" /></div></button> </div> </div> </div> ); })} </div> ) : view === 'daily' ? ( <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} /> ) : ( <CalendarView tasks={tasks} highlightedDates={highlightedCalendarDates} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} originTaskForCalendar={originTaskForCalendar} backToOriginTask={backToOriginTask} /> )}
                  <div className="mt-7 sm:mt-9 bg-white rounded-xl shadow-lg p-3 sm:p-5"> <div className="text-center text-gray-600 space-y-1.5"> <div className="border-b border-gray-200 pb-1.5"> <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p> <p className="text-xs text-gray-700">Realizado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span></p> <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p> </div> </div> </div>
             </div>
 
