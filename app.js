@@ -118,7 +118,7 @@ const LoginScreen = ({ showAlert }) => {
     };
 
     return (
-        <div className="min-h-screen bg-blue-50 flex flex-col justify-center items-center p-4">
+        <div className="min-h-screen bg-blue-600 flex flex-col justify-center items-center p-4">
             <div className="max-w-md w-full mx-auto bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-blue-600">
                 <div className="text-center mb-8">
                     <IconBook width="48" height="48" className="mx-auto text-blue-600" />
