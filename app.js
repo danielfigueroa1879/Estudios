@@ -6,26 +6,21 @@ const { useState, useEffect, useRef } = React;
 // 3. Copia el objeto de configuración de Firebase y pégalo aquí abajo.
 // 4. En Firebase, ve a "Authentication" -> "Sign-in method" y habilita "Email/Password".
 // 5. Ve a "Firestore Database" -> "Create database" y créala en modo de prueba (test mode) por ahora.
-// Import the functions you need from the SDKs you need
-
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDxrNur1ijuqHzkKK0vuvJ2jaW5DnhkgcQ",
   authDomain: "gestor-9df5a.firebaseapp.com",
   projectId: "gestor-9df5a",
-  storageBucket: "gestor-9df5a.firebasestorage.app",
+  storageBucket: "gestor-9df5a.appspot.com",
   messagingSenderId: "81232263097",
   appId: "1:81232263097:web:07d07125dac516205e2868",
   measurementId: "G-GJVDBRWEGV"
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
 
 // --- Iconos SVG (Sin cambios) ---
 const IconBook = ({ width = "20", height = "20" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/> <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/> </svg> );
