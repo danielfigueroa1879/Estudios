@@ -90,16 +90,27 @@ const LoginScreen = ({ showAlert }) => {
         setLoading(true);
         auth.signInWithEmailAndPassword(email, password)
             .then((userCredential) => {
-                if (!userCredential.user.emailVerified) {
-                    showAlert('Tu correo no ha sido verificado. Por favor, revisa tu bandeja de entrada.');
-                    auth.signOut(); // Prevent login
+                // Forzar la recarga del perfil del usuario para obtener el estado más reciente de emailVerified
+                return userCredential.user.reload().then(() => userCredential);
+            })
+            .then((userCredential) => {
+                // Ahora, verificar el usuario actual recargado
+                if (!auth.currentUser.emailVerified) {
+                    showAlert('Tu correo no ha sido verificado. Por favor, revisa tu bandeja de entrada y vuelve a iniciar sesión.');
+                    auth.signOut();
                 }
-                // No need to call onLoginSuccess, onAuthStateChanged will handle it.
+                // Si está verificado, el listener onAuthStateChanged se encargará del resto.
             })
             .catch((error) => {
-                showAlert('Correo o contraseña incorrectos.');
+                let message = 'Correo o contraseña incorrectos.';
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                     message = 'Correo o contraseña incorrectos.';
+                }
+                showAlert(message);
             })
-            .finally(() => setLoading(false));
+            .finally(() => {
+                setLoading(false);
+            });
     };
 
     const handlePasswordReset = () => {
