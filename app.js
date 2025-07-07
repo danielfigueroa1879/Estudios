@@ -201,16 +201,16 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
                 <button onClick={goToNextMonth} className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm">→</button>
             </div>
             <div className="grid grid-cols-7 bg-blue-600 text-white rounded-t-lg">{dayNames.map((day, index) => <div key={index} className="text-center font-semibold py-2 text-sm">{day}</div>)}</div>
-            <div className="grid grid-cols-7 gap-0.5">
+            <div className="grid grid-cols-7 gap-0.5 rounded-b-2xl overflow-hidden">
                 {daysArray.map((day, index) => {
-                    if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28"></div>;
+                    if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28 bg-gray-50"></div>;
                     const dayObj = new Date(year, month, day);
                     const isToday = todayGlobal.getDate() === dayObj.getDate() && todayGlobal.getMonth() === dayObj.getMonth() && todayGlobal.getFullYear() === dayObj.getFullYear();
                     const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                     const isHoliday = chileanHolidays.includes(currentDayFormatted);
                     const highlightEntry = highlightedDate && highlightedDate.date === currentDayFormatted ? highlightedDate : null;
                     
-                    let dayClasses = `h-14 sm:h-20 lg:h-28 border border-gray-200 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative ${isHoliday ? 'bg-red-50' : ''} ${isToday ? 'bg-blue-100 border-blue-500' : 'bg-white hover:bg-gray-50'}`;
+                    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative ${isHoliday ? 'bg-red-50' : ''} ${isToday ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`;
                     
                     if (highlightEntry) {
                         dayClasses += ` ${highlightEntry.highlightBg}`;
@@ -241,7 +241,7 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
 
 const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate, originTaskForCalendar, backToOriginTask }) => {
     return (
-        <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative" id="calendarSection">
+        <div className="bg-white rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200" id="calendarSection">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left">Calendario</h2>
                 {originTaskForCalendar && (<button onClick={backToOriginTask} className="p-2 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center z-10" title="Volver a la tarea original"><IconArrowBack width="20" height="20" /></button>)}
