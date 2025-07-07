@@ -209,10 +209,15 @@ const MonthlyCalendar = ({ tasks, highlightedDates, currentViewDate, setCurrentV
                     const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                     const isHoliday = chileanHolidays.includes(currentDayFormatted);
                     const highlightEntry = highlightedDates.find(h => h.date === currentDayFormatted);
-                    const highlightClassesToApply = highlightEntry ? highlightEntry.classes : '';
-                    const highlightBorderColorRgb = highlightEntry ? highlightEntry.borderColorRgb : '';
+                    
+                    let dayClasses = `h-14 sm:h-20 lg:h-28 border border-gray-200 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative ${isHoliday ? 'bg-red-50' : ''} ${isToday ? 'bg-blue-100 border-blue-500' : 'bg-white hover:bg-gray-50'}`;
+                    
+                    if (highlightEntry) {
+                        dayClasses += ` ${highlightEntry.highlightBg} animate-flash-glow`;
+                    }
+
                     return (
-                        <div key={currentDayFormatted} className={`h-14 sm:h-20 lg:h-28 border border-gray-200 p-0.5 sm:p-1 transition-all duration-300 ease-in-out ${isHoliday ? 'bg-red-50' : ''} ${isToday ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50'} ${highlightClassesToApply.includes('ring-2') ? 'highlight-animation' : ''}`} style={highlightEntry ? { '--highlight-color': highlightClassesToApply.match(/border-([\w-]+)-(\d+)/)?.[0].replace('border-', '') || '#3b82f6', '--ring-color-rgb': highlightBorderColorRgb } : {}}>
+                        <div key={currentDayFormatted} className={dayClasses}>
                             <div className={`text-xs sm:text-sm font-medium ${isToday ? 'text-blue-700' : (isHoliday ? 'text-red-600' : 'text-gray-800')}`}>{day}</div>
                             <div className="mt-0.5 space-y-0.5">
                                 {tasksByDate[day] && tasksByDate[day].sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')).map((task, taskIndex) => {
@@ -307,12 +312,13 @@ const AcademicTaskManager = ({ user }) => {
     const getTaskStatus = (dueDate, dueTime, completed) => { if (completed) return 'completed'; const now = new Date(); const todayMidnight = new Date(now); todayMidnight.setHours(0, 0, 0, 0); const dueMidnight = createLocalDate(dueDate); let dueDateTime = dueMidnight; if (dueTime) { const [hours, minutes] = dueTime.split(':').map(Number); dueDateTime = new Date(dueMidnight); dueDateTime.setHours(hours, minutes, 0, 0); } else { dueDateTime = new Date(dueMidnight); dueDateTime.setHours(23, 59, 59, 999); } if (dueDateTime < now) return 'overdue'; const diffTime = dueMidnight.getTime() - todayMidnight.getTime(); const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); if (diffDays === 0) return 'due-today'; if (diffDays === 1) return 'due-tomorrow'; if (diffDays <= 3) return 'due-soon'; return 'on-time'; };
     
     const getTaskCardStyle = (status, completed) => {
-        let baseStyles = {}, highlightClass = '', borderColorRgb = '0,0,0', hoverClasses = '';
+        let baseStyles = {}, highlightClass = '', borderColorRgb = '0,0,0', hoverClasses = '', highlightBg = '';
         if (completed) {
             baseStyles = { bg: 'bg-gray-50', border: 'border-gray-300', text: 'text-gray-600' };
             highlightClass = 'border-gray-500 ring-2 ring-gray-500 shadow-md';
             borderColorRgb = '107,114,128';
             hoverClasses = 'hover:border-gray-400 hover:ring-2 hover:ring-gray-400/50 hover:shadow-xl hover:shadow-gray-300/50';
+            highlightBg = 'bg-gray-200';
         } else {
             switch (status) {
                 case 'overdue':
@@ -320,34 +326,39 @@ const AcademicTaskManager = ({ user }) => {
                     highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md';
                     borderColorRgb = '75,85,99';
                     hoverClasses = 'hover:border-gray-600 hover:ring-2 hover:ring-gray-600/50 hover:shadow-xl hover:shadow-gray-400/50';
+                    highlightBg = 'bg-gray-200';
                     break;
                 case 'due-today':
                     baseStyles = { bg: 'bg-red-50', border: 'border-red-500', text: 'text-red-800' };
                     highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
                     borderColorRgb = '239,68,68';
                     hoverClasses = 'hover:border-red-600 hover:ring-2 hover:ring-red-600/50 hover:shadow-xl hover:shadow-red-300/50';
+                    highlightBg = 'bg-red-200';
                     break;
                 case 'due-tomorrow':
                     baseStyles = { bg: 'bg-orange-50', border: 'border-orange-400', text: 'text-orange-800' };
                     highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
                     borderColorRgb = '249,115,22';
                     hoverClasses = 'hover:border-orange-500 hover:ring-2 hover:ring-orange-500/50 hover:shadow-xl hover:shadow-orange-300/50';
+                    highlightBg = 'bg-orange-200';
                     break;
                 case 'due-soon':
                     baseStyles = { bg: 'bg-yellow-50', border: 'border-yellow-400', text: 'text-yellow-800' };
                     highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
                     borderColorRgb = '245,158,11';
                     hoverClasses = 'hover:border-yellow-500 hover:ring-2 hover:ring-yellow-500/50 hover:shadow-xl hover:shadow-yellow-300/50';
+                    highlightBg = 'bg-yellow-200';
                     break;
                 default: // 'on-time'
                     baseStyles = { bg: 'bg-green-50', border: 'border-green-400', text: 'text-green-800' };
                     highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
                     borderColorRgb = '34,197,94';
                     hoverClasses = 'hover:border-green-500 hover:ring-2 hover:ring-green-500/50 hover:shadow-xl hover:shadow-green-300/50';
+                    highlightBg = 'bg-green-200';
                     break;
             }
         }
-        return { ...baseStyles, highlightClass, borderColorRgb, hoverClasses };
+        return { ...baseStyles, highlightClass, borderColorRgb, hoverClasses, highlightBg };
     };
 
     useEffect(() => { const checkNotifications = () => { const newNotifications = []; tasks.forEach(task => { if (!task.completed) { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); if (['due-today', 'due-tomorrow', 'overdue'].includes(status)) { let label = ''; switch (status) { case 'overdue': label = 'Vencido'; break; case 'due-today': label = 'Vence hoy'; break; case 'due-tomorrow': label = 'Vence mañana'; break; } newNotifications.push({ id: task.id, message: `${task.subject}: ${task.title} - ${label}`, type: status, dueDate: task.dueDate, timestamp: new Date() }); } } }); setNotifications(newNotifications); }; checkNotifications(); const interval = setInterval(checkNotifications, 60000); return () => clearInterval(interval); }, [tasks, currentTime]);
@@ -417,9 +428,39 @@ const AcademicTaskManager = ({ user }) => {
     const formatDate = (dateString) => createLocalDate(dateString).toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
     const formatDateTime = (dateString, timeString) => { const formattedDate = formatDate(dateString); const formattedTime = timeString || ''; return formattedTime ? `${formattedDate} a las ${formattedTime}` : formattedDate; };
     const getDaysUntilDue = (dueDate) => { const todayMidnight = new Date(); todayMidnight.setHours(0, 0, 0, 0); const dueMidnight = createLocalDate(dueDate); const diffTime = dueMidnight.getTime() - todayMidnight.getTime(); const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); if (diffDays < 0) return `${Math.abs(diffDays)} días atrasado`; if (diffDays === 0) return 'Vence hoy'; if (diffDays === 1) return 'Vence mañana'; return `${diffDays} días restantes`; };
-    const animateCalendarDate = async (dateString, highlightClasses, borderColorRgb) => { if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current); setHighlightedCalendarDates([]); setHighlightedCalendarDates([{ date: dateString, classes: highlightClasses, borderColorRgb: borderColorRgb }]); highlightTimeoutRef.current = setTimeout(() => { setHighlightedCalendarDates([]); highlightTimeoutRef.current = null; }, 30000); };
+    
+    const animateCalendarDate = (dateString, highlightBg) => {
+        if (highlightTimeoutRef.current) {
+            clearTimeout(highlightTimeoutRef.current);
+        }
+        setHighlightedCalendarDates([{ date: dateString, highlightBg }]);
+        highlightTimeoutRef.current = setTimeout(() => {
+            setHighlightedCalendarDates([]);
+            highlightTimeoutRef.current = null;
+        }, 2000); // Highlight duration
+    };
+
     const handleAlertsClick = async () => { if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current); setHighlightedCalendarDates([]); setOriginTaskForCalendar(null); setView('calendar'); setTimeout(() => { const calendarSection = document.getElementById('calendarSection'); if (calendarSection) calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); const alertDates = [...new Set(notifications.map(n => n.dueDate))].sort(); let delay = 0; for (const dateString of alertDates) { const taskForColor = tasks.find(t => t.dueDate === dateString); let highlightClasses = '', borderColorRgb = ''; if (taskForColor) { const status = getTaskStatus(taskForColor.dueDate, taskForColor.dueTime, taskForColor.completed); const style = getTaskCardStyle(status, taskForColor.completed); highlightClasses = style.highlightClass; borderColorRgb = style.borderColorRgb; } await new Promise(resolve => { highlightTimeoutRef.current = setTimeout(() => { setHighlightedCalendarDates([{ date: dateString, classes: highlightClasses, borderColorRgb: borderColorRgb }]); resolve(); }, delay); }); delay += 1500; await new Promise(resolve => { highlightTimeoutRef.current = setTimeout(() => { setHighlightedCalendarDates([]); resolve(); }, delay); }); delay += 750; } highlightTimeoutRef.current = null; };
-    const handleTaskCardClick = async (task) => { if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current); setHighlightedCalendarDates([]); setOriginTaskForCalendar({ taskId: task.id, scrollY: window.scrollY }); setView('calendar'); setCurrentCalendarViewDate(createLocalDate(task.dueDate)); setTimeout(() => { const calendarSection = document.getElementById('calendarSection'); if (calendarSection) calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); const cardStyle = getTaskCardStyle(status, task.completed); await animateCalendarDate(task.dueDate, cardStyle.highlightClass, cardStyle.borderColorRgb); };
+    
+    const handleTaskCardClick = (task) => {
+        if (highlightTimeoutRef.current) {
+            clearTimeout(highlightTimeoutRef.current);
+        }
+        setOriginTaskForCalendar({ taskId: task.id, scrollY: window.scrollY });
+        setView('calendar');
+        setCurrentCalendarViewDate(createLocalDate(task.dueDate));
+        
+        setTimeout(() => {
+            const calendarSection = document.getElementById('calendarSection');
+            if (calendarSection) {
+                calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+            const cardStyle = getTaskCardStyle(status, task.completed);
+            animateCalendarDate(task.dueDate, cardStyle.highlightBg);
+        }, 100);
+    };
+
     const backToOriginTask = () => { if (originTaskForCalendar) { setView('list'); setHighlightedCalendarDates([]); setTimeout(() => { const taskElement = document.getElementById(originTaskForCalendar.taskId); if (taskElement) taskElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); setOriginTaskForCalendar(null); }, 0); } };
     
     if (loading) {
@@ -432,9 +473,28 @@ const AcademicTaskManager = ({ user }) => {
 
     return (
         <div className="min-h-screen bg-gray-200">
+            <style>{`
+                @keyframes flash-glow {
+                    0% {
+                        transform: scale(1);
+                        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
+                    }
+                    50% {
+                        transform: scale(1.05);
+                        box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.3);
+                    }
+                    100% {
+                        transform: scale(1);
+                        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
+                    }
+                }
+                .animate-flash-glow {
+                    animation: flash-glow 1s ease-in-out;
+                }
+            `}</style>
             {/* Header */}
             <div className="bg-blue-700 shadow-lg w-full py-4 sm:py-4 mb-5">
-                <div className="max-w-7xl mx-auto px-3 sm:px-6">
+                <div className="max-w-6xl mx-auto px-3 sm:px-6">
                     <div className="flex items-start sm:items-center justify-between">
                         <div className="flex flex-col sm:flex-row sm:items-center">
                             <div className="flex items-center space-x-2">
@@ -471,10 +531,10 @@ const AcademicTaskManager = ({ user }) => {
             </div>
 
             {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-3 sm:px-6">
+            <div className="max-w-6xl mx-auto px-3 sm:px-6">
                  {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
                  <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300 mt-3"> <button onClick={() => setShowAddTask(!showAddTask)} className="w-full flex items-center justify-between text-left mb-3"> <h3 className="font-semibold text-blue-600 text-lg sm:text-xl text-left">{editingTask ? 'Editar tarea' : 'Agregar nueva tarea'}</h3> {showAddTask ? <div className="text-blue-600"><IconChevronUp width="20" height="20" /></div> : <div className="text-blue-600"><IconChevronDown width="20" height="20" /></div>} </button> {showAddTask && ( <div className="space-y-3"> <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3"> <input type="text" placeholder="Asignatura" value={newTask.subject} onChange={(e) => setNewTask({...newTask, subject: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <input type="text" placeholder="Título de la tarea" value={newTask.title} onChange={(e) => setNewTask({...newTask, title: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <select value={newTask.type} onChange={(e) => setNewTask({...newTask, type: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="Tarea">Tarea</option> <option value="Examen">Examen</option> <option value="Recuperación de Clases">Recuperación de Clases</option> <option value="Proyecto">Proyecto</option> <option value="Monografía">Monografía</option> <option value="Informe">Informe</option> </select> <input type="date" value={newTask.dueDate} onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <input type="time" placeholder="Hora (opcional)" value={newTask.dueTime} onChange={(e) => setNewTask({...newTask, dueTime: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> </div> <textarea placeholder="Descripción (opcional)" value={newTask.description} onChange={(e) => setNewTask({...newTask, description: e.target.value})} rows="2" className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea> <div className="flex space-x-3"> <button onClick={editingTask ? updateTask : addTask} className="flex-1 bg-blue-600 text-white rounded-xl px-3 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-1.5 text-base font-medium"> {editingTask ? <><IconCheck width="18" height="18" /><span>Actualizar</span></> : <><IconPlus width="18" height="18" /><span>Agregar</span></>} </button> {editingTask && <button onClick={cancelEditing} className="flex-1 bg-gray-500 text-white rounded-xl px-3 py-2.5 hover:bg-gray-600 flex items-center justify-center space-x-1.5 text-base font-medium"><span>Cancelar</span></button>} </div> </div> )} </div>
-                 <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl"> <div className="max-w-7xl mx-auto px-3 sm:px-6"> <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-5">Tareas</h2> <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0"> <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto"> <div className="grid grid-cols-3 gap-1.5 sm:flex sm:gap-3 w-full sm:w-auto"> <button onClick={() => { setView('list'); setOriginTaskForCalendar(null); setTimeout(() => document.getElementById('taskListSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'list' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconBook width="18" height="18" /><span className="font-medium text-center sm:text-center">Lista</span></button> <button onClick={() => { setView('daily'); setShowColorLegend(false); setTimeout(() => document.getElementById('dailyTasksSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'daily' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center sm:text-center">Por Día</span></button> <button onClick={() => { setView('calendar'); setShowColorLegend(false); setTimeout(() => document.getElementById('calendarSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'calendar' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center sm:text-center">Calendario</span></button> </div> </div> {tasks.filter(task => task.completed).length > 0 && <button onClick={deleteAllCompleted} className="px-3 py-2 bg-red-500 text-white rounded-2xl hover:bg-red-600 flex items-center space-x-1.5 text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-red-200"><IconTrash width="16" height="16" /><span>Eliminar Completadas ({tasks.filter(task => task.completed).length})</span></button>} </div> </div> </div>
+                 <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl"> <div className="max-w-6xl mx-auto px-3 sm:px-6"> <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-5">Tareas</h2> <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0"> <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto"> <div className="grid grid-cols-3 gap-1.5 sm:flex sm:gap-3 w-full sm:w-auto"> <button onClick={() => { setView('list'); setOriginTaskForCalendar(null); setTimeout(() => document.getElementById('taskListSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'list' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconBook width="18" height="18" /><span className="font-medium text-center sm:text-center">Lista</span></button> <button onClick={() => { setView('daily'); setShowColorLegend(false); setTimeout(() => document.getElementById('dailyTasksSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'daily' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center sm:text-center">Por Día</span></button> <button onClick={() => { setView('calendar'); setShowColorLegend(false); setTimeout(() => document.getElementById('calendarSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'calendar' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center sm:text-center">Calendario</span></button> </div> </div> {tasks.filter(task => task.completed).length > 0 && <button onClick={deleteAllCompleted} className="px-3 py-2 bg-red-500 text-white rounded-2xl hover:bg-red-600 flex items-center space-x-1.5 text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-red-200"><IconTrash width="16" height="16" /><span>Eliminar Completadas ({tasks.filter(task => task.completed).length})</span></button>} </div> </div> </div>
                  <div className="border-t-4 border-gray-100 mb-2 sm:my-3"></div>
                  {view === 'list' ? ( <div id="taskListSection" className="bg-white rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4"> <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-3 sm:mb-6">Lista de tareas</h2> {[...tasks].sort((a, b) => { if (a.completed && !b.completed) return 1; if (!a.completed && b.completed) return -1; const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`); const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`); return dateA - dateB; }).map(task => { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); const cardStyle = getTaskCardStyle(status, task.completed); return ( <div key={task.id} id={task.id} onClick={(e) => { if (e.target.tagName !== 'BUTTON' && e.target.closest('button') === null) handleTaskCardClick(task); }} className={`rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} ${cardStyle.hoverClasses} cursor-pointer`}> <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0"> <div className="flex items-start space-x-2.5 sm:space-x-4 flex-1"> <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id, task.completed); }} className={`mt-0.5 w-6 h-6 sm:w-6.5 sm:h-6.5 rounded border-2 flex items-center justify-center flex-shrink-0 ${task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 hover:border-gray-400'}`}>{task.completed && <IconCheck width="15" height="15" />}</button> <div className="flex-1 min-w-0"> <div className="flex flex-col sm:flex-row sm:items-center space-y-1.5 sm:space-y-0 sm:space-x-3 mb-1.5"> <h3 className={`font-semibold text-sm sm:text-lg ${task.completed ? 'line-through text-gray-500' : status === 'overdue' ? 'line-through text-gray-700' : 'text-gray-900'}`}>{task.subject}: {task.title}</h3> <div className="flex items-center space-x-2"><span className="text-xs sm:text-sm bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded">{task.type}</span></div> </div> {task.description && <p className="text-xs sm:text-base text-gray-600 mb-1.5">{task.description}</p>} <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-5 text-xs sm:text-base text-gray-500"> <span>📅 {formatDateTime(task.dueDate, task.dueTime)}</span> <span>⏰ {getDaysUntilDue(task.dueDate)}</span> </div> </div> </div> <div className="flex items-center space-x-2.5"> <div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconClock width="22" height="22" /></div> <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Editar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconEdit width="22" height="22" /></div></button> <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Eliminar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconTrash width="22" height="22" /></div></button> </div> </div> </div> ); })} </div> ) : view === 'daily' ? ( <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} getDaysUntilDue={getDaysUntilDue} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} /> ) : ( <CalendarView tasks={tasks} highlightedDates={highlightedCalendarDates} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} originTaskForCalendar={originTaskForCalendar} backToOriginTask={backToOriginTask} /> )}
                  <div className="mt-7 sm:mt-9 bg-white rounded-xl shadow-lg p-3 sm:p-5"> <div className="text-center text-gray-600 space-y-1.5"> <div className="border-b border-gray-200 pb-1.5"> <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p> <p className="text-xs text-gray-700">Realizado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span></p> <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p> </div> </div> </div>
