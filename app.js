@@ -449,7 +449,6 @@ const InstallBanner = ({ onInstall, onClose }) => {
         <div className="fixed top-0 left-0 right-0 p-4 z-50">
             <div className="bg-gray-800 bg-opacity-90 backdrop-blur-sm text-white rounded-2xl shadow-2xl max-w-lg mx-auto p-4 flex items-center justify-between transition-transform duration-500 transform animate-slide-down">
                 <div className="flex items-center">
-                    <IconBook width="40" height="40" className="mr-4 text-blue-400"/>
                     <div>
                         <h4 className="font-bold">Instalar Gestor Académico</h4>
                         <p className="text-sm text-gray-300">Accede más rápido a tus tareas.</p>
