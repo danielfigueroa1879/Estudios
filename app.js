@@ -201,16 +201,16 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
                 <button onClick={goToNextMonth} className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm">→</button>
             </div>
             <div className="grid grid-cols-7 bg-blue-600 text-white rounded-t-lg">{dayNames.map((day, index) => <div key={index} className="text-center font-semibold py-2 text-sm">{day}</div>)}</div>
-            <div className="grid grid-cols-7 gap-0.5 rounded-b-2xl overflow-hidden">
+            <div className="grid grid-cols-7 border-l border-t border-gray-200">
                 {daysArray.map((day, index) => {
-                    if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28 bg-gray-50"></div>;
+                    if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28 bg-gray-50 border-r border-b border-gray-200"></div>;
                     const dayObj = new Date(year, month, day);
                     const isToday = todayGlobal.getDate() === dayObj.getDate() && todayGlobal.getMonth() === dayObj.getMonth() && todayGlobal.getFullYear() === dayObj.getFullYear();
                     const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                     const isHoliday = chileanHolidays.includes(currentDayFormatted);
                     const highlightEntry = highlightedDate && highlightedDate.date === currentDayFormatted ? highlightedDate : null;
                     
-                    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative ${isHoliday ? 'bg-red-50' : ''} ${isToday ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`;
+                    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 ${isHoliday ? 'bg-red-50' : ''} ${isToday ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`;
                     
                     if (highlightEntry) {
                         dayClasses += ` ${highlightEntry.highlightBg}`;
