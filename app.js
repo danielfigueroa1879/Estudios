@@ -494,7 +494,7 @@ const App = () => {
                 setShowInstallBanner(true);
                 setTimeout(() => {
                     setShowInstallBanner(false);
-                }, 5000); 
+                }, 10000); 
             }
         };
 
