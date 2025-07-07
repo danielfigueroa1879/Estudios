@@ -443,6 +443,40 @@ const AcademicTaskManager = ({ user }) => {
     );
 };
 
+// --- NUEVO: Banner de Instalación ---
+const InstallBanner = ({ onInstall, onClose }) => {
+    return (
+        <div className="fixed top-0 left-0 right-0 p-4 z-50">
+            <div className="bg-gray-800 bg-opacity-90 backdrop-blur-sm text-white rounded-2xl shadow-2xl max-w-lg mx-auto p-4 flex items-center justify-between transition-transform duration-500 transform animate-slide-down">
+                <div className="flex items-center">
+                    <IconBook width="40" height="40" className="mr-4 text-blue-400"/>
+                    <div>
+                        <h4 className="font-bold">Instalar Gestor Académico</h4>
+                        <p className="text-sm text-gray-300">Accede más rápido a tus tareas.</p>
+                    </div>
+                </div>
+                <div className="flex items-center">
+                    <button onClick={onInstall} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex items-center transition-colors">
+                        <IconDownload className="w-5 h-5 mr-2"/>
+                        Instalar
+                    </button>
+                    <button onClick={onClose} className="ml-2 text-gray-400 hover:text-white p-2 rounded-full">
+                        <IconClose className="w-5 h-5"/>
+                    </button>
+                </div>
+            </div>
+            <style>{`
+                @keyframes slide-down {
+                    from { transform: translateY(-100%); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+                .animate-slide-down { animation: slide-down 0.5s ease-out forwards; }
+            `}</style>
+        </div>
+    );
+};
+
+
 // --- Main App Component (Actualizado con lógica de instalación) ---
 const App = () => {
     const [user, setUser] = useState(null);
@@ -539,4 +573,3 @@ const App = () => {
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 root.render(<App />);
-
