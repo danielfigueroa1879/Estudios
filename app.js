@@ -213,7 +213,7 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
                     let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 ${isHoliday ? 'bg-red-50' : ''} ${isToday ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`;
                     
                     if (highlightEntry) {
-                        dayClasses += ` ${highlightEntry.highlightBg}`;
+                        dayClasses += ` ${highlightEntry.highlightBg} z-10`;
                         if (highlightEntry.isAnimating) {
                              dayClasses += ` animate-fast-pulse`;
                         }
