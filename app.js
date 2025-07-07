@@ -188,7 +188,7 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
         return acc;
     }, {});
     const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-    const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', <span key="sab" className="text-red-600">Sáb</span>, <span key="dom" className="text-red-600">Dom</span>];
+    const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
     const goToPreviousMonth = () => setCurrentViewDate(new Date(year, month - 1, 1));
     const goToNextMonth = () => setCurrentViewDate(new Date(year, month + 1, 1));
     const goToToday = () => setCurrentViewDate(todayGlobal);
@@ -200,7 +200,7 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
                 <button onClick={goToToday} className="px-3 py-1.5 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm">Hoy</button>
                 <button onClick={goToNextMonth} className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm">→</button>
             </div>
-            <div className="grid grid-cols-7 gap-0.5 mb-1">{dayNames.map((day, index) => <div key={index} className="text-center font-semibold text-gray-600 py-1 text-sm">{day}</div>)}</div>
+            <div className="grid grid-cols-7 bg-blue-600 text-white rounded-t-lg">{dayNames.map((day, index) => <div key={index} className="text-center font-semibold py-2 text-sm">{day}</div>)}</div>
             <div className="grid grid-cols-7 gap-0.5">
                 {daysArray.map((day, index) => {
                     if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28"></div>;
