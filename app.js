@@ -451,7 +451,6 @@ const InstallBanner = ({ onInstall, onClose }) => {
                 <div className="flex items-center">
                     <div>
                         <h4 className="font-bold">Instalar Gestor Académico</h4>
-                        <p className="text-sm text-gray-300">Accede más rápido a tus tareas.</p>
                     </div>
                 </div>
                 <div className="flex items-center">
