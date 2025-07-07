@@ -7,8 +7,7 @@ const { useState, useEffect, useRef } = React;
 // 4. En Firebase, ve a "Authentication" -> "Sign-in method" y habilita "Email/Password".
 // 5. Ve a "Firestore Database" -> "Create database" y créala en modo de prueba (test mode) por ahora.
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
