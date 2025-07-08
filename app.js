@@ -195,7 +195,7 @@ const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle
     );
 };
 
-const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate }) => {
+const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate, onDayDoubleClick }) => {
     const year = currentViewDate.getFullYear();
     const month = currentViewDate.getMonth();
     const firstDay = new Date(year, month, 1);
@@ -274,7 +274,7 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
                     };
 
                     return (
-                        <div key={currentDayFormatted} className={dayClasses}>
+                        <div key={currentDayFormatted} onDoubleClick={() => onDayDoubleClick(currentDayFormatted)} className={dayClasses}>
                             <div className={`text-xs sm:text-sm font-medium ${isToday ? 'text-blue-700' : (isHoliday ? 'text-red-600' : 'text-gray-800')}`}>{day}</div>
                             <div className="absolute top-4 left-0.5 right-0.5 bottom-1">
                                 {/* All-day tasks stacked at the top */}
@@ -305,14 +305,14 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
     );
 };
 
-const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate, originTaskForCalendar, backToOriginTask }) => {
+const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate, originTaskForCalendar, backToOriginTask, onDayDoubleClick }) => {
     return (
         <div className="bg-white rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200" id="calendarSection">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left">Calendario</h2>
                 {originTaskForCalendar && (<button onClick={backToOriginTask} className="p-2 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center z-10" title="Volver a la tarea original"><IconArrowBack width="20" height="20" /></button>)}
             </div>
-            <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} />
+            <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onDayDoubleClick={onDayDoubleClick} />
         </div>
     );
 };
@@ -365,6 +365,78 @@ const HistoryView = ({ history, permanentDeleteFromHistory, formatTimestamp }) =
                     </div>
                 );
             })}
+        </div>
+    );
+};
+
+const TaskModal = ({ isOpen, onClose, onAddTask, selectedDate, showAlert }) => {
+    const [taskData, setTaskData] = useState({
+        subject: '',
+        title: '',
+        description: '',
+        dueDate: selectedDate,
+        dueTime: '',
+        type: 'Tarea'
+    });
+
+    useEffect(() => {
+        if (selectedDate) {
+            setTaskData(prev => ({ ...prev, dueDate: selectedDate }));
+        }
+    }, [selectedDate]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setTaskData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = () => {
+        if (taskData.subject && taskData.title && taskData.dueDate) {
+            onAddTask({ ...taskData, completed: false });
+            onClose(); // Cierra el modal después de agregar
+        } else {
+            showAlert('Por favor, completa los campos de Asignatura, Título y Fecha de Vencimiento.');
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 max-w-lg w-full border-t-4 border-blue-500">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="font-semibold text-blue-600 text-xl sm:text-2xl">Agregar Nueva Tarea</h3>
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 rounded-full">
+                        <IconClose className="w-6 h-6" />
+                    </button>
+                </div>
+                <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <input type="text" name="subject" placeholder="Asignatura" value={taskData.subject} onChange={handleChange} className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="text" name="title" placeholder="Título de la tarea" value={taskData.title} onChange={handleChange} className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    </div>
+                    <select name="type" value={taskData.type} onChange={handleChange} className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="Tarea">Tarea</option>
+                        <option value="Examen">Examen</option>
+                        <option value="Recuperación de Clases">Recuperación de Clases</option>
+                        <option value="Proyecto">Proyecto</option>
+                        <option value="Monografía">Monografía</option>
+                        <option value="Informe">Informe</option>
+                    </select>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <input type="date" name="dueDate" value={taskData.dueDate} onChange={handleChange} className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="time" name="dueTime" placeholder="Hora (opcional)" value={taskData.dueTime} onChange={handleChange} className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    </div>
+                    <textarea name="description" placeholder="Descripción (opcional)" value={taskData.description} onChange={handleChange} rows="3" className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea>
+                    <div className="flex justify-end space-x-4">
+                        <button onClick={onClose} className="bg-gray-300 text-gray-800 rounded-xl px-6 py-3 hover:bg-gray-400 text-base font-medium">Cancelar</button>
+                        <button onClick={handleSubmit} className="bg-blue-600 text-white rounded-xl px-6 py-3 hover:bg-blue-700 flex items-center justify-center space-x-2 text-base font-medium">
+                            <IconPlus width="18" height="18" />
+                            <span>Agregar Tarea</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
@@ -425,6 +497,8 @@ const AcademicTaskManager = ({ user }) => {
     
     const [newTask, setNewTask] = useState({ subject: '', title: '', description: '', dueDate: '', dueTime: '', type: 'Tarea' });
     const [editingTask, setEditingTask] = useState(null);
+    const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+    const [selectedDateForNewTask, setSelectedDateForNewTask] = useState('');
     
     const { view, emailNotifications } = settings;
     const setView = (newView) => setSettings(prev => ({...prev, view: newView}));
@@ -499,14 +573,16 @@ const AcademicTaskManager = ({ user }) => {
     useEffect(() => { const checkNotifications = () => { const newNotifications = []; tasks.forEach(task => { if (!task.completed) { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); if (['due-today', 'due-tomorrow', 'overdue'].includes(status)) { let label = ''; switch (status) { case 'overdue': label = 'Vencido'; break; case 'due-today': label = 'Vence hoy'; break; case 'due-tomorrow': label = 'Vence mañana'; break; } newNotifications.push({ id: task.id, message: `${task.subject}: ${task.title} - ${label}`, type: status, dueDate: task.dueDate, timestamp: new Date() }); } } }); setNotifications(newNotifications); }; checkNotifications(); const interval = setInterval(checkNotifications, 60000); return () => clearInterval(interval); }, [tasks, currentTime]);
     useEffect(() => { if (showAlerts && notifications.length > 0) { if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = setTimeout(() => { setShowAlerts(false); alertHideTimeoutRef.current = null; }, 25000); } else if (!showAlerts && alertHideTimeoutRef.current) { clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; } return () => { if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); }; }, [showAlerts, notifications.length]);
 
-    const addTask = () => {
+    const addTask = (taskData) => {
+        tasksCollectionRef.add({ ...taskData, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+            .catch(error => showAlert("Error al agregar la tarea: " + error.message));
+    };
+
+    const handleAddTask = () => {
         if (newTask.subject && newTask.title && newTask.dueDate) {
-            tasksCollectionRef.add({ ...newTask, completed: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
-                .then(() => {
-                    setNewTask({ subject: '', title: '', description: '', dueDate: '', dueTime: '', type: 'Tarea' });
-                    setShowAddTask(false);
-                })
-                .catch(error => showAlert("Error al agregar la tarea: " + error.message));
+            addTask({ ...newTask, completed: false });
+            setNewTask({ subject: '', title: '', description: '', dueDate: '', dueTime: '', type: 'Tarea' });
+            setShowAddTask(false);
         } else {
             showAlert('Por favor, completa los campos de Asignatura, Título y Fecha de Vencimiento.');
         }
@@ -538,14 +614,12 @@ const AcademicTaskManager = ({ user }) => {
 
         const taskData = taskDoc.data();
         
-        // Mover a historial como "completada"
         await historyCollectionRef.add({
             ...taskData,
             status: 'completed',
             archivedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // Eliminar de la lista de tareas activas
         await taskRef.delete();
     };
 
@@ -559,14 +633,12 @@ const AcademicTaskManager = ({ user }) => {
             }
             const taskData = taskDoc.data();
 
-            // Mover a historial como "eliminada"
             await historyCollectionRef.add({
                 ...taskData,
                 status: 'deleted',
                 archivedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            // Eliminar de la lista de tareas activas
             await taskRef.delete();
             
             if (editingTask && editingTask.id === id) cancelEditing();
@@ -578,6 +650,11 @@ const AcademicTaskManager = ({ user }) => {
             historyCollectionRef.doc(id).delete()
                 .catch(error => showAlert("Error al eliminar la tarea del historial: " + error.message));
         });
+    };
+
+    const handleDayDoubleClick = (date) => {
+        setSelectedDateForNewTask(date);
+        setIsTaskModalOpen(true);
     };
 
     const formatDate = (dateString) => createLocalDate(dateString).toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
@@ -667,7 +744,7 @@ const AcademicTaskManager = ({ user }) => {
             case 'daily':
                 return <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} getDaysUntilDue={getDaysUntilDue} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} />;
             case 'calendar':
-                return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} originTaskForCalendar={originTaskForCalendar} backToOriginTask={backToOriginTask} />;
+                return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} originTaskForCalendar={originTaskForCalendar} backToOriginTask={backToOriginTask} onDayDoubleClick={handleDayDoubleClick} />;
             case 'history':
                 return <HistoryView history={history} permanentDeleteFromHistory={permanentDeleteFromHistory} formatTimestamp={formatTimestamp} />;
             default:
@@ -728,7 +805,7 @@ const AcademicTaskManager = ({ user }) => {
             {/* Main Content */}
             <div className="max-w-5xl mx-auto px-3 sm:px-6">
                  {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
-                 <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300 mt-3"> <button onClick={() => setShowAddTask(!showAddTask)} className="w-full flex items-center justify-between text-left mb-3"> <h3 className="font-semibold text-blue-600 text-lg sm:text-xl text-left">{editingTask ? 'Editar tarea' : 'Agregar nueva tarea'}</h3> {showAddTask ? <div className="text-blue-600"><IconChevronUp width="20" height="20" /></div> : <div className="text-blue-600"><IconChevronDown width="20" height="20" /></div>} </button> {showAddTask && ( <div className="space-y-3"> <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3"> <input type="text" placeholder="Asignatura" value={newTask.subject} onChange={(e) => setNewTask({...newTask, subject: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <input type="text" placeholder="Título de la tarea" value={newTask.title} onChange={(e) => setNewTask({...newTask, title: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <select value={newTask.type} onChange={(e) => setNewTask({...newTask, type: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="Tarea">Tarea</option> <option value="Examen">Examen</option> <option value="Recuperación de Clases">Recuperación de Clases</option> <option value="Proyecto">Proyecto</option> <option value="Monografía">Monografía</option> <option value="Informe">Informe</option> </select> <input type="date" value={newTask.dueDate} onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <input type="time" placeholder="Hora (opcional)" value={newTask.dueTime} onChange={(e) => setNewTask({...newTask, dueTime: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> </div> <textarea placeholder="Descripción (opcional)" value={newTask.description} onChange={(e) => setNewTask({...newTask, description: e.target.value})} rows="2" className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea> <div className="flex space-x-3"> <button onClick={editingTask ? updateTask : addTask} className="flex-1 bg-blue-600 text-white rounded-xl px-3 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-1.5 text-base font-medium"> {editingTask ? <><IconCheck width="18" height="18" /><span>Actualizar</span></> : <><IconPlus width="18" height="18" /><span>Agregar</span></>} </button> {editingTask && <button onClick={cancelEditing} className="flex-1 bg-gray-500 text-white rounded-xl px-3 py-2.5 hover:bg-gray-600 flex items-center justify-center space-x-1.5 text-base font-medium"><span>Cancelar</span></button>} </div> </div> )} </div>
+                 <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300 mt-3"> <button onClick={() => setShowAddTask(!showAddTask)} className="w-full flex items-center justify-between text-left mb-3"> <h3 className="font-semibold text-blue-600 text-lg sm:text-xl text-left">{editingTask ? 'Editar tarea' : 'Agregar nueva tarea'}</h3> {showAddTask ? <div className="text-blue-600"><IconChevronUp width="20" height="20" /></div> : <div className="text-blue-600"><IconChevronDown width="20" height="20" /></div>} </button> {showAddTask && ( <div className="space-y-3"> <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3"> <input type="text" placeholder="Asignatura" value={newTask.subject} onChange={(e) => setNewTask({...newTask, subject: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <input type="text" placeholder="Título de la tarea" value={newTask.title} onChange={(e) => setNewTask({...newTask, title: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <select value={newTask.type} onChange={(e) => setNewTask({...newTask, type: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="Tarea">Tarea</option> <option value="Examen">Examen</option> <option value="Recuperación de Clases">Recuperación de Clases</option> <option value="Proyecto">Proyecto</option> <option value="Monografía">Monografía</option> <option value="Informe">Informe</option> </select> <input type="date" value={newTask.dueDate} onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <input type="time" placeholder="Hora (opcional)" value={newTask.dueTime} onChange={(e) => setNewTask({...newTask, dueTime: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> </div> <textarea placeholder="Descripción (opcional)" value={newTask.description} onChange={(e) => setNewTask({...newTask, description: e.target.value})} rows="2" className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea> <div className="flex space-x-3"> <button onClick={editingTask ? updateTask : handleAddTask} className="flex-1 bg-blue-600 text-white rounded-xl px-3 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-1.5 text-base font-medium"> {editingTask ? <><IconCheck width="18" height="18" /><span>Actualizar</span></> : <><IconPlus width="18" height="18" /><span>Agregar</span></>} </button> {editingTask && <button onClick={cancelEditing} className="flex-1 bg-gray-500 text-white rounded-xl px-3 py-2.5 hover:bg-gray-600 flex items-center justify-center space-x-1.5 text-base font-medium"><span>Cancelar</span></button>} </div> </div> )} </div>
                  <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl"> <div className="max-w-5xl mx-auto px-3 sm:px-6"> <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-5">Vistas</h2> <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0"> <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto"> <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:flex sm:gap-3 w-full sm:w-auto"> 
                     <button onClick={() => setView('list')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'list' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconBook width="18" height="18" /><span className="font-medium text-center sm:text-center">Lista</span></button> 
                     <button onClick={() => setView('daily')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'daily' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center sm:text-center">Por Día</span></button> 
@@ -743,6 +820,13 @@ const AcademicTaskManager = ({ user }) => {
             {/* Custom Dialogs */}
             <CustomAlertDialog message={alertDialogMessage} isOpen={isAlertDialogOpen} onClose={handleAlertDialogClose} />
             <CustomConfirmDialog message={confirmDialogMessage} isOpen={isConfirmDialogOpen} onConfirm={handleConfirmDialogConfirm} onCancel={handleConfirmDialogCancel} />
+            <TaskModal 
+                isOpen={isTaskModalOpen} 
+                onClose={() => setIsTaskModalOpen(false)} 
+                onAddTask={addTask} 
+                selectedDate={selectedDateForNewTask}
+                showAlert={showAlert}
+            />
         </div>
     );
 };
