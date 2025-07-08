@@ -317,7 +317,7 @@ const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewD
     );
 };
 
-const HistoryView = ({ history, permanentDeleteFromHistory, formatDateTime }) => {
+const HistoryView = ({ history, permanentDeleteFromHistory, formatTimestamp }) => {
     if (!history || history.length === 0) {
         return (
             <div id="historySection" className="bg-white rounded-2xl shadow-lg p-6 mb-6 mt-6 text-center">
@@ -349,7 +349,7 @@ const HistoryView = ({ history, permanentDeleteFromHistory, formatDateTime }) =>
                                 </div>
                                 <h3 className="font-semibold text-lg text-gray-800 truncate">{task.subject}: {task.title}</h3>
                                 <p className="text-sm text-gray-500 mt-1">
-                                    Archivado: {task.archivedAt ? formatDateTime(task.archivedAt.toDate()) : 'Fecha no disponible'}
+                                    Archivado: {task.archivedAt ? formatTimestamp(task.archivedAt.toDate()) : 'Fecha no disponible'}
                                 </p>
                             </div>
                             <div className="mt-3 sm:mt-0">
@@ -581,7 +581,7 @@ const AcademicTaskManager = ({ user }) => {
     };
 
     const formatDate = (dateString) => createLocalDate(dateString).toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-    const formatDateTime = (dateObj) => {
+    const formatTimestamp = (dateObj) => {
         if (!dateObj) return '';
         return dateObj.toLocaleString('es-ES', {
             year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -647,13 +647,29 @@ const AcademicTaskManager = ({ user }) => {
                                      <span className="text-xs sm:text-sm bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded-md ml-2 align-middle">{task.type}</span>
                                  </p>
                                  {task.description && <p className="text-xs sm:text-base text-gray-600 mt-1.5 mb-1.5">{task.description}</p>} 
-                                 <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-5 text-xs sm:text-base text-gray-500 mt-2"> <span>📅 {formatDateTime(task.dueDate, task.dueTime)}</span> <span>⏰ {getDaysUntilDue(task.dueDate)}</span> </div> </div> </div> <div className="flex items-center space-x-2.5"> <div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconClock width="22" height="22" /></div> <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Editar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconEdit width="22" height="22" /></div></button> <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Eliminar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconTrash width="22" height="22" /></div></button> </div> </div> </div> ); })} </div>;
+                                 <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 text-xs sm:text-base text-gray-500 mt-2">
+                                    <span className="flex items-center">
+                                        📅
+                                        <span className="ml-1.5">{formatDate(task.dueDate)}</span>
+                                    </span>
+                                    {task.dueTime && (
+                                        <span className="flex items-center">
+                                            🕒
+                                            <span className="ml-1.5">{task.dueTime}</span>
+                                        </span>
+                                    )}
+                                    <span className="flex items-center">
+                                        ⏰
+                                        <span className="ml-1.5">{getDaysUntilDue(task.dueDate)}</span>
+                                    </span>
+                                </div>
+                                 </div> </div> <div className="flex items-center space-x-2.5"> <div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconClock width="22" height="22" /></div> <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Editar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconEdit width="22" height="22" /></div></button> <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Eliminar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconTrash width="22" height="22" /></div></button> </div> </div> </div> ); })} </div>;
             case 'daily':
                 return <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} getDaysUntilDue={getDaysUntilDue} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} />;
             case 'calendar':
                 return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} originTaskForCalendar={originTaskForCalendar} backToOriginTask={backToOriginTask} />;
             case 'history':
-                return <HistoryView history={history} permanentDeleteFromHistory={permanentDeleteFromHistory} formatDateTime={formatDateTime} />;
+                return <HistoryView history={history} permanentDeleteFromHistory={permanentDeleteFromHistory} formatTimestamp={formatTimestamp} />;
             default:
                 return null;
         }
