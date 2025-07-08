@@ -232,14 +232,14 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
             <div className="grid grid-cols-7 bg-blue-600 dark:bg-gray-700 text-white rounded-t-lg">{dayNames.map((day, index) => <div key={index} className="text-center font-semibold py-2 text-sm">{day}</div>)}</div>
             <div className="grid grid-cols-7 border-l border-t border-gray-200 dark:border-gray-700">
                 {daysArray.map((day, index) => {
-                    if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28 bg-gray-50 dark:bg-gray-700/30 border-r border-b border-gray-200 dark:border-gray-600"></div>;
+                    if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28 bg-gray-50 dark:bg-gray-800/20 border-r border-b border-gray-200 dark:border-gray-600"></div>;
                     const dayObj = new Date(year, month, day);
                     const isToday = todayGlobal.getDate() === dayObj.getDate() && todayGlobal.getMonth() === dayObj.getMonth() && todayGlobal.getFullYear() === dayObj.getFullYear();
                     const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                     const isHoliday = chileanHolidays.includes(currentDayFormatted);
                     const highlightEntry = highlightedDate && highlightedDate.date === currentDayFormatted ? highlightedDate : null;
                     
-                    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 dark:border-gray-600 ${isHoliday ? 'bg-red-50 dark:bg-red-800/30' : ''} ${isToday ? 'bg-blue-100 dark:bg-blue-800/40' : 'bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'}`;
+                    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 dark:border-gray-600 ${isHoliday ? 'bg-red-50 dark:bg-red-800/30' : ''} ${isToday ? 'bg-blue-100 dark:bg-blue-800/40' : 'bg-white dark:bg-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-600/50'}`;
                     
                     if (highlightEntry) {
                         dayClasses += ` ${highlightEntry.highlightBg} z-10`;
@@ -519,46 +519,46 @@ const AcademicTaskManager = ({ user }) => {
     const getTaskCardStyle = (status, completed) => {
         let baseStyles = {}, highlightClass = '', borderColorRgb = '0,0,0', hoverClasses = '', highlightBg = '';
         if (completed) {
-            baseStyles = { bg: 'bg-gray-50', border: 'border-gray-300', text: 'text-gray-600' };
+            baseStyles = { bg: 'bg-gray-50 dark:bg-gray-700/50', border: 'border-gray-300 dark:border-gray-600', text: 'text-gray-600 dark:text-gray-400' };
             highlightClass = 'border-gray-500 ring-2 ring-gray-500 shadow-md';
             borderColorRgb = '107,114,128';
-            hoverClasses = 'hover:border-gray-400 hover:ring-2 hover:ring-gray-400/50 hover:shadow-xl hover:shadow-gray-300/50';
-            highlightBg = 'bg-gray-200';
+            hoverClasses = 'hover:border-gray-400 dark:hover:border-gray-500 hover:ring-2 hover:ring-gray-400/50 dark:hover:ring-gray-500/50 hover:shadow-xl hover:shadow-gray-300/50 dark:hover:shadow-gray-900/50';
+            highlightBg = 'bg-gray-200 dark:bg-gray-600';
         } else {
             switch (status) {
                 case 'overdue':
-                    baseStyles = { bg: 'bg-gray-100 dark:bg-gray-700/50', border: 'border-gray-500', text: 'text-gray-800 dark:text-gray-300' };
+                    baseStyles = { bg: 'bg-gray-100 dark:bg-gray-800/60', border: 'border-gray-500 dark:border-gray-600', text: 'text-gray-800 dark:text-gray-300' };
                     highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md';
                     borderColorRgb = '75,85,99';
-                    hoverClasses = 'hover:border-gray-600 hover:ring-2 hover:ring-gray-600/50 hover:shadow-xl hover:shadow-gray-400/50';
+                    hoverClasses = 'hover:border-gray-600 dark:hover:border-gray-400 hover:ring-2 hover:ring-gray-600/50 dark:hover:ring-gray-400/50 hover:shadow-xl hover:shadow-gray-400/50 dark:hover:shadow-black/50';
                     highlightBg = 'bg-gray-200 dark:bg-gray-600';
                     break;
                 case 'due-today':
-                    baseStyles = { bg: 'bg-red-50', border: 'border-red-500', text: 'text-red-800' };
+                    baseStyles = { bg: 'bg-red-50 dark:bg-red-900/40', border: 'border-red-500 dark:border-red-700', text: 'text-red-800 dark:text-red-300' };
                     highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
                     borderColorRgb = '239,68,68';
-                    hoverClasses = 'hover:border-red-600 hover:ring-2 hover:ring-red-600/50 hover:shadow-xl hover:shadow-red-300/50';
+                    hoverClasses = 'hover:border-red-600 dark:hover:border-red-500 hover:ring-2 hover:ring-red-600/50 dark:hover:ring-red-500/50 hover:shadow-xl hover:shadow-red-300/50 dark:hover:shadow-red-900/50';
                     highlightBg = 'bg-red-200 dark:bg-red-800/40';
                     break;
                 case 'due-tomorrow':
-                    baseStyles = { bg: 'bg-orange-50', border: 'border-orange-400', text: 'text-orange-800' };
+                    baseStyles = { bg: 'bg-orange-50 dark:bg-orange-900/40', border: 'border-orange-400 dark:border-orange-600', text: 'text-orange-800 dark:text-orange-300' };
                     highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
                     borderColorRgb = '249,115,22';
-                    hoverClasses = 'hover:border-orange-500 hover:ring-2 hover:ring-orange-500/50 hover:shadow-xl hover:shadow-orange-300/50';
+                    hoverClasses = 'hover:border-orange-500 dark:hover:border-orange-500 hover:ring-2 hover:ring-orange-500/50 dark:hover:ring-orange-500/50 hover:shadow-xl hover:shadow-orange-300/50 dark:hover:shadow-orange-900/50';
                     highlightBg = 'bg-orange-200 dark:bg-orange-800/40';
                     break;
                 case 'due-soon':
-                    baseStyles = { bg: 'bg-yellow-50', border: 'border-yellow-400', text: 'text-yellow-800' };
+                    baseStyles = { bg: 'bg-yellow-50 dark:bg-yellow-900/40', border: 'border-yellow-400 dark:border-yellow-600', text: 'text-yellow-800 dark:text-yellow-300' };
                     highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
                     borderColorRgb = '245,158,11';
-                    hoverClasses = 'hover:border-yellow-500 hover:ring-2 hover:ring-yellow-500/50 hover:shadow-xl hover:shadow-yellow-300/50';
+                    hoverClasses = 'hover:border-yellow-500 dark:hover:border-yellow-500 hover:ring-2 hover:ring-yellow-500/50 dark:hover:ring-yellow-500/50 hover:shadow-xl hover:shadow-yellow-300/50 dark:hover:shadow-yellow-900/50';
                     highlightBg = 'bg-yellow-200 dark:bg-yellow-800/40';
                     break;
                 default: // 'on-time'
-                    baseStyles = { bg: 'bg-green-50', border: 'border-green-400', text: 'text-green-800' };
+                    baseStyles = { bg: 'bg-green-50 dark:bg-green-900/40', border: 'border-green-400 dark:border-green-600', text: 'text-green-800 dark:text-green-300' };
                     highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
                     borderColorRgb = '34,197,94';
-                    hoverClasses = 'hover:border-green-500 hover:ring-2 hover:ring-green-500/50 hover:shadow-xl hover:shadow-green-300/50';
+                    hoverClasses = 'hover:border-green-500 dark:hover:border-green-500 hover:ring-2 hover:ring-green-500/50 dark:hover:ring-green-500/50 hover:shadow-xl hover:shadow-green-300/50 dark:hover:shadow-green-900/50';
                     highlightBg = 'bg-green-200 dark:bg-green-800/40';
                     break;
             }
@@ -724,7 +724,7 @@ const AcademicTaskManager = ({ user }) => {
         }
     };
     
-    const unselectedButtonClasses = "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-600 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-700 dark:hover:text-white";
+    const unselectedButtonClasses = "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-700 dark:hover:text-white";
     const selectedButtonClasses = "bg-blue-600 text-white shadow-lg shadow-blue-300 dark:shadow-blue-800/50 ring-2 ring-blue-400 dark:ring-blue-500";
 
     return (
