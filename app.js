@@ -416,7 +416,7 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
 
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2">
-            <div className="bg-sky-100/40 dark:bg-sky-900/40 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
+            <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="font-semibold text-white text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
                     <button onClick={onClose} className="text-gray-200 hover:text-white p-1 rounded-full">
@@ -812,7 +812,7 @@ const AcademicTaskManager = ({ user }) => {
                                 <button onClick={() => auth.signOut()} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Cerrar sesión">
                                     <IconLogOut width="22" height="22" />
                                 </button>
-                                <button onClick={() => setShowQuickAccess(!showQuickAccess)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Acceso Rápido">
+                                <button onClick={() => setShowQuickAccess(!showQuickAccess)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors md:hidden" title="Acceso Rápido">
                                     {showQuickAccess ? <IconClose className="w-6 h-6"/> : <IconHamburger width="22" height="22" />}
                                 </button>
                             </div>
@@ -820,9 +820,9 @@ const AcademicTaskManager = ({ user }) => {
                     </div>
                 </div>
                 {showQuickAccess && (
-                    <div className="absolute top-full left-0 right-0 w-full md:flex md:justify-end">
-                         <div className="p-4 bg-black/30 dark:bg-black/50 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-xl">
-                            <div className="max-w-5xl md:max-w-xs mx-auto">
+                    <div className="absolute top-full left-0 right-0 w-full md:hidden">
+                         <div className="p-4 bg-black/20 dark:bg-black/40 backdrop-blur-2xl shadow-lg w-full rounded-b-xl">
+                            <div className="max-w-5xl mx-auto">
                                 <div className="space-y-1">
                                     <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconBook width="20" height="20" /> <span>Lista</span>
