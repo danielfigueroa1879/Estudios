@@ -416,7 +416,7 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
 
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2">
-            <div className="bg-blue-300/10 dark:bg-blue-900/10 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
+            <div className="bg-blue-300/20 dark:bg-blue-900/40 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="font-semibold text-gray-900 dark:text-white text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
                     <button onClick={onClose} className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white p-1 rounded-full">
@@ -425,10 +425,10 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
                 </div>
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <input type="text" name="subject" placeholder="Asignatura" value={taskData.subject || ''} onChange={handleChange} className="w-full bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-200 border border-gray-300/50 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                        <input type="text" name="title" placeholder="Título de la tarea" value={taskData.title || ''} onChange={handleChange} className="w-full bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-200 border border-gray-300/50 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="text" name="subject" placeholder="Asignatura" value={taskData.subject || ''} onChange={handleChange} className="w-full bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="text" name="title" placeholder="Título de la tarea" value={taskData.title || ''} onChange={handleChange} className="w-full bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
-                    <select name="type" value={taskData.type || 'Tarea'} onChange={handleChange} className="w-full bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-200 border border-gray-300/50 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <select name="type" value={taskData.type || 'Tarea'} onChange={handleChange} className="w-full bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="Tarea">Tarea</option>
                         <option value="Examen">Examen</option>
                         <option value="Recuperación de Clases">Recuperación de Clases</option>
@@ -437,10 +437,10 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
                         <option value="Informe">Informe</option>
                     </select>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <input type="date" name="dueDate" value={taskData.dueDate || ''} onChange={handleChange} className="w-full bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-200 border border-gray-300/50 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                        <input type="time" name="dueTime" placeholder="Hora (opcional)" value={taskData.dueTime || ''} onChange={handleChange} className="w-full bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-200 border border-gray-300/50 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="date" name="dueDate" value={taskData.dueDate || ''} onChange={handleChange} className="w-full bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="time" name="dueTime" placeholder="Hora (opcional)" value={taskData.dueTime || ''} onChange={handleChange} className="w-full bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
-                    <textarea name="description" placeholder="Descripción (opcional)" value={taskData.description || ''} onChange={handleChange} rows="3" className="w-full bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-200 border border-gray-300/50 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea>
+                    <textarea name="description" placeholder="Descripción (opcional)" value={taskData.description || ''} onChange={handleChange} rows="3" className="w-full bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea>
                     <div className="flex justify-center w-full space-x-4 pt-2">
                         <button onClick={onClose} className="bg-gray-500/50 text-white rounded-xl px-5 py-2.5 hover:bg-gray-500/70 text-base font-medium">Cancelar</button>
                         <button onClick={handleSubmit} className="bg-blue-600 text-white rounded-xl px-5 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-2 text-base font-medium">
@@ -526,14 +526,35 @@ const AcademicTaskManager = ({ user }) => {
     const alertHideTimeoutRef = useRef(null);
     
     const [isViewsCollapsed, setIsViewsCollapsed] = useState(window.innerWidth < 640);
+    const viewsCollapseTimeoutRef = useRef(null);
 
     useEffect(() => {
         const handleResize = () => {
-            setIsViewsCollapsed(window.innerWidth < 640);
+            const mobile = window.innerWidth < 640;
+            if (!mobile) {
+                setIsViewsCollapsed(false); // Always expand on desktop
+            } else {
+                setIsViewsCollapsed(true); // Collapse by default on mobile
+            }
         };
         window.addEventListener('resize', handleResize);
+        handleResize(); // Initial check
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+    
+    useEffect(() => {
+        if (!isViewsCollapsed && window.innerWidth < 640) {
+            viewsCollapseTimeoutRef.current = setTimeout(() => {
+                setIsViewsCollapsed(true);
+            }, 30000);
+        }
+        return () => {
+            if (viewsCollapseTimeoutRef.current) {
+                clearTimeout(viewsCollapseTimeoutRef.current);
+            }
+        };
+    }, [isViewsCollapsed]);
+
 
     useEffect(() => { const interval = setInterval(() => setCurrentTime(new Date()), 60000); return () => clearInterval(interval); }, []);
     
@@ -713,7 +734,7 @@ const AcademicTaskManager = ({ user }) => {
     const renderCurrentView = () => {
         switch (view) {
             case 'list':
-                return <div id="taskListSection" className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4"> <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left mb-3 sm:mb-6">Lista de tareas</h2> {[...tasks].sort((a, b) => { if (a.completed && !b.completed) return 1; if (!a.completed && b.completed) return -1; const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`); const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`); return dateA - dateB; }).map(task => { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); const cardStyle = getTaskCardStyle(status, task.completed); return ( <div key={task.id} id={task.id} onClick={(e) => { if (e.target.tagName !== 'BUTTON' && e.target.closest('button') === null) handleTaskCardClick(task); }} className={`rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} ${cardStyle.hoverClasses} cursor-pointer`}> <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0"> <div className="flex items-start space-x-2.5 sm:space-x-4 flex-1"> <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }} className={`mt-0.5 w-6 h-6 sm:w-6.5 sm:h-6.5 rounded border-2 flex items-center justify-center flex-shrink-0 border-gray-300 dark:border-gray-500 hover:border-green-500 dark:hover:border-green-400 hover:bg-green-100 dark:hover:bg-green-900/30`}></button> <div className="flex-1 min-w-0">
+                return <div id="taskListSection" className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-3 space-y-4"> <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left mb-3 sm:mb-6">Lista de tareas</h2> {[...tasks].sort((a, b) => { if (a.completed && !b.completed) return 1; if (!a.completed && b.completed) return -1; const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`); const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`); return dateA - dateB; }).map(task => { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); const cardStyle = getTaskCardStyle(status, task.completed); return ( <div key={task.id} id={task.id} onClick={(e) => { if (e.target.tagName !== 'BUTTON' && e.target.closest('button') === null) handleTaskCardClick(task); }} className={`rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} ${cardStyle.hoverClasses} cursor-pointer`}> <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0"> <div className="flex items-start space-x-2.5 sm:space-x-4 flex-1"> <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }} className={`mt-0.5 w-6 h-6 sm:w-6.5 sm:h-6.5 rounded border-2 flex items-center justify-center flex-shrink-0 border-gray-300 dark:border-gray-500 hover:border-green-500 dark:hover:border-green-400 hover:bg-green-100 dark:hover:bg-green-900/30`}></button> <div className="flex-1 min-w-0">
                                  <h3 className={`font-semibold text-sm sm:text-lg text-gray-900 dark:text-gray-100`}>{task.subject}</h3>
                                  <p className={`text-sm sm:text-base text-gray-800 dark:text-gray-300`}>
                                      {task.title}
@@ -762,19 +783,6 @@ const AcademicTaskManager = ({ user }) => {
                 .animate-fast-pulse {
                     animation: fast-pulse 0.8s infinite ease-in-out;
                 }
-                .views-panel {
-                    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-                }
-                .views-panel-collapsed {
-                    transform: translateX(100%);
-                    opacity: 0;
-                    height: 0;
-                    overflow: hidden;
-                }
-                .views-panel-visible {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
             `}</style>
             {/* Header */}
             <div className="sticky top-0 z-30">
@@ -812,9 +820,9 @@ const AcademicTaskManager = ({ user }) => {
                     </div>
                 </div>
                 {showQuickAccess && (
-                    <div className="absolute top-full left-0 right-0 w-full">
-                        <div className="p-4 bg-blue-500/10 dark:bg-blue-900/10 backdrop-blur-2xl shadow-lg w-full rounded-b-3xl">
-                            <div className="max-w-5xl mx-auto px-3 sm:px-6">
+                    <div className="absolute top-full left-0 right-0 w-full md:flex md:justify-end">
+                         <div className="p-4 bg-blue-900/50 dark:bg-blue-900/60 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs md:rounded-b-2xl">
+                            <div className="max-w-5xl md:max-w-xs mx-auto">
                                 <div className="space-y-1">
                                     <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center space-x-3">
                                         <IconBook width="20" height="20" /> <span>Lista</span>
@@ -846,12 +854,15 @@ const AcademicTaskManager = ({ user }) => {
             <div className="max-w-5xl mx-auto px-3 sm:px-6 pb-24">
                  {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-100 dark:bg-orange-500/20 border border-orange-400 dark:border-orange-500/50 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 dark:text-orange-300 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600 dark:text-orange-400"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 dark:text-orange-300/90 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 dark:text-orange-400 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
                  
-                 <div className="relative bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-5 rounded-2xl">
+                 <div className="relative bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-3 rounded-2xl">
                     <div className="max-w-5xl mx-auto px-3 sm:px-6">
                         <div className="flex justify-between items-center">
                             <h2 className="text-lg sm:text-xl font-semibold text-blue-600 dark:text-blue-400 text-left">Vistas</h2>
-                            <button onClick={() => setIsViewsCollapsed(!isViewsCollapsed)} className="sm:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                                <IconChevronRight className={`w-6 h-6 transition-transform duration-300 ${isViewsCollapsed ? '' : 'rotate-180'}`} />
+                            <button onClick={() => {
+                                setIsViewsCollapsed(!isViewsCollapsed);
+                                if (viewsCollapseTimeoutRef.current) clearTimeout(viewsCollapseTimeoutRef.current);
+                            }} className="sm:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <IconChevronRight className={`w-6 h-6 transition-transform duration-300 ${isViewsCollapsed ? '' : 'rotate-90'}`} />
                             </button>
                         </div>
                         <div className={`sm:block mt-4 sm:mt-5 ${isViewsCollapsed ? 'hidden' : ''}`}>
