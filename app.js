@@ -335,7 +335,7 @@ const HistoryView = ({ history, permanentDeleteFromHistory, formatTimestamp }) =
             <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left mb-3 sm:mb-6">Historial de Tareas</h2>
             {history.map(task => {
                 const isCompleted = task.status === 'completed';
-                const cardStyle = isCompleted ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800/50' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/50';
+                const cardStyle = isCompleted ? 'bg-green-50 dark:bg-green-800/20 border-green-200 dark:border-green-800/50' : 'bg-red-50 dark:bg-red-800/20 border-red-200 dark:border-red-800/50';
                 const textStyle = isCompleted ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-400';
                 const icon = isCompleted ? <IconCheck width="16" height="16" /> : <IconTrash width="16" height="16" />;
 
@@ -534,28 +534,28 @@ const AcademicTaskManager = ({ user }) => {
                     highlightBg = 'bg-gray-200 dark:bg-gray-600';
                     break;
                 case 'due-today':
-                    baseStyles = { bg: 'bg-red-50 dark:bg-red-900/60', border: 'border-red-500 dark:border-red-600', text: 'text-red-800 dark:text-red-200' };
+                    baseStyles = { bg: 'bg-red-50 dark:bg-red-800/70', border: 'border-red-500 dark:border-red-600', text: 'text-red-800 dark:text-red-200' };
                     highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
                     borderColorRgb = '239,68,68';
                     hoverClasses = 'hover:border-red-600 dark:hover:border-red-500 hover:ring-2 hover:ring-red-600/50 dark:hover:ring-red-500/50 hover:shadow-xl hover:shadow-red-300/50 dark:hover:shadow-red-900/50';
                     highlightBg = 'bg-red-200 dark:bg-red-800/70';
                     break;
                 case 'due-tomorrow':
-                    baseStyles = { bg: 'bg-orange-50 dark:bg-orange-900/60', border: 'border-orange-400 dark:border-orange-500', text: 'text-orange-800 dark:text-orange-200' };
+                    baseStyles = { bg: 'bg-orange-50 dark:bg-orange-800/70', border: 'border-orange-400 dark:border-orange-500', text: 'text-orange-800 dark:text-orange-200' };
                     highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
                     borderColorRgb = '249,115,22';
                     hoverClasses = 'hover:border-orange-500 dark:hover:border-orange-500 hover:ring-2 hover:ring-orange-500/50 dark:hover:ring-orange-500/50 hover:shadow-xl hover:shadow-orange-300/50 dark:hover:shadow-orange-900/50';
                     highlightBg = 'bg-orange-200 dark:bg-orange-800/70';
                     break;
                 case 'due-soon':
-                    baseStyles = { bg: 'bg-yellow-50 dark:bg-yellow-900/60', border: 'border-yellow-400 dark:border-yellow-500', text: 'text-yellow-800 dark:text-yellow-200' };
+                    baseStyles = { bg: 'bg-yellow-50 dark:bg-yellow-800/70', border: 'border-yellow-400 dark:border-yellow-500', text: 'text-yellow-800 dark:text-yellow-200' };
                     highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
                     borderColorRgb = '245,158,11';
                     hoverClasses = 'hover:border-yellow-500 dark:hover:border-yellow-500 hover:ring-2 hover:ring-yellow-500/50 dark:hover:ring-yellow-500/50 hover:shadow-xl hover:shadow-yellow-300/50 dark:hover:shadow-yellow-900/50';
                     highlightBg = 'bg-yellow-200 dark:bg-yellow-800/70';
                     break;
                 default: // 'on-time'
-                    baseStyles = { bg: 'bg-green-50 dark:bg-green-900/60', border: 'border-green-400 dark:border-green-500', text: 'text-green-800 dark:text-green-200' };
+                    baseStyles = { bg: 'bg-green-50 dark:bg-green-800/70', border: 'border-green-400 dark:border-green-500', text: 'text-green-800 dark:text-green-200' };
                     highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
                     borderColorRgb = '34,197,94';
                     hoverClasses = 'hover:border-green-500 dark:hover:border-green-500 hover:ring-2 hover:ring-green-500/50 dark:hover:ring-green-500/50 hover:shadow-xl hover:shadow-green-300/50 dark:hover:shadow-green-900/50';
