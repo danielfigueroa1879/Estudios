@@ -821,7 +821,7 @@ const AcademicTaskManager = ({ user }) => {
                 </div>
                 {showQuickAccess && (
                     <div className="absolute top-full left-0 right-0 w-full md:flex md:justify-end">
-                         <div className="p-4 bg-black/10 dark:bg-black/30 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-2xl">
+                         <div className="p-4 bg-black/30 dark:bg-black/50 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-xl">
                             <div className="max-w-5xl md:max-w-xs mx-auto">
                                 <div className="space-y-1">
                                     <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
