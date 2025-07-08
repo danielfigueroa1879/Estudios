@@ -48,8 +48,8 @@ const IconHistory = ({ width = "20", height = "20" }) => ( <svg width={width} he
 
 
 // --- Custom Dialogs ---
-const CustomAlertDialog = ({ message, isOpen, onClose }) => { if (!isOpen) return null; return ( <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4"> <div className="bg-white rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-blue-500"> <IconAlert width="40" height="40" className="text-blue-500 mx-auto mb-4" /> <p className="text-lg text-gray-800 mb-6">{message}</p> <button onClick={onClose} className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors text-lg font-medium" > Aceptar </button> </div> </div> ); };
-const CustomConfirmDialog = ({ message, isOpen, onConfirm, onCancel }) => { if (!isOpen) return null; return ( <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4"> <div className="bg-white rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-red-500"> <IconTrash width="40" height="40" className="text-red-500 mx-auto mb-4" /> <p className="text-lg text-gray-800 mb-6">{message}</p> <div className="flex space-x-4"> <button onClick={onCancel} className="flex-1 bg-gray-300 text-gray-800 py-3 rounded-lg hover:bg-gray-400 transition-colors text-lg font-medium" > Cancelar </button> <button onClick={onConfirm} className="flex-1 bg-red-500 text-white py-3 rounded-lg hover:bg-red-600 transition-colors text-lg font-medium" > Confirmar </button> </div> </div> </div> ); };
+const CustomAlertDialog = ({ message, isOpen, onClose }) => { if (!isOpen) return null; return ( <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4"> <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-blue-500"> <IconAlert width="40" height="40" className="text-blue-500 mx-auto mb-4" /> <p className="text-lg text-gray-800 dark:text-gray-200 mb-6">{message}</p> <button onClick={onClose} className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors text-lg font-medium" > Aceptar </button> </div> </div> ); };
+const CustomConfirmDialog = ({ message, isOpen, onConfirm, onCancel }) => { if (!isOpen) return null; return ( <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4"> <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-red-500"> <IconTrash width="40" height="40" className="text-red-500 mx-auto mb-4" /> <p className="text-lg text-gray-800 dark:text-gray-200 mb-6">{message}</p> <div className="flex space-x-4"> <button onClick={onCancel} className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors text-lg font-medium" > Cancelar </button> <button onClick={onConfirm} className="flex-1 bg-red-500 text-white py-3 rounded-lg hover:bg-red-600 transition-colors text-lg font-medium" > Confirmar </button> </div> </div> </div> ); };
 
 // --- Login Screen Component ---
 const LoginScreen = ({ showAlert }) => {
@@ -111,7 +111,7 @@ const LoginScreen = ({ showAlert }) => {
 
     return (
         <div className="min-h-screen bg-blue-600 flex flex-col justify-center items-center p-4">
-            <div className="max-w-md w-full mx-auto bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-blue-600">
+            <div className="max-w-md w-full mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 border-t-4 border-blue-600">
                 {registerSuccessMessage && (
                     <div className="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 mb-6 rounded-r-lg" role="alert">
                         <p className="font-bold">¡Éxito!</p>
@@ -120,11 +120,11 @@ const LoginScreen = ({ showAlert }) => {
                 )}
                 <div className="text-center mb-8">
                     <IconBook width="48" height="48" className="mx-auto text-blue-600" />
-                    <h1 className="text-3xl font-bold text-gray-800 mt-4">Gestor Académico</h1>
-                    <p className="text-gray-500">{isRegister ? 'Crea una nueva cuenta' : 'Bienvenido de vuelta'}</p>
+                    <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mt-4">Gestor Académico</h1>
+                    <p className="text-gray-500 dark:text-gray-400">{isRegister ? 'Crea una nueva cuenta' : 'Bienvenido de vuelta'}</p>
                 </div>
                 <div className="space-y-6">
-                    <div className="relative"><span className="absolute left-4 top-3.5 text-gray-400"><IconMail /></span><input type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border border-gray-300 rounded-xl px-12 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" /></div>
+                    <div className="relative"><span className="absolute left-4 top-3.5 text-gray-400"><IconMail /></span><input type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" /></div>
                     <div className="relative">
                         <span className="absolute left-4 top-3.5 text-gray-400"><IconLock /></span>
                         <input 
@@ -132,12 +132,12 @@ const LoginScreen = ({ showAlert }) => {
                             placeholder="Contraseña" 
                             value={password} 
                             onChange={(e) => setPassword(e.target.value)} 
-                            className="w-full border border-gray-300 rounded-xl px-12 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" 
+                            className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" 
                         />
                         <button 
                             type="button"
                             onClick={() => setShowPassword(!showPassword)} 
-                            className="absolute inset-y-0 right-0 px-4 flex items-center text-gray-500 hover:text-blue-600"
+                            className="absolute inset-y-0 right-0 px-4 flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                         >
                             {showPassword ? <IconEyeOff /> : <IconEye />}
                         </button>
@@ -145,8 +145,8 @@ const LoginScreen = ({ showAlert }) => {
                 </div>
                 <div className="mt-8"><button onClick={isRegister ? handleRegister : handleLogin} disabled={loading} className="w-full bg-blue-600 text-white rounded-xl py-3.5 text-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl flex items-center justify-center disabled:bg-blue-400">{loading && <IconSpinner />}{isRegister ? 'Registrarse' : 'Iniciar Sesión'}</button></div>
                 <div className="text-center mt-6 flex justify-between items-center">
-                    <button onClick={() => setIsRegister(!isRegister)} className="text-blue-600 hover:underline">{isRegister ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}</button>
-                    {!isRegister && (<button onClick={handlePasswordReset} className="text-sm text-gray-500 hover:underline">¿Olvidaste la contraseña?</button>)}
+                    <button onClick={() => setIsRegister(!isRegister)} className="text-blue-600 dark:text-blue-400 hover:underline">{isRegister ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}</button>
+                    {!isRegister && (<button onClick={handlePasswordReset} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">¿Olvidaste la contraseña?</button>)}
                 </div>
             </div>
         </div>
@@ -163,12 +163,12 @@ const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle
     }, {});
 
     return (
-        <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6" id="dailyTasksSection">
-            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-6">Tareas por día</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6" id="dailyTasksSection">
+            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left mb-6">Tareas por día</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
-                    <div key={date} className="bg-white rounded-xl shadow-lg p-2.5 sm:p-5 transition-all duration-300">
-                        <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 mb-2 sm:mb-3">{formatDate(date)}</h3>
+                    <div key={date} className="bg-white dark:bg-gray-700/50 rounded-xl shadow-lg p-2.5 sm:p-5 transition-all duration-300">
+                        <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 dark:text-gray-200 mb-2 sm:mb-3">{formatDate(date)}</h3>
                         <div className="space-y-1">
                             {dayTasks.sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')).map(task => {
                                 const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
@@ -176,13 +176,13 @@ const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle
                                 return (
                                     <div key={task.id} onClick={() => handleTaskCardClick(task)} className={`p-1.5 sm:p-3 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300 cursor-pointer ${cardStyle.hoverClasses}`}>
                                         <div className="flex items-center justify-between mb-2">
-                                            <div className="flex items-center space-x-1"><IconClock width="18" height="18" /><span className={`text-xs sm:text-sm px-2 py-0.5 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>{task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate)}</span></div>
-                                            <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id, task.completed); }} className={`w-5 h-5 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center ${task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300'}`}>{task.completed && <IconCheck width="14" height="14" />}</button>
+                                            <div className="flex items-center space-x-1"><IconClock width="18" height="18" className="text-gray-600 dark:text-gray-300" /><span className={`text-xs sm:text-sm px-2 py-0.5 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>{task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate)}</span></div>
+                                            <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id, task.completed); }} className={`w-5 h-5 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center ${task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-400 dark:border-gray-500'}`}>{task.completed && <IconCheck width="14" height="14" />}</button>
                                         </div>
-                                        <div><p className="font-medium text-sm sm:text-lg text-gray-800">{task.subject}</p><p className="text-xs sm:text-base text-gray-600 mt-0.5">{task.title}</p><p className="text-xs text-gray-500 mt-1">{task.type}</p></div>
+                                        <div><p className="font-medium text-sm sm:text-lg text-gray-800 dark:text-gray-100">{task.subject}</p><p className="text-xs sm:text-base text-gray-600 dark:text-gray-300 mt-0.5">{task.title}</p><p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{task.type}</p></div>
                                         <div className="flex justify-end mt-3 space-x-1">
-                                            <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1 rounded-xl transition-colors" title="Editar tarea"><IconEdit width="16" height="16" /></button>
-                                            <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded-xl transition-colors" title="Eliminar tarea"><IconTrash width="16" height="16" /></button>
+                                            <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/50 p-1 rounded-xl transition-colors" title="Editar tarea"><IconEdit width="16" height="16" /></button>
+                                            <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 p-1 rounded-xl transition-colors" title="Eliminar tarea"><IconTrash width="16" height="16" /></button>
                                         </div>
                                     </div>
                                 );
@@ -223,23 +223,23 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
 
     return (
         <div className="relative">
-            <h2 className="text-2xl sm:text-3xl font-bold text-red-600 text-center mb-1 sm:mb-0 uppercase">{monthNames[month]} {year}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-red-600 dark:text-red-400 text-center mb-1 sm:mb-0 uppercase">{monthNames[month]} {year}</h2>
             <div className="flex justify-center space-x-1 sm:space-x-2 w-full mt-1 sm:mt-2 mb-4">
                 <button onClick={goToPreviousMonth} className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm">←</button>
                 <button onClick={goToToday} className="px-3 py-1.5 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm">Hoy</button>
                 <button onClick={goToNextMonth} className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm">→</button>
             </div>
-            <div className="grid grid-cols-7 bg-blue-600 text-white rounded-t-lg">{dayNames.map((day, index) => <div key={index} className="text-center font-semibold py-2 text-sm">{day}</div>)}</div>
-            <div className="grid grid-cols-7 border-l border-t border-gray-200">
+            <div className="grid grid-cols-7 bg-blue-600 dark:bg-gray-700 text-white rounded-t-lg">{dayNames.map((day, index) => <div key={index} className="text-center font-semibold py-2 text-sm">{day}</div>)}</div>
+            <div className="grid grid-cols-7 border-l border-t border-gray-200 dark:border-gray-700">
                 {daysArray.map((day, index) => {
-                    if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28 bg-gray-50 border-r border-b border-gray-200"></div>;
+                    if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28 bg-gray-50 dark:bg-gray-800/20 border-r border-b border-gray-200 dark:border-gray-700"></div>;
                     const dayObj = new Date(year, month, day);
                     const isToday = todayGlobal.getDate() === dayObj.getDate() && todayGlobal.getMonth() === dayObj.getMonth() && todayGlobal.getFullYear() === dayObj.getFullYear();
                     const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                     const isHoliday = chileanHolidays.includes(currentDayFormatted);
                     const highlightEntry = highlightedDate && highlightedDate.date === currentDayFormatted ? highlightedDate : null;
                     
-                    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 ${isHoliday ? 'bg-red-50' : ''} ${isToday ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`;
+                    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 dark:border-gray-700 ${isHoliday ? 'bg-red-50 dark:bg-red-900/20' : ''} ${isToday ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700'}`;
                     
                     if (highlightEntry) {
                         dayClasses += ` ${highlightEntry.highlightBg} z-10`;
@@ -275,7 +275,7 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
 
                     return (
                         <div key={currentDayFormatted} onDoubleClick={() => onDayDoubleClick(currentDayFormatted)} className={dayClasses}>
-                            <div className={`text-xs sm:text-sm font-medium ${isToday ? 'text-blue-700' : (isHoliday ? 'text-red-600' : 'text-gray-800')}`}>{day}</div>
+                            <div className={`text-xs sm:text-sm font-medium ${isToday ? 'text-blue-700 dark:text-blue-300' : (isHoliday ? 'text-red-600 dark:text-red-400' : 'text-gray-800 dark:text-gray-300')}`}>{day}</div>
                             <div className="absolute top-4 left-0.5 right-0.5 bottom-1">
                                 {/* All-day tasks stacked at the top */}
                                 <div className="space-y-0.5">
@@ -307,9 +307,9 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
 
 const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate, onBackToList, onDayDoubleClick }) => {
     return (
-        <div className="bg-white rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200" id="calendarSection">
+        <div className="bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700" id="calendarSection">
             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left">Calendario</h2>
+                <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Calendario</h2>
                 <button onClick={onBackToList} className="p-2.5 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
                     <IconArrowBack width="22" height="22" />
                 </button>
@@ -322,21 +322,21 @@ const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewD
 const HistoryView = ({ history, permanentDeleteFromHistory, formatTimestamp }) => {
     if (!history || history.length === 0) {
         return (
-            <div id="historySection" className="bg-white rounded-2xl shadow-lg p-6 mb-6 mt-6 text-center">
-                <IconHistory width="48" height="48" className="mx-auto text-gray-400 mb-4" />
-                <h2 className="text-2xl font-semibold text-blue-600 mb-2">Historial de Tareas</h2>
-                <p className="text-gray-500">Aún no hay tareas completadas o eliminadas.</p>
+            <div id="historySection" className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 mt-6 text-center">
+                <IconHistory width="48" height="48" className="mx-auto text-gray-400 dark:text-gray-500 mb-4" />
+                <h2 className="text-2xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Historial de Tareas</h2>
+                <p className="text-gray-500 dark:text-gray-400">Aún no hay tareas completadas o eliminadas.</p>
             </div>
         );
     }
 
     return (
-        <div id="historySection" className="bg-white rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4">
-            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-3 sm:mb-6">Historial de Tareas</h2>
+        <div id="historySection" className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4">
+            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left mb-3 sm:mb-6">Historial de Tareas</h2>
             {history.map(task => {
                 const isCompleted = task.status === 'completed';
-                const cardStyle = isCompleted ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
-                const textStyle = isCompleted ? 'text-green-700' : 'text-red-700';
+                const cardStyle = isCompleted ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800/50' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/50';
+                const textStyle = isCompleted ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-400';
                 const icon = isCompleted ? <IconCheck width="16" height="16" /> : <IconTrash width="16" height="16" />;
 
                 return (
@@ -344,20 +344,20 @@ const HistoryView = ({ history, permanentDeleteFromHistory, formatTimestamp }) =
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between">
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center mb-2">
-                                    <span className={`font-bold text-sm px-3 py-1 rounded-full flex items-center space-x-2 ${textStyle} ${isCompleted ? 'bg-green-100' : 'bg-red-100'}`}>
+                                    <span className={`font-bold text-sm px-3 py-1 rounded-full flex items-center space-x-2 ${textStyle} ${isCompleted ? 'bg-green-100 dark:bg-green-500/20' : 'bg-red-100 dark:bg-red-500/20'}`}>
                                         {icon}
                                         <span>{isCompleted ? 'Completada' : 'Eliminada'}</span>
                                     </span>
                                 </div>
-                                <h3 className="font-semibold text-lg text-gray-800 truncate">{task.subject}: {task.title}</h3>
-                                <p className="text-sm text-gray-500 mt-1">
+                                <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-200 truncate">{task.subject}: {task.title}</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                                     Archivado: {task.archivedAt ? formatTimestamp(task.archivedAt.toDate()) : 'Fecha no disponible'}
                                 </p>
                             </div>
                             <div className="mt-3 sm:mt-0">
                                 <button
                                     onClick={() => permanentDeleteFromHistory(task.id)}
-                                    className="text-gray-500 hover:text-red-600 hover:bg-red-100 p-2 rounded-full transition-colors"
+                                    className="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 p-2 rounded-full transition-colors"
                                     title="Eliminar permanentemente"
                                 >
                                     <IconTrash width="20" height="20" />
@@ -402,19 +402,19 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
 
     return (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 max-w-lg w-full border-t-4 border-blue-500">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 max-w-lg w-full border-t-4 border-blue-500">
                 <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-semibold text-blue-600 text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 rounded-full">
+                    <h3 className="font-semibold text-blue-600 dark:text-blue-400 text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded-full">
                         <IconClose className="w-6 h-6" />
                     </button>
                 </div>
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <input type="text" name="subject" placeholder="Asignatura" value={taskData.subject || ''} onChange={handleChange} className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                        <input type="text" name="title" placeholder="Título de la tarea" value={taskData.title || ''} onChange={handleChange} className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="text" name="subject" placeholder="Asignatura" value={taskData.subject || ''} onChange={handleChange} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="text" name="title" placeholder="Título de la tarea" value={taskData.title || ''} onChange={handleChange} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
-                    <select name="type" value={taskData.type || 'Tarea'} onChange={handleChange} className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <select name="type" value={taskData.type || 'Tarea'} onChange={handleChange} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="Tarea">Tarea</option>
                         <option value="Examen">Examen</option>
                         <option value="Recuperación de Clases">Recuperación de Clases</option>
@@ -423,12 +423,12 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
                         <option value="Informe">Informe</option>
                     </select>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <input type="date" name="dueDate" value={taskData.dueDate || ''} onChange={handleChange} className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                        <input type="time" name="dueTime" placeholder="Hora (opcional)" value={taskData.dueTime || ''} onChange={handleChange} className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="date" name="dueDate" value={taskData.dueDate || ''} onChange={handleChange} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="time" name="dueTime" placeholder="Hora (opcional)" value={taskData.dueTime || ''} onChange={handleChange} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
-                    <textarea name="description" placeholder="Descripción (opcional)" value={taskData.description || ''} onChange={handleChange} rows="3" className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea>
+                    <textarea name="description" placeholder="Descripción (opcional)" value={taskData.description || ''} onChange={handleChange} rows="3" className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea>
                     <div className="flex justify-end space-x-4">
-                        <button onClick={onClose} className="bg-gray-300 text-gray-800 rounded-xl px-6 py-3 hover:bg-gray-400 text-base font-medium">Cancelar</button>
+                        <button onClick={onClose} className="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-xl px-6 py-3 hover:bg-gray-400 dark:hover:bg-gray-500 text-base font-medium">Cancelar</button>
                         <button onClick={handleSubmit} className="bg-blue-600 text-white rounded-xl px-6 py-3 hover:bg-blue-700 flex items-center justify-center space-x-2 text-base font-medium">
                             {isEditMode ? <IconCheck width="18" height="18" /> : <IconPlus width="18" height="18" />}
                             <span>{isEditMode ? 'Actualizar Tarea' : 'Agregar Tarea'}</span>
@@ -527,39 +527,39 @@ const AcademicTaskManager = ({ user }) => {
         } else {
             switch (status) {
                 case 'overdue':
-                    baseStyles = { bg: 'bg-gray-100', border: 'border-gray-500', text: 'text-gray-800' };
+                    baseStyles = { bg: 'bg-gray-100 dark:bg-gray-700/50', border: 'border-gray-500', text: 'text-gray-800 dark:text-gray-300' };
                     highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md';
                     borderColorRgb = '75,85,99';
                     hoverClasses = 'hover:border-gray-600 hover:ring-2 hover:ring-gray-600/50 hover:shadow-xl hover:shadow-gray-400/50';
-                    highlightBg = 'bg-gray-200';
+                    highlightBg = 'bg-gray-200 dark:bg-gray-600';
                     break;
                 case 'due-today':
-                    baseStyles = { bg: 'bg-red-50', border: 'border-red-500', text: 'text-red-800' };
+                    baseStyles = { bg: 'bg-red-50 dark:bg-red-900/20', border: 'border-red-500', text: 'text-red-800 dark:text-red-300' };
                     highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
                     borderColorRgb = '239,68,68';
                     hoverClasses = 'hover:border-red-600 hover:ring-2 hover:ring-red-600/50 hover:shadow-xl hover:shadow-red-300/50';
-                    highlightBg = 'bg-red-200';
+                    highlightBg = 'bg-red-200 dark:bg-red-800/40';
                     break;
                 case 'due-tomorrow':
-                    baseStyles = { bg: 'bg-orange-50', border: 'border-orange-400', text: 'text-orange-800' };
+                    baseStyles = { bg: 'bg-orange-50 dark:bg-orange-900/20', border: 'border-orange-400', text: 'text-orange-800 dark:text-orange-300' };
                     highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
                     borderColorRgb = '249,115,22';
                     hoverClasses = 'hover:border-orange-500 hover:ring-2 hover:ring-orange-500/50 hover:shadow-xl hover:shadow-orange-300/50';
-                    highlightBg = 'bg-orange-200';
+                    highlightBg = 'bg-orange-200 dark:bg-orange-800/40';
                     break;
                 case 'due-soon':
-                    baseStyles = { bg: 'bg-yellow-50', border: 'border-yellow-400', text: 'text-yellow-800' };
+                    baseStyles = { bg: 'bg-yellow-50 dark:bg-yellow-900/20', border: 'border-yellow-400', text: 'text-yellow-800 dark:text-yellow-300' };
                     highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
                     borderColorRgb = '245,158,11';
                     hoverClasses = 'hover:border-yellow-500 hover:ring-2 hover:ring-yellow-500/50 hover:shadow-xl hover:shadow-yellow-300/50';
-                    highlightBg = 'bg-yellow-200';
+                    highlightBg = 'bg-yellow-200 dark:bg-yellow-800/40';
                     break;
                 default: // 'on-time'
-                    baseStyles = { bg: 'bg-green-50', border: 'border-green-400', text: 'text-green-800' };
+                    baseStyles = { bg: 'bg-green-50 dark:bg-green-900/20', border: 'border-green-400', text: 'text-green-800 dark:text-green-300' };
                     highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
                     borderColorRgb = '34,197,94';
                     hoverClasses = 'hover:border-green-500 hover:ring-2 hover:ring-green-500/50 hover:shadow-xl hover:shadow-green-300/50';
-                    highlightBg = 'bg-green-200';
+                    highlightBg = 'bg-green-200 dark:bg-green-800/40';
                     break;
             }
         }
@@ -680,8 +680,8 @@ const AcademicTaskManager = ({ user }) => {
     
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-200 flex items-center justify-center">
-                <IconSpinner /> <span className="text-xl ml-4 text-gray-600">Cargando tareas...</span>
+            <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+                <IconSpinner /> <span className="text-xl ml-4 text-gray-600 dark:text-gray-300">Cargando tareas...</span>
             </div>
         );
     }
@@ -689,14 +689,14 @@ const AcademicTaskManager = ({ user }) => {
     const renderCurrentView = () => {
         switch (view) {
             case 'list':
-                return <div id="taskListSection" className="bg-white rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4"> <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-3 sm:mb-6">Lista de tareas</h2> {[...tasks].sort((a, b) => { if (a.completed && !b.completed) return 1; if (!a.completed && b.completed) return -1; const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`); const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`); return dateA - dateB; }).map(task => { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); const cardStyle = getTaskCardStyle(status, task.completed); return ( <div key={task.id} id={task.id} onClick={(e) => { if (e.target.tagName !== 'BUTTON' && e.target.closest('button') === null) handleTaskCardClick(task); }} className={`rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} ${cardStyle.hoverClasses} cursor-pointer`}> <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0"> <div className="flex items-start space-x-2.5 sm:space-x-4 flex-1"> <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }} className={`mt-0.5 w-6 h-6 sm:w-6.5 sm:h-6.5 rounded border-2 flex items-center justify-center flex-shrink-0 border-gray-300 hover:border-green-500 hover:bg-green-100`}></button> <div className="flex-1 min-w-0">
-                                 <h3 className={`font-semibold text-sm sm:text-lg text-gray-900`}>{task.subject}</h3>
-                                 <p className={`text-sm sm:text-base text-gray-800`}>
+                return <div id="taskListSection" className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4"> <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left mb-3 sm:mb-6">Lista de tareas</h2> {[...tasks].sort((a, b) => { if (a.completed && !b.completed) return 1; if (!a.completed && b.completed) return -1; const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`); const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`); return dateA - dateB; }).map(task => { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); const cardStyle = getTaskCardStyle(status, task.completed); return ( <div key={task.id} id={task.id} onClick={(e) => { if (e.target.tagName !== 'BUTTON' && e.target.closest('button') === null) handleTaskCardClick(task); }} className={`rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} ${cardStyle.hoverClasses} cursor-pointer`}> <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0"> <div className="flex items-start space-x-2.5 sm:space-x-4 flex-1"> <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }} className={`mt-0.5 w-6 h-6 sm:w-6.5 sm:h-6.5 rounded border-2 flex items-center justify-center flex-shrink-0 border-gray-300 dark:border-gray-500 hover:border-green-500 dark:hover:border-green-400 hover:bg-green-100 dark:hover:bg-green-900/30`}></button> <div className="flex-1 min-w-0">
+                                 <h3 className={`font-semibold text-sm sm:text-lg text-gray-900 dark:text-gray-100`}>{task.subject}</h3>
+                                 <p className={`text-sm sm:text-base text-gray-800 dark:text-gray-300`}>
                                      {task.title}
-                                     <span className="text-xs sm:text-sm bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded-md ml-2 align-middle">{task.type}</span>
+                                     <span className="text-xs sm:text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-0.5 rounded-md ml-2 align-middle">{task.type}</span>
                                  </p>
-                                 {task.description && <p className="text-xs sm:text-base text-gray-600 mt-1.5 mb-1.5">{task.description}</p>} 
-                                 <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-base text-gray-500 mt-2">
+                                 {task.description && <p className="text-xs sm:text-base text-gray-600 dark:text-gray-400 mt-1.5 mb-1.5">{task.description}</p>} 
+                                 <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-base text-gray-500 dark:text-gray-400 mt-2">
                                     <span className="flex items-center">
                                         📅
                                         <span className="ml-1.5">{formatDate(task.dueDate)}</span>
@@ -712,7 +712,7 @@ const AcademicTaskManager = ({ user }) => {
                                         <span className="ml-1.5">{getDaysUntilDue(task.dueDate)}</span>
                                     </span>
                                 </div>
-                                 </div> </div> <div className="flex items-center space-x-2.5"> <div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconClock width="22" height="22" /></div> <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Editar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconEdit width="22" height="22" /></div></button> <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Eliminar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconTrash width="22" height="22" /></div></button> </div> </div> </div> ); })} </div>;
+                                 </div> </div> <div className="flex items-center space-x-2.5"> <div className="w-4.5 h-4.5 sm:w-6 sm:h-6 text-gray-600 dark:text-gray-400"><IconClock width="22" height="22" /></div> <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Editar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconEdit width="22" height="22" /></div></button> <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Eliminar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconTrash width="22" height="22" /></div></button> </div> </div> </div> ); })} </div>;
             case 'daily':
                 return <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} getDaysUntilDue={getDaysUntilDue} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} />;
             case 'calendar':
@@ -724,11 +724,11 @@ const AcademicTaskManager = ({ user }) => {
         }
     };
     
-    const unselectedButtonClasses = "bg-white text-gray-700 border-2 border-blue-200 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-700";
-    const selectedButtonClasses = "bg-blue-600 text-white shadow-lg shadow-blue-300 ring-2 ring-blue-400";
+    const unselectedButtonClasses = "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-600 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-700 dark:hover:text-white";
+    const selectedButtonClasses = "bg-blue-600 text-white shadow-lg shadow-blue-300 dark:shadow-blue-800/50 ring-2 ring-blue-400 dark:ring-blue-500";
 
     return (
-        <div className="min-h-screen bg-gray-200">
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
             <style>{`
                 @keyframes fast-pulse {
                     0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,0.1); }
@@ -740,7 +740,7 @@ const AcademicTaskManager = ({ user }) => {
                 }
             `}</style>
             {/* Header */}
-            <div className="bg-blue-700 shadow-lg w-full py-4 sm:py-4 mb-5">
+            <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4 mb-5">
                 <div className="max-w-5xl mx-auto px-3 sm:px-6">
                     <div className="flex items-start sm:items-center justify-between">
                         <div className="flex flex-col sm:flex-row sm:items-center">
@@ -748,47 +748,47 @@ const AcademicTaskManager = ({ user }) => {
                                 <div className="text-white"><IconBook width="26" height="26" /></div>
                                 <div>
                                     <h1 className="text-lg sm:text-3xl font-bold text-white leading-tight">GESTOR ACADÉMICO</h1>
-                                    <p className="text-xs sm:text-base text-white mt-1">Usuario: <span className="font-semibold">{user.email}</span></p>
+                                    <p className="text-xs sm:text-base text-blue-200 mt-1">Usuario: <span className="font-semibold text-white">{user.email}</span></p>
                                 </div>
                             </div>
                         </div>
                         <div className="flex-shrink-0 flex items-center space-x-1 sm:space-x-2">
                             {notifications.length > 0 && (
-                                <button onClick={() => setShowAlerts(!showAlerts)} className="relative text-white hover:bg-blue-600 p-2 rounded-full transition-colors" title={showAlerts ? "Ocultar alertas" : "Mostrar alertas"}>
+                                <button onClick={() => setShowAlerts(!showAlerts)} className="relative text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title={showAlerts ? "Ocultar alertas" : "Mostrar alertas"}>
                                     <IconBell width="22" height="22" />
                                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{notifications.length}</span>
                                 </button>
                             )}
-                            <div className="hidden sm:flex items-center space-x-2 p-1 rounded-full hover:bg-blue-600 transition-colors">
+                            <div className="hidden sm:flex items-center space-x-2 p-1 rounded-full hover:bg-blue-600 dark:hover:bg-gray-700 transition-colors">
                                 <IconMail width="22" height="22" className="text-white" />
                                 <button onClick={() => setEmailNotifications(!emailNotifications)} className={`w-10 h-5 rounded-full transition-colors flex items-center p-0.5 ${emailNotifications ? 'bg-blue-400' : 'bg-gray-500'}`}>
                                     <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${emailNotifications ? 'translate-x-5' : 'translate-x-0'}`} />
                                 </button>
                             </div>
-                            <button onClick={() => auth.signOut()} className="text-white hover:bg-blue-600 p-2 rounded-full transition-colors" title="Cerrar sesión">
+                            <button onClick={() => auth.signOut()} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Cerrar sesión">
                                 <IconLogOut width="22" height="22" />
                             </button>
-                            <button onClick={() => setShowColorLegend(!showColorLegend)} className="text-white hover:bg-blue-600 p-2 rounded-full transition-colors" title="Acceso Rápido a Tareas">
+                            <button onClick={() => setShowColorLegend(!showColorLegend)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Acceso Rápido a Tareas">
                                 <IconHamburger width="22" height="22" />
                             </button>
                         </div>
                     </div>
-                     {showColorLegend && ( <div className="mt-4 pt-3 border-t border-gray-200"> <h3 className="font-semibold text-blue-600 text-lg sm:text-xl text-left mb-3">Acceso rápido a tareas</h3> <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5"> <button onClick={() => { setView('list'); setShowColorLegend(false); setHighlightedDate(null); setTimeout(() => document.getElementById('taskListSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0); }} className="block w-full text-left p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-sm flex items-center space-x-1.5"> <IconBook width="18" height="18" /> <span>Tareas</span> </button> <button onClick={() => { setView('daily'); setShowColorLegend(false); setHighlightedDate(null); setTimeout(() => document.getElementById('dailyTasksSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0); }} className="block w-full text-left p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-sm flex items-center space-x-1.5"> <IconCalendar width="18" height="18" /> <span>Tareas por Día</span> </button> <button onClick={() => { setView('calendar'); setShowColorLegend(false); setTimeout(() => document.getElementById('calendarSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }} className="block w-full text-left p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium text-sm flex items-center space-x-1.5"> <IconCalendar width="20" height="20" /> <span>Calendario</span> </button> </div> </div> )}
+                     {showColorLegend && ( <div className="mt-4 pt-3 border-t border-blue-500 dark:border-gray-700"> <h3 className="font-semibold text-white text-lg sm:text-xl text-left mb-3">Acceso rápido a tareas</h3> <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5"> <button onClick={() => { setView('list'); setShowColorLegend(false); setHighlightedDate(null); setTimeout(() => document.getElementById('taskListSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0); }} className="block w-full text-left p-2.5 rounded-xl bg-blue-600 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-gray-600 transition-colors text-white font-medium text-sm flex items-center space-x-1.5"> <IconBook width="18" height="18" /> <span>Tareas</span> </button> <button onClick={() => { setView('daily'); setShowColorLegend(false); setHighlightedDate(null); setTimeout(() => document.getElementById('dailyTasksSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0); }} className="block w-full text-left p-2.5 rounded-xl bg-blue-600 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-gray-600 transition-colors text-white font-medium text-sm flex items-center space-x-1.5"> <IconCalendar width="18" height="18" /> <span>Tareas por Día</span> </button> <button onClick={() => { setView('calendar'); setShowColorLegend(false); setTimeout(() => document.getElementById('calendarSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }} className="block w-full text-left p-2.5 rounded-xl bg-blue-600 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-gray-600 transition-colors text-white font-medium text-sm flex items-center space-x-1.5"> <IconCalendar width="20" height="20" /> <span>Calendario</span> </button> </div> </div> )}
                 </div>
             </div>
 
             {/* Main Content */}
             <div className="max-w-5xl mx-auto px-3 sm:px-6 pb-24">
-                 {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
-                 <div className="bg-white shadow-lg border border-gray-200 w-full py-2.5 sm:py-3.5 mt-5 mb-5 rounded-2xl"> <div className="max-w-5xl mx-auto px-3 sm:px-6"> <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-5">Vistas</h2> <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0"> <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto"> <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:flex sm:gap-3 w-full sm:w-auto"> 
+                 {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-100 dark:bg-orange-500/20 border border-orange-400 dark:border-orange-500/50 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 dark:text-orange-300 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600 dark:text-orange-400"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 dark:text-orange-300/90 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 dark:text-orange-400 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
+                 <div className="bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-5 rounded-2xl"> <div className="max-w-5xl mx-auto px-3 sm:px-6"> <h2 className="text-lg sm:text-xl font-semibold text-blue-600 dark:text-blue-400 text-left mb-5">Vistas</h2> <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0"> <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto"> <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:flex sm:gap-3 w-full sm:w-auto"> 
                     <button onClick={() => setView('list')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'list' ? selectedButtonClasses : unselectedButtonClasses}`}><IconBook width="18" height="18" /><span className="font-medium text-center sm:text-center">Lista</span></button> 
                     <button onClick={() => setView('daily')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'daily' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center sm:text-center">Por Día</span></button> 
                     <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center sm:text-center">Calendario</span></button> 
                     <button onClick={() => setView('history')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'history' ? selectedButtonClasses : unselectedButtonClasses}`}><IconHistory width="20" height="20" /><span className="font-medium text-center sm:text-center">Historial</span></button> 
                  </div> </div> </div> </div> </div>
-                 <div className="border-t-4 border-gray-100 mb-2 sm:my-3"></div>
+                 <div className="border-t-4 border-gray-100 dark:border-gray-800 mb-2 sm:my-3"></div>
                  {renderCurrentView()}
-                 <div className="mt-7 sm:mt-9 bg-white rounded-xl shadow-lg p-3 sm:p-5"> <div className="text-center text-gray-600 space-y-1.5"> <div className="border-b border-gray-200 pb-1.5"> <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p> <p className="text-xs text-gray-700">Creado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span></p> <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p> </div> </div> </div>
+                 <div className="mt-7 sm:mt-9 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5"> <div className="text-center text-gray-600 dark:text-gray-400 space-y-1.5"> <div className="border-b border-gray-200 dark:border-gray-700 pb-1.5"> <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-0.5">© Derechos Reservados</p> <p className="text-xs text-gray-700 dark:text-gray-300">Creado por <span className="font-semibold text-blue-600 dark:text-blue-400">Daniel Figueroa Chacama</span></p> <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Ingeniero en Informática</p> </div> </div> </div>
             </div>
 
             <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 lg:right-[calc(50%-28rem)] bg-blue-600/80 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-all transform hover:scale-110 z-40">
@@ -907,8 +907,8 @@ const App = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-200 flex items-center justify-center">
-                <IconSpinner /> <span className="text-xl ml-4 text-gray-600">Iniciando...</span>
+            <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+                <IconSpinner /> <span className="text-xl ml-4 text-gray-600 dark:text-gray-300">Cargando...</span>
             </div>
         );
     }
