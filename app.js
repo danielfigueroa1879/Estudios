@@ -402,8 +402,8 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full sm:max-w-lg mx-4 border-t-4 border-blue-500">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full sm:max-w-lg mx-4 border-t-4 border-blue-500">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="font-semibold text-blue-600 dark:text-blue-400 text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
                     <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded-full">
@@ -435,6 +435,38 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
                             <span>{isEditMode ? 'Actualizar' : 'Agregar'}</span>
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const QuickAccessMenu = ({ isOpen, onClose, setView, handleOpenNewTaskModal }) => {
+    if (!isOpen) return null;
+
+    const handleViewChange = (view) => {
+        setView(view);
+        onClose();
+    };
+
+    const handleAddNewTask = () => {
+        handleOpenNewTaskModal();
+        onClose();
+    };
+
+    return (
+        <div className="fixed inset-0 z-40" onClick={onClose}>
+            <div 
+                className="absolute top-20 right-4 w-64 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 dark:border-gray-700/50 p-4 transition-all duration-300"
+                onClick={e => e.stopPropagation()}
+            >
+                <h3 className="font-semibold text-gray-900 dark:text-white text-lg mb-4">Acceso Rápido</h3>
+                <div className="space-y-2">
+                    <button onClick={() => handleViewChange('list')} className="w-full text-left p-2.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-gray-800 dark:text-gray-200 font-medium text-sm flex items-center space-x-2.5"> <IconBook width="18" height="18" /> <span>Lista</span> </button>
+                    <button onClick={() => handleViewChange('daily')} className="w-full text-left p-2.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-gray-800 dark:text-gray-200 font-medium text-sm flex items-center space-x-2.5"> <IconCalendar width="18" height="18" /> <span>Por Día</span> </button>
+                    <button onClick={() => handleViewChange('calendar')} className="w-full text-left p-2.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-gray-800 dark:text-gray-200 font-medium text-sm flex items-center space-x-2.5"> <IconCalendar width="20" height="20" /> <span>Calendario</span> </button>
+                    <button onClick={() => handleViewChange('history')} className="w-full text-left p-2.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-gray-800 dark:text-gray-200 font-medium text-sm flex items-center space-x-2.5"> <IconHistory width="18" height="18" /> <span>Historial</span> </button>
+                    <button onClick={handleAddNewTask} className="w-full text-left p-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 transition-colors text-red-700 dark:text-red-300 font-medium text-sm flex items-center space-x-2.5"> <IconPlus width="18" height="18" /> <span>Agregar nueva tarea</span> </button>
                 </div>
             </div>
         </div>
@@ -764,7 +796,7 @@ const AcademicTaskManager = ({ user }) => {
                 }
             `}</style>
             {/* Header */}
-            <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4 mb-5">
+            <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4 mb-5 sticky top-0 z-30">
                 <div className="max-w-5xl mx-auto px-3 sm:px-6">
                     <div className="flex items-start sm:items-center justify-between">
                         <div className="flex flex-col sm:flex-row sm:items-center">
@@ -797,13 +829,6 @@ const AcademicTaskManager = ({ user }) => {
                             </button>
                         </div>
                     </div>
-                     {showQuickAccess && ( <div className="mt-4 pt-3 border-t border-blue-500 dark:border-gray-700"> <h3 className="font-semibold text-white text-lg sm:text-xl text-left mb-3">Acceso Rápido</h3> <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5"> 
-                        <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="block w-full text-left p-2.5 rounded-xl bg-blue-600 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-gray-600 transition-colors text-white font-medium text-sm flex items-center space-x-1.5"> <IconBook width="18" height="18" /> <span>Lista</span> </button> 
-                        <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="block w-full text-left p-2.5 rounded-xl bg-blue-600 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-gray-600 transition-colors text-white font-medium text-sm flex items-center space-x-1.5"> <IconCalendar width="18" height="18" /> <span>Por Día</span> </button> 
-                        <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="block w-full text-left p-2.5 rounded-xl bg-blue-600 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-gray-600 transition-colors text-white font-medium text-sm flex items-center space-x-1.5"> <IconCalendar width="20" height="20" /> <span>Calendario</span> </button> 
-                        <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="block w-full text-left p-2.5 rounded-xl bg-blue-600 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-gray-600 transition-colors text-white font-medium text-sm flex items-center space-x-1.5"> <IconHistory width="18" height="18" /> <span>Historial</span> </button> 
-                        <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="block w-full text-left p-2.5 rounded-xl bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 transition-colors text-white font-medium text-sm flex items-center space-x-1.5"> <IconPlus width="18" height="18" /> <span>Agregar nueva tarea</span> </button> 
-                     </div> </div> )}
                 </div>
             </div>
 
@@ -839,7 +864,7 @@ const AcademicTaskManager = ({ user }) => {
                 <IconPlus width="24" height="24" />
             </button>
 
-            {/* Custom Dialogs */}
+            {/* Custom Dialogs and Menus */}
             <CustomAlertDialog message={alertDialogMessage} isOpen={isAlertDialogOpen} onClose={handleAlertDialogClose} />
             <CustomConfirmDialog message={confirmDialogMessage} isOpen={isConfirmDialogOpen} onConfirm={handleConfirmDialogConfirm} onCancel={handleConfirmDialogCancel} />
             <TaskModal 
@@ -849,6 +874,12 @@ const AcademicTaskManager = ({ user }) => {
                 showAlert={showAlert}
                 taskToEdit={editingTask}
                 selectedDate={selectedDateForNewTask}
+            />
+            <QuickAccessMenu 
+                isOpen={showQuickAccess} 
+                onClose={() => setShowQuickAccess(false)}
+                setView={setView}
+                handleOpenNewTaskModal={handleOpenNewTaskModal}
             />
         </div>
     );
