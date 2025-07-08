@@ -775,13 +775,12 @@ const AcademicTaskManager = ({ user }) => {
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
             <style>{`
-                @keyframes fast-pulse {
-                    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,0.1); }
-                    50% { transform: scale(1.07); box-shadow: 0 0 15px 7px rgba(0,0,0,0.25); }
-                    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,0.1); }
+                @keyframes fire-glow {
+                    0%, 100% { text-shadow: 0 0 4px #25a0e8, 0 0 8px #25a0e8, 0 0 12px #25a0e8; color: #93c5fd; }
+                    50% { text-shadow: 0 0 8px #25a0e8, 0 0 16px #25a0e8, 0 0 24px #25a0e8; color: #dbeafe; }
                 }
-                .animate-fast-pulse {
-                    animation: fast-pulse 0.8s infinite ease-in-out;
+                .hover-fire-glow:hover span {
+                    animation: fire-glow 1.5s ease-in-out infinite alternate;
                 }
             `}</style>
             {/* Header */}
@@ -824,23 +823,23 @@ const AcademicTaskManager = ({ user }) => {
                          <div className="p-4 bg-black/10 dark:bg-black/30 backdrop-blur-2xl shadow-lg w-full rounded-b-xl">
                             <div className="max-w-5xl mx-auto">
                                 <div className="space-y-1">
-                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3 hover-fire-glow">
                                         <IconBook width="20" height="20" /> <span>Lista</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3 hover-fire-glow">
                                         <IconCalendar width="20" height="20" /> <span>Por Día</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3 hover-fire-glow">
                                         <IconCalendar width="20" height="20" /> <span>Calendario</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3 hover-fire-glow">
                                         <IconHistory width="20" height="20" /> <span>Historial</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3 hover-fire-glow">
                                         <IconPlus width="20" height="20" /> <span>Agregar nueva tarea</span>
                                     </button>
                                 </div>
