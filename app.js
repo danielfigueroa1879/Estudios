@@ -201,14 +201,6 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
     const goToNextMonth = () => setCurrentViewDate(new Date(year, month + 1, 1));
     const goToToday = () => setCurrentViewDate(todayGlobal);
 
-    const renderTaskIndicator = (task) => {
-        const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-        let bgColor = '', title = '';
-        switch (status) { case 'overdue': bgColor = 'bg-gray-600'; title = `${task.subject} - Vencida`; break; case 'due-today': bgColor = 'bg-red-400'; title = `${task.subject} - Vence hoy`; break; case 'due-tomorrow': bgColor = 'bg-orange-400'; title = `${task.subject} - Vence mañana`; break; case 'due-soon': bgColor = 'bg-yellow-400'; title = `${task.subject} - Por vencer`; break; case 'completed': bgColor = 'bg-gray-400'; title = `${task.subject} - Completada`; break; default: bgColor = 'bg-green-400'; title = `${task.subject} - A tiempo`; }
-        if (task.dueTime) title += ` - ${task.dueTime}`;
-        return <div key={task.id} className={`w-full h-1.5 ${bgColor} rounded`} title={title}></div>;
-    };
-
     return (
         <div className="relative">
             <h2 className="text-xl sm:text-2xl font-bold text-red-600 text-center mb-1 sm:mb-0">{monthNames[month]} {year}</h2>
@@ -235,18 +227,56 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
                              dayClasses += ` animate-fast-pulse`;
                         }
                     }
-                    
+
                     const dayTasks = tasksByDate[day] || [];
-                    const morningTasks = dayTasks.filter(t => !t.dueTime || parseInt(t.dueTime.split(':')[0]) < 12);
-                    const afternoonTasks = dayTasks.filter(t => t.dueTime && parseInt(t.dueTime.split(':')[0]) >= 12 && parseInt(t.dueTime.split(':')[0]) < 19);
-                    const nightTasks = dayTasks.filter(t => t.dueTime && parseInt(t.dueTime.split(':')[0]) >= 19);
+                    const allDayTasks = dayTasks.filter(t => !t.dueTime);
+                    const timedTasks = dayTasks.filter(t => t.dueTime);
+
+                    const getTaskTopPercent = (time) => {
+                        const [hour, minute] = time.split(':').map(Number);
+                        const totalMinutes = hour * 60 + minute;
+                        const startMinutes = 8 * 60; // 8 AM
+                        const endMinutes = 24 * 60; // Midnight
+                        const duration = endMinutes - startMinutes;
+
+                        const positionInMinutes = totalMinutes - startMinutes;
+                        const percentage = (positionInMinutes / duration) * 100;
+
+                        return Math.max(0, Math.min(100, percentage));
+                    };
+                    
+                    const renderTaskBar = (task) => {
+                         const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                         let bgColor = '', title = '';
+                         switch (status) { case 'overdue': bgColor = 'bg-gray-600'; title = `${task.subject} - Vencida`; break; case 'due-today': bgColor = 'bg-red-400'; title = `${task.subject} - Vence hoy`; break; case 'due-tomorrow': bgColor = 'bg-orange-400'; title = `${task.subject} - Vence mañana`; break; case 'due-soon': bgColor = 'bg-yellow-400'; title = `${task.subject} - Por vencer`; break; case 'completed': bgColor = 'bg-gray-400'; title = `${task.subject} - Completada`; break; default: bgColor = 'bg-green-400'; title = `${task.subject} - A tiempo`; }
+                         if (task.dueTime) title += ` - ${task.dueTime}`;
+                         return <div className={`w-full h-1.5 ${bgColor} rounded`} title={title}></div>;
+                    };
 
                     return (
                         <div key={currentDayFormatted} className={dayClasses}>
                             <div className={`text-xs sm:text-sm font-medium ${isToday ? 'text-blue-700' : (isHoliday ? 'text-red-600' : 'text-gray-800')}`}>{day}</div>
-                            <div className="absolute top-4 left-0.5 right-0.5 space-y-0.5">{morningTasks.map(renderTaskIndicator)}</div>
-                            <div className="absolute top-1/2 -translate-y-1/2 left-0.5 right-0.5 space-y-0.5">{afternoonTasks.map(renderTaskIndicator)}</div>
-                            <div className="absolute bottom-1 left-0.5 right-0.5 space-y-0.5">{nightTasks.map(renderTaskIndicator)}</div>
+                            <div className="absolute top-4 left-0.5 right-0.5 bottom-1">
+                                {/* All-day tasks stacked at the top */}
+                                <div className="space-y-0.5">
+                                    {allDayTasks.map(task => <div key={task.id}>{renderTaskBar(task)}</div>)}
+                                </div>
+                                {/* Timed tasks positioned absolutely */}
+                                {timedTasks.map(task => {
+                                    const topPercent = getTaskTopPercent(task.dueTime);
+                                    const style = {
+                                        position: 'absolute',
+                                        top: `${topPercent}%`,
+                                        transform: 'translateY(-50%)',
+                                        width: '100%'
+                                    };
+                                    return (
+                                        <div key={task.id} style={style}>
+                                            {renderTaskBar(task)}
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     );
                 })}
