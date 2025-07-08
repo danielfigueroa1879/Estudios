@@ -163,7 +163,7 @@ const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle
     }, {});
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6" id="dailyTasksSection">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6">
             <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left mb-6">Tareas por día</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
@@ -232,14 +232,14 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
             <div className="grid grid-cols-7 bg-blue-600 dark:bg-gray-700 text-white rounded-t-lg">{dayNames.map((day, index) => <div key={index} className="text-center font-semibold py-2 text-sm">{day}</div>)}</div>
             <div className="grid grid-cols-7 border-l border-t border-gray-200 dark:border-gray-700">
                 {daysArray.map((day, index) => {
-                    if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28 bg-gray-50 dark:bg-gray-800/20 border-r border-b border-gray-200 dark:border-gray-700"></div>;
+                    if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28 bg-gray-50 dark:bg-gray-700/30 border-r border-b border-gray-200 dark:border-gray-600"></div>;
                     const dayObj = new Date(year, month, day);
                     const isToday = todayGlobal.getDate() === dayObj.getDate() && todayGlobal.getMonth() === dayObj.getMonth() && todayGlobal.getFullYear() === dayObj.getFullYear();
                     const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                     const isHoliday = chileanHolidays.includes(currentDayFormatted);
                     const highlightEntry = highlightedDate && highlightedDate.date === currentDayFormatted ? highlightedDate : null;
                     
-                    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 dark:border-gray-700 ${isHoliday ? 'bg-red-50 dark:bg-red-900/20' : ''} ${isToday ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700'}`;
+                    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 dark:border-gray-600 ${isHoliday ? 'bg-red-50 dark:bg-red-800/30' : ''} ${isToday ? 'bg-blue-100 dark:bg-blue-800/40' : 'bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'}`;
                     
                     if (highlightEntry) {
                         dayClasses += ` ${highlightEntry.highlightBg} z-10`;
@@ -534,28 +534,28 @@ const AcademicTaskManager = ({ user }) => {
                     highlightBg = 'bg-gray-200 dark:bg-gray-600';
                     break;
                 case 'due-today':
-                    baseStyles = { bg: 'bg-red-50 dark:bg-red-900/20', border: 'border-red-500', text: 'text-red-800 dark:text-red-300' };
+                    baseStyles = { bg: 'bg-red-50', border: 'border-red-500', text: 'text-red-800' };
                     highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
                     borderColorRgb = '239,68,68';
                     hoverClasses = 'hover:border-red-600 hover:ring-2 hover:ring-red-600/50 hover:shadow-xl hover:shadow-red-300/50';
                     highlightBg = 'bg-red-200 dark:bg-red-800/40';
                     break;
                 case 'due-tomorrow':
-                    baseStyles = { bg: 'bg-orange-50 dark:bg-orange-900/20', border: 'border-orange-400', text: 'text-orange-800 dark:text-orange-300' };
+                    baseStyles = { bg: 'bg-orange-50', border: 'border-orange-400', text: 'text-orange-800' };
                     highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
                     borderColorRgb = '249,115,22';
                     hoverClasses = 'hover:border-orange-500 hover:ring-2 hover:ring-orange-500/50 hover:shadow-xl hover:shadow-orange-300/50';
                     highlightBg = 'bg-orange-200 dark:bg-orange-800/40';
                     break;
                 case 'due-soon':
-                    baseStyles = { bg: 'bg-yellow-50 dark:bg-yellow-900/20', border: 'border-yellow-400', text: 'text-yellow-800 dark:text-yellow-300' };
+                    baseStyles = { bg: 'bg-yellow-50', border: 'border-yellow-400', text: 'text-yellow-800' };
                     highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
                     borderColorRgb = '245,158,11';
                     hoverClasses = 'hover:border-yellow-500 hover:ring-2 hover:ring-yellow-500/50 hover:shadow-xl hover:shadow-yellow-300/50';
                     highlightBg = 'bg-yellow-200 dark:bg-yellow-800/40';
                     break;
                 default: // 'on-time'
-                    baseStyles = { bg: 'bg-green-50 dark:bg-green-900/20', border: 'border-green-400', text: 'text-green-800 dark:text-green-300' };
+                    baseStyles = { bg: 'bg-green-50', border: 'border-green-400', text: 'text-green-800' };
                     highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
                     borderColorRgb = '34,197,94';
                     hoverClasses = 'hover:border-green-500 hover:ring-2 hover:ring-green-500/50 hover:shadow-xl hover:shadow-green-300/50';
