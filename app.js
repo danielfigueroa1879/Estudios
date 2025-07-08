@@ -155,7 +155,7 @@ const LoginScreen = ({ showAlert }) => {
 };
 
 // --- Componentes de Vista (Refactorizados) ---
-const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, getDaysUntilDue, toggleTask, startEditing, deleteTask, handleTaskCardClick }) => {
+const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, getDaysUntilDue, toggleTask, startEditing, deleteTask, handleTaskCardClick, onBackToList }) => {
     const groupedTasks = tasks.reduce((acc, task) => {
         const date = task.dueDate;
         if (!acc[date]) acc[date] = [];
@@ -164,8 +164,13 @@ const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle
     }, {});
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6">
-            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left mb-6">Tareas por día</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative">
+            <div className="flex items-center justify-between mb-6">
+                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Tareas por día</h2>
+                 <button onClick={onBackToList} className="p-2.5 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
+                    <IconArrowBack width="22" height="22" />
+                </button>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
                     <div key={date} className="bg-white dark:bg-gray-700/50 rounded-xl shadow-lg p-2.5 sm:p-5 transition-all duration-300">
@@ -320,11 +325,14 @@ const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewD
     );
 };
 
-const HistoryView = ({ history, permanentDeleteFromHistory, formatTimestamp }) => {
+const HistoryView = ({ history, permanentDeleteFromHistory, formatTimestamp, onBackToList }) => {
     if (!history || history.length === 0) {
         return (
-            <div id="historySection" className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 mt-6 text-center">
-                <IconHistory width="48" height="48" className="mx-auto text-gray-400 dark:text-gray-500 mb-4" />
+            <div id="historySection" className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 mt-6 text-center relative">
+                 <button onClick={onBackToList} className="absolute top-4 right-4 p-2.5 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
+                    <IconArrowBack width="22" height="22" />
+                </button>
+                <IconHistory width="48" height="48" className="mx-auto text-gray-400 dark:text-gray-500 mb-4 mt-8" />
                 <h2 className="text-2xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Historial de Tareas</h2>
                 <p className="text-gray-500 dark:text-gray-400">Aún no hay tareas completadas o eliminadas.</p>
             </div>
@@ -332,8 +340,13 @@ const HistoryView = ({ history, permanentDeleteFromHistory, formatTimestamp }) =
     }
 
     return (
-        <div id="historySection" className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4">
-            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left mb-3 sm:mb-6">Historial de Tareas</h2>
+        <div id="historySection" className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4 relative">
+            <div className="flex items-center justify-between mb-3 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Historial de Tareas</h2>
+                 <button onClick={onBackToList} className="p-2.5 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
+                    <IconArrowBack width="22" height="22" />
+                </button>
+            </div>
             {history.map(task => {
                 const isCompleted = task.status === 'completed';
                 const cardStyle = isCompleted ? 'bg-green-50 dark:bg-green-800/20 border-green-200 dark:border-green-800/50' : 'bg-red-50 dark:bg-red-800/20 border-red-200 dark:border-red-800/50';
@@ -403,10 +416,10 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
 
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2">
-            <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
+            <div className="bg-blue-300/10 dark:bg-blue-900/10 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
                 <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-semibold text-blue-800 dark:text-blue-300 text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
-                    <button onClick={onClose} className="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 p-1 rounded-full">
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
+                    <button onClick={onClose} className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white p-1 rounded-full">
                         <IconClose className="w-6 h-6" />
                     </button>
                 </div>
@@ -725,11 +738,11 @@ const AcademicTaskManager = ({ user }) => {
                                 </div>
                                  </div> </div> <div className="flex items-center space-x-2.5"> <div className="w-4.5 h-4.5 sm:w-6 sm:h-6 text-gray-600 dark:text-gray-400"><IconClock width="22" height="22" /></div> <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Editar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconEdit width="22" height="22" /></div></button> <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Eliminar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconTrash width="22" height="22" /></div></button> </div> </div> </div> ); })} </div>;
             case 'daily':
-                return <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} getDaysUntilDue={getDaysUntilDue} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} />;
+                return <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} getDaysUntilDue={getDaysUntilDue} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} onBackToList={() => setView('list')} />;
             case 'calendar':
                 return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={handleDayDoubleClick} />;
             case 'history':
-                return <HistoryView history={history} permanentDeleteFromHistory={permanentDeleteFromHistory} formatTimestamp={formatTimestamp} />;
+                return <HistoryView history={history} permanentDeleteFromHistory={permanentDeleteFromHistory} formatTimestamp={formatTimestamp} onBackToList={() => setView('list')} />;
             default:
                 return null;
         }
@@ -800,7 +813,7 @@ const AcademicTaskManager = ({ user }) => {
                 </div>
                 {showQuickAccess && (
                     <div className="absolute top-full left-0 right-0 w-full">
-                        <div className="p-4 bg-black/20 dark:bg-black/40 backdrop-blur-xl shadow-lg w-full">
+                        <div className="p-4 bg-blue-500/10 dark:bg-blue-900/10 backdrop-blur-2xl shadow-lg w-full rounded-b-3xl">
                             <div className="max-w-5xl mx-auto px-3 sm:px-6">
                                 <div className="space-y-1">
                                     <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center space-x-3">
