@@ -27,7 +27,7 @@ const IconBook = ({ width = "20", height = "20" }) => ( <svg width={width} heigh
 const IconCalendar = ({ width = "20", height = "20" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/> <line x1="16" y1="2" x2="16" y2="6"/> <line x1="8" y1="2" x2="8" y2="6"/> <line x1="3" y1="10" x2="21" y2="10"/> </svg> );
 const IconPlus = ({ width = "20", height = "20" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <line x1="12" y1="5" x2="12" y2="19"/> <line x1="5" y1="12" x2="19" y2="12"/> </svg> );
 const IconClock = ({ width = "20", height = "20" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <circle cx="12" cy="12" r="10"/> <polyline points="12,6 12,12 16,14"/> </svg> );
-const IconMail = ({ width = "20", height = "20" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/> <polyline points="22,6 12,13 2,6"/> </svg> );
+const IconMail = ({ width = "20", height = "20", className }) => ( <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/> <polyline points="22,6 12,13 2,6"/> </svg> );
 const IconBell = ({ width = "22", height = "22" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/> <path d="M13.73 21a2 2 0 0 1-3.46 0"/> </svg> );
 const IconAlert = ({ width = "20", height = "20" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/> <line x1="12" y1="9" x2="12" y2="13"/> <line x1="12" y1="17" x2="12.01" y2="17"/> </svg> );
 const IconChevronDown = ({ width = "24", height = "24" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <polyline points="6,9 12,15 18,9"/> </svg> );
@@ -723,6 +723,9 @@ const AcademicTaskManager = ({ user }) => {
                 return null;
         }
     };
+    
+    const unselectedButtonClasses = "bg-white text-gray-700 border-2 border-blue-200 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-700";
+    const selectedButtonClasses = "bg-blue-600 text-white shadow-lg shadow-blue-300 ring-2 ring-blue-400";
 
     return (
         <div className="min-h-screen bg-gray-200">
@@ -749,24 +752,24 @@ const AcademicTaskManager = ({ user }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex-shrink-0 flex items-center space-x-2">
+                        <div className="flex-shrink-0 flex items-center space-x-1 sm:space-x-2">
                             {notifications.length > 0 && (
-                                <button onClick={() => setShowAlerts(!showAlerts)} className="relative hover:bg-blue-600 p-1.5 rounded-xl transition-colors" title={showAlerts ? "Ocultar alertas" : "Mostrar alertas"}>
-                                    <div className="text-white"><IconBell width="20" height="20" /></div>
+                                <button onClick={() => setShowAlerts(!showAlerts)} className="relative text-white hover:bg-blue-600 p-2 rounded-full transition-colors" title={showAlerts ? "Ocultar alertas" : "Mostrar alertas"}>
+                                    <IconBell width="22" height="22" />
                                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{notifications.length}</span>
                                 </button>
                             )}
-                            <div className="hidden sm:flex items-center space-x-0.5">
-                                <div className="text-white"><IconMail width="16" height="16" /></div>
-                                <button onClick={() => setEmailNotifications(!emailNotifications)} className={`w-9 h-4 rounded-full transition-colors ${emailNotifications ? 'bg-blue-500' : 'bg-gray-300'}`}>
-                                    <div className={`w-3.5 h-3.5 bg-white rounded-full transition-transform ${emailNotifications ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                            <div className="hidden sm:flex items-center space-x-2 p-1 rounded-full hover:bg-blue-600 transition-colors">
+                                <IconMail width="22" height="22" className="text-white" />
+                                <button onClick={() => setEmailNotifications(!emailNotifications)} className={`w-10 h-5 rounded-full transition-colors flex items-center p-0.5 ${emailNotifications ? 'bg-blue-400' : 'bg-gray-500'}`}>
+                                    <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${emailNotifications ? 'translate-x-5' : 'translate-x-0'}`} />
                                 </button>
                             </div>
-                            <button onClick={() => auth.signOut()} className="text-white hover:bg-blue-600 p-1.5 rounded-xl transition-colors" title="Cerrar sesión">
+                            <button onClick={() => auth.signOut()} className="text-white hover:bg-blue-600 p-2 rounded-full transition-colors" title="Cerrar sesión">
                                 <IconLogOut width="22" height="22" />
                             </button>
-                            <button onClick={() => setShowColorLegend(!showColorLegend)} className="text-white hover:bg-blue-600 p-1.5 rounded-xl transition-colors" title="Acceso Rápido a Tareas">
-                                <IconHamburger width="26" height="26" />
+                            <button onClick={() => setShowColorLegend(!showColorLegend)} className="text-white hover:bg-blue-600 p-2 rounded-full transition-colors" title="Acceso Rápido a Tareas">
+                                <IconHamburger width="22" height="22" />
                             </button>
                         </div>
                     </div>
@@ -778,17 +781,17 @@ const AcademicTaskManager = ({ user }) => {
             <div className="max-w-5xl mx-auto px-3 sm:px-6 pb-24">
                  {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
                  <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl"> <div className="max-w-5xl mx-auto px-3 sm:px-6"> <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-5">Vistas</h2> <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0"> <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto"> <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:flex sm:gap-3 w-full sm:w-auto"> 
-                    <button onClick={() => setView('list')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'list' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconBook width="18" height="18" /><span className="font-medium text-center sm:text-center">Lista</span></button> 
-                    <button onClick={() => setView('daily')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'daily' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center sm:text-center">Por Día</span></button> 
-                    <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'calendar' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center sm:text-center">Calendario</span></button> 
-                    <button onClick={() => setView('history')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'history' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconHistory width="20" height="20" /><span className="font-medium text-center sm:text-center">Historial</span></button> 
+                    <button onClick={() => setView('list')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'list' ? selectedButtonClasses : unselectedButtonClasses}`}><IconBook width="18" height="18" /><span className="font-medium text-center sm:text-center">Lista</span></button> 
+                    <button onClick={() => setView('daily')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'daily' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center sm:text-center">Por Día</span></button> 
+                    <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center sm:text-center">Calendario</span></button> 
+                    <button onClick={() => setView('history')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'history' ? selectedButtonClasses : unselectedButtonClasses}`}><IconHistory width="20" height="20" /><span className="font-medium text-center sm:text-center">Historial</span></button> 
                  </div> </div> </div> </div> </div>
                  <div className="border-t-4 border-gray-100 mb-2 sm:my-3"></div>
                  {renderCurrentView()}
                  <div className="mt-7 sm:mt-9 bg-white rounded-xl shadow-lg p-3 sm:p-5"> <div className="text-center text-gray-600 space-y-1.5"> <div className="border-b border-gray-200 pb-1.5"> <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p> <p className="text-xs text-gray-700">Creado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span></p> <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p> </div> </div> </div>
             </div>
 
-            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 lg:right-24 xl:right-48 2xl:right-64 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-110 z-40">
+            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 lg:right-[calc(50%-28rem)] bg-blue-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-all transform hover:scale-110 z-40">
                 <IconPlus width="24" height="24" />
             </button>
 
