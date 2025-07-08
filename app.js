@@ -428,7 +428,7 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
                         <input type="time" name="dueTime" placeholder="Hora (opcional)" value={taskData.dueTime || ''} onChange={handleChange} className="w-full bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-200 border border-gray-300/50 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
                     <textarea name="description" placeholder="Descripción (opcional)" value={taskData.description || ''} onChange={handleChange} rows="3" className="w-full bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-200 border border-gray-300/50 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea>
-                    <div className="flex justify-end space-x-3">
+                    <div className="flex justify-center w-full space-x-4 pt-2">
                         <button onClick={onClose} className="bg-gray-500/50 text-white rounded-xl px-5 py-2.5 hover:bg-gray-500/70 text-base font-medium">Cancelar</button>
                         <button onClick={handleSubmit} className="bg-blue-600 text-white rounded-xl px-5 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-2 text-base font-medium">
                             {isEditMode ? <IconCheck width="18" height="18" /> : <IconPlus width="18" height="18" />}
@@ -799,9 +799,9 @@ const AcademicTaskManager = ({ user }) => {
                     </div>
                 </div>
                 {showQuickAccess && (
-                    <div className="absolute top-full left-0 right-0">
-                         <div className="max-w-5xl mx-auto px-3 sm:px-6">
-                            <div className="mt-2 p-4 bg-blue-600/80 dark:bg-gray-800/80 backdrop-blur-2xl rounded-2xl shadow-lg border border-white/10">
+                    <div className="absolute top-full left-0 right-0 w-full">
+                        <div className="p-4 bg-black/20 dark:bg-black/40 backdrop-blur-xl shadow-lg w-full">
+                            <div className="max-w-5xl mx-auto px-3 sm:px-6">
                                 <div className="space-y-1">
                                     <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center space-x-3">
                                         <IconBook width="20" height="20" /> <span>Lista</span>
