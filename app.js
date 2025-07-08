@@ -37,7 +37,7 @@ const IconTrash = ({ width = "18", height = "18" }) => ( <svg width={width} heig
 const IconCheck = ({ width = "18", height = "18" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <polyline points="20,6 9,17 4,12"/> </svg> );
 const IconEdit = ({ width = "18", height = "18" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/> <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/> </svg> );
 const IconHamburger = ({ width = "24", height = "24" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <line x1="3" y1="12" x2="21" y2="12"></line> <line x1="3" y1="6" x2="21" y2="6"></line> <line x1="3" y1="18" x2="21" y2="18"></line> </svg> );
-const IconBackArrowhead = ({ width = "22", height = "22", className }) => ( <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"> <polyline points="15 18 9 12 15 6"/> </svg> );
+const IconArrowBack = ({ width = "24", height = "24" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M19 12H5"/> <polyline points="12 19 5 12 12 5"/> </svg> );
 const IconLock = ({ width = "20", height = "20" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect> <path d="M7 11V7a5 5 0 0 1 10 0v4"></path> </svg> );
 const IconLogOut = ({ width = "22", height = "22" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path> <polyline points="16 17 21 12 16 7"></polyline> <line x1="21" y1="12" x2="9" y2="12"></line> </svg> );
 const IconSpinner = () => (<svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"> <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle> <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path> </svg>);
@@ -167,8 +167,8 @@ const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative">
             <div className="flex items-center justify-between mb-6">
                  <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Tareas por día</h2>
-                 <button onClick={onBackToList} className="p-2.5 bg-white text-red-500 rounded-full shadow-lg hover:bg-gray-100 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
-                    <IconBackArrowhead width="22" height="22" />
+                 <button onClick={onBackToList} className="p-2.5 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
+                    <IconArrowBack width="22" height="22" />
                 </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -316,8 +316,8 @@ const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewD
         <div className="bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700" id="calendarSection">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Calendario</h2>
-                <button onClick={onBackToList} className="p-2.5 bg-white text-red-500 rounded-full shadow-lg hover:bg-gray-100 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
-                    <IconBackArrowhead width="22" height="22" />
+                <button onClick={onBackToList} className="p-2.5 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
+                    <IconArrowBack width="22" height="22" />
                 </button>
             </div>
             <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onDayDoubleClick={onDayDoubleClick} />
@@ -329,8 +329,8 @@ const HistoryView = ({ history, permanentDeleteFromHistory, formatTimestamp, onB
     if (!history || history.length === 0) {
         return (
             <div id="historySection" className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 mt-6 text-center relative">
-                 <button onClick={onBackToList} className="absolute top-4 right-4 p-2.5 bg-white text-red-500 rounded-full shadow-lg hover:bg-gray-100 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
-                    <IconBackArrowhead width="22" height="22" />
+                 <button onClick={onBackToList} className="absolute top-4 right-4 p-2.5 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
+                    <IconArrowBack width="22" height="22" />
                 </button>
                 <IconHistory width="48" height="48" className="mx-auto text-gray-400 dark:text-gray-500 mb-4 mt-8" />
                 <h2 className="text-2xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Historial de Tareas</h2>
@@ -343,8 +343,8 @@ const HistoryView = ({ history, permanentDeleteFromHistory, formatTimestamp, onB
         <div id="historySection" className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4 relative">
             <div className="flex items-center justify-between mb-3 sm:mb-6">
                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Historial de Tareas</h2>
-                 <button onClick={onBackToList} className="p-2.5 bg-white text-red-500 rounded-full shadow-lg hover:bg-gray-100 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
-                    <IconBackArrowhead width="22" height="22" />
+                 <button onClick={onBackToList} className="p-2.5 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
+                    <IconArrowBack width="22" height="22" />
                 </button>
             </div>
             {history.map(task => {
@@ -416,7 +416,7 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
 
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2">
-            <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
+            <div className="bg-sky-100/40 dark:bg-sky-900/40 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="font-semibold text-white text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
                     <button onClick={onClose} className="text-gray-200 hover:text-white p-1 rounded-full">
@@ -704,7 +704,8 @@ const AcademicTaskManager = ({ user }) => {
 
         highlightTimeoutRef.current = setTimeout(() => {
             setHighlightedDate(prev => (prev && prev.date === dateString) ? { ...prev, isAnimating: false } : prev);
-        }, 180000); 
+            highlightTimeoutRef.current = null;
+        }, 300000); 
     };
     
     const handleTaskCardClick = (task) => {
@@ -773,6 +774,16 @@ const AcademicTaskManager = ({ user }) => {
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+            <style>{`
+                @keyframes fast-pulse {
+                    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,0.1); }
+                    50% { transform: scale(1.07); box-shadow: 0 0 15px 7px rgba(0,0,0,0.25); }
+                    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,0.1); }
+                }
+                .animate-fast-pulse {
+                    animation: fast-pulse 0.8s infinite ease-in-out;
+                }
+            `}</style>
             {/* Header */}
             <div className="sticky top-0 z-30">
                 <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4">
@@ -801,7 +812,7 @@ const AcademicTaskManager = ({ user }) => {
                                 <button onClick={() => auth.signOut()} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Cerrar sesión">
                                     <IconLogOut width="22" height="22" />
                                 </button>
-                                <button onClick={() => setShowQuickAccess(!showQuickAccess)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors md:hidden" title="Acceso Rápido">
+                                <button onClick={() => setShowQuickAccess(!showQuickAccess)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Acceso Rápido">
                                     {showQuickAccess ? <IconClose className="w-6 h-6"/> : <IconHamburger width="22" height="22" />}
                                 </button>
                             </div>
@@ -809,27 +820,27 @@ const AcademicTaskManager = ({ user }) => {
                     </div>
                 </div>
                 {showQuickAccess && (
-                    <div className="absolute top-full left-0 right-0 w-full md:hidden">
-                         <div className="p-4 bg-black/50 dark:bg-black/70 backdrop-blur-2xl shadow-lg w-full rounded-b-xl">
-                            <div className="max-w-5xl mx-auto">
+                    <div className="absolute top-full left-0 right-0 w-full md:flex md:justify-end">
+                         <div className="p-4 bg-black/10 dark:bg-black/30 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-2xl">
+                            <div className="max-w-5xl md:max-w-xs mx-auto">
                                 <div className="space-y-1">
-                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconBook width="20" height="20" /> <span>Lista</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconCalendar width="20" height="20" /> <span>Por Día</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconCalendar width="20" height="20" /> <span>Calendario</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconHistory width="20" height="20" /> <span>Historial</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconPlus width="20" height="20" /> <span>Agregar nueva tarea</span>
                                     </button>
                                 </div>
