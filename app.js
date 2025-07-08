@@ -534,32 +534,32 @@ const AcademicTaskManager = ({ user }) => {
                     highlightBg = 'bg-gray-200 dark:bg-gray-600';
                     break;
                 case 'due-today':
-                    baseStyles = { bg: 'bg-red-50 dark:bg-red-900/30', border: 'border-red-500 dark:border-red-700', text: 'text-red-800 dark:text-red-300' };
+                    baseStyles = { bg: 'bg-red-50 dark:bg-red-900/40', border: 'border-red-500 dark:border-red-700', text: 'text-red-800 dark:text-red-300' };
                     highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
                     borderColorRgb = '239,68,68';
                     hoverClasses = 'hover:border-red-600 dark:hover:border-red-500 hover:ring-2 hover:ring-red-600/50 dark:hover:ring-red-500/50 hover:shadow-xl hover:shadow-red-300/50 dark:hover:shadow-red-900/50';
-                    highlightBg = 'bg-red-200 dark:bg-red-800/40';
+                    highlightBg = 'bg-red-200 dark:bg-red-800/50';
                     break;
                 case 'due-tomorrow':
-                    baseStyles = { bg: 'bg-orange-50 dark:bg-orange-900/30', border: 'border-orange-400 dark:border-orange-600', text: 'text-orange-800 dark:text-orange-300' };
+                    baseStyles = { bg: 'bg-orange-50 dark:bg-orange-900/40', border: 'border-orange-400 dark:border-orange-600', text: 'text-orange-800 dark:text-orange-300' };
                     highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
                     borderColorRgb = '249,115,22';
                     hoverClasses = 'hover:border-orange-500 dark:hover:border-orange-500 hover:ring-2 hover:ring-orange-500/50 dark:hover:ring-orange-500/50 hover:shadow-xl hover:shadow-orange-300/50 dark:hover:shadow-orange-900/50';
-                    highlightBg = 'bg-orange-200 dark:bg-orange-800/40';
+                    highlightBg = 'bg-orange-200 dark:bg-orange-800/50';
                     break;
                 case 'due-soon':
-                    baseStyles = { bg: 'bg-yellow-50 dark:bg-yellow-900/30', border: 'border-yellow-400 dark:border-yellow-600', text: 'text-yellow-800 dark:text-yellow-300' };
+                    baseStyles = { bg: 'bg-yellow-50 dark:bg-yellow-900/40', border: 'border-yellow-400 dark:border-yellow-600', text: 'text-yellow-800 dark:text-yellow-300' };
                     highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
                     borderColorRgb = '245,158,11';
                     hoverClasses = 'hover:border-yellow-500 dark:hover:border-yellow-500 hover:ring-2 hover:ring-yellow-500/50 dark:hover:ring-yellow-500/50 hover:shadow-xl hover:shadow-yellow-300/50 dark:hover:shadow-yellow-900/50';
-                    highlightBg = 'bg-yellow-200 dark:bg-yellow-800/40';
+                    highlightBg = 'bg-yellow-200 dark:bg-yellow-800/50';
                     break;
                 default: // 'on-time'
-                    baseStyles = { bg: 'bg-green-50 dark:bg-green-900/30', border: 'border-green-400 dark:border-green-600', text: 'text-green-800 dark:text-green-300' };
+                    baseStyles = { bg: 'bg-green-50 dark:bg-green-900/40', border: 'border-green-400 dark:border-green-600', text: 'text-green-800 dark:text-green-300' };
                     highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
                     borderColorRgb = '34,197,94';
                     hoverClasses = 'hover:border-green-500 dark:hover:border-green-500 hover:ring-2 hover:ring-green-500/50 dark:hover:ring-green-500/50 hover:shadow-xl hover:shadow-green-300/50 dark:hover:shadow-green-900/50';
-                    highlightBg = 'bg-green-200 dark:bg-green-800/40';
+                    highlightBg = 'bg-green-200 dark:bg-green-800/50';
                     break;
             }
         }
@@ -791,7 +791,7 @@ const AcademicTaskManager = ({ user }) => {
                  <div className="mt-7 sm:mt-9 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5"> <div className="text-center text-gray-600 dark:text-gray-400 space-y-1.5"> <div className="border-b border-gray-200 dark:border-gray-700 pb-1.5"> <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-0.5">© Derechos Reservados</p> <p className="text-xs text-gray-700 dark:text-gray-300">Creado por <span className="font-semibold text-blue-600 dark:text-blue-400">Daniel Figueroa Chacama</span></p> <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Ingeniero en Informática</p> </div> </div> </div>
             </div>
 
-            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 lg:right-[calc(50%-28rem)] bg-blue-600/80 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-all transform hover:scale-110 z-40">
+            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 lg:right-[calc(50%-28rem)] bg-red-600/80 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
                 <IconPlus width="24" height="24" />
             </button>
 
