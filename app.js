@@ -223,7 +223,7 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
 
     return (
         <div className="relative">
-            <h2 className="text-xl sm:text-2xl font-bold text-red-600 text-center mb-1 sm:mb-0">{monthNames[month]} {year}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-red-600 text-center mb-1 sm:mb-0 uppercase">{monthNames[month]} {year}</h2>
             <div className="flex justify-center space-x-1 sm:space-x-2 w-full mt-1 sm:mt-2 mb-4">
                 <button onClick={goToPreviousMonth} className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm">←</button>
                 <button onClick={goToToday} className="px-3 py-1.5 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm">Hoy</button>
@@ -310,8 +310,8 @@ const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewD
         <div className="bg-white rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200" id="calendarSection">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left">Calendario</h2>
-                <button onClick={onBackToList} className="p-2 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
-                    <IconArrowBack width="20" height="20" />
+                <button onClick={onBackToList} className="p-2.5 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
+                    <IconArrowBack width="22" height="22" />
                 </button>
             </div>
             <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onDayDoubleClick={onDayDoubleClick} />
@@ -780,7 +780,7 @@ const AcademicTaskManager = ({ user }) => {
             {/* Main Content */}
             <div className="max-w-5xl mx-auto px-3 sm:px-6 pb-24">
                  {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
-                 <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl"> <div className="max-w-5xl mx-auto px-3 sm:px-6"> <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-5">Vistas</h2> <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0"> <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto"> <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:flex sm:gap-3 w-full sm:w-auto"> 
+                 <div className="bg-white shadow-lg border border-gray-200 w-full py-2.5 sm:py-3.5 mt-5 mb-5 rounded-2xl"> <div className="max-w-5xl mx-auto px-3 sm:px-6"> <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-5">Vistas</h2> <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0"> <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto"> <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:flex sm:gap-3 w-full sm:w-auto"> 
                     <button onClick={() => setView('list')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'list' ? selectedButtonClasses : unselectedButtonClasses}`}><IconBook width="18" height="18" /><span className="font-medium text-center sm:text-center">Lista</span></button> 
                     <button onClick={() => setView('daily')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'daily' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center sm:text-center">Por Día</span></button> 
                     <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center sm:text-center">Calendario</span></button> 
@@ -791,7 +791,7 @@ const AcademicTaskManager = ({ user }) => {
                  <div className="mt-7 sm:mt-9 bg-white rounded-xl shadow-lg p-3 sm:p-5"> <div className="text-center text-gray-600 space-y-1.5"> <div className="border-b border-gray-200 pb-1.5"> <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p> <p className="text-xs text-gray-700">Creado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span></p> <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p> </div> </div> </div>
             </div>
 
-            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 lg:right-[calc(50%-28rem)] bg-blue-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-all transform hover:scale-110 z-40">
+            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 lg:right-[calc(50%-28rem)] bg-blue-600/80 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-all transform hover:scale-110 z-40">
                 <IconPlus width="24" height="24" />
             </button>
 
