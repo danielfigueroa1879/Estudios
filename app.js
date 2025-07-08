@@ -416,7 +416,7 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
 
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2">
-            <div className="bg-black/10 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
+            <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="font-semibold text-white text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
                     <button onClick={onClose} className="text-gray-200 hover:text-white p-1 rounded-full">
@@ -774,16 +774,6 @@ const AcademicTaskManager = ({ user }) => {
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-            <style>{`
-                @keyframes fast-pulse {
-                    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,0.1); }
-                    50% { transform: scale(1.07); box-shadow: 0 0 15px 7px rgba(0,0,0,0.25); }
-                    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,0.1); }
-                }
-                .animate-fast-pulse {
-                    animation: fast-pulse 0.8s infinite ease-in-out;
-                }
-            `}</style>
             {/* Header */}
             <div className="sticky top-0 z-30">
                 <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4">
@@ -821,7 +811,7 @@ const AcademicTaskManager = ({ user }) => {
                 </div>
                 {showQuickAccess && (
                     <div className="absolute top-full left-0 right-0 w-full md:hidden">
-                         <div className="p-4 bg-black/5 dark:bg-black/20 backdrop-blur-2xl shadow-lg w-full rounded-b-xl">
+                         <div className="p-4 bg-black/5 dark:bg-black/10 backdrop-blur-2xl shadow-lg w-full rounded-b-xl">
                             <div className="max-w-5xl mx-auto">
                                 <div className="space-y-1">
                                     <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-sky-300 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
