@@ -44,6 +44,7 @@ const IconDownload = ({ className }) => ( <svg className={className} xmlns="http
 const IconClose = ({ className }) => ( <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <line x1="18" y1="6" x2="6" y2="18"></line> <line x1="6" y1="6" x2="18" y2="18"></line> </svg> );
 const IconEye = ({ width = "20", height = "20" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path> <circle cx="12" cy="12" r="3"></circle> </svg> );
 const IconEyeOff = ({ width = "20", height = "20" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path> <line x1="1" y1="1" x2="23" y2="23"></line> </svg> );
+const IconHistory = ({ width = "20", height = "20" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M1 4v6h6" /> <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /> </svg> );
 
 
 // --- Custom Dialogs ---
@@ -316,13 +317,68 @@ const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewD
     );
 };
 
+const HistoryView = ({ history, permanentDeleteFromHistory, formatDateTime }) => {
+    if (!history || history.length === 0) {
+        return (
+            <div id="historySection" className="bg-white rounded-2xl shadow-lg p-6 mb-6 mt-6 text-center">
+                <IconHistory width="48" height="48" className="mx-auto text-gray-400 mb-4" />
+                <h2 className="text-2xl font-semibold text-blue-600 mb-2">Historial de Tareas</h2>
+                <p className="text-gray-500">Aún no hay tareas completadas o eliminadas.</p>
+            </div>
+        );
+    }
+
+    return (
+        <div id="historySection" className="bg-white rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4">
+            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-3 sm:mb-6">Historial de Tareas</h2>
+            {history.map(task => {
+                const isCompleted = task.status === 'completed';
+                const cardStyle = isCompleted ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
+                const textStyle = isCompleted ? 'text-green-700' : 'text-red-700';
+                const icon = isCompleted ? <IconCheck width="16" height="16" /> : <IconTrash width="16" height="16" />;
+
+                return (
+                    <div key={task.id} className={`rounded-xl border-l-8 p-4 transition-all duration-300 ${cardStyle}`}>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between">
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center mb-2">
+                                    <span className={`font-bold text-sm px-3 py-1 rounded-full flex items-center space-x-2 ${textStyle} ${isCompleted ? 'bg-green-100' : 'bg-red-100'}`}>
+                                        {icon}
+                                        <span>{isCompleted ? 'Completada' : 'Eliminada'}</span>
+                                    </span>
+                                </div>
+                                <h3 className="font-semibold text-lg text-gray-800 truncate">{task.subject}: {task.title}</h3>
+                                <p className="text-sm text-gray-500 mt-1">
+                                    Archivado: {task.archivedAt ? formatDateTime(task.archivedAt.toDate()) : 'Fecha no disponible'}
+                                </p>
+                            </div>
+                            <div className="mt-3 sm:mt-0">
+                                <button
+                                    onClick={() => permanentDeleteFromHistory(task.id)}
+                                    className="text-gray-500 hover:text-red-600 hover:bg-red-100 p-2 rounded-full transition-colors"
+                                    title="Eliminar permanentemente"
+                                >
+                                    <IconTrash width="20" height="20" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    );
+};
+
+
 // --- Academic Task Manager Component ---
 const AcademicTaskManager = ({ user }) => {
     const [tasks, setTasks] = useState([]);
+    const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [settings, setSettings] = useState({ view: 'list', emailNotifications: false });
 
     const tasksCollectionRef = db.collection('users').doc(user.uid).collection('tasks');
+    const historyCollectionRef = db.collection('users').doc(user.uid).collection('history');
     const settingsDocRef = db.collection('users').doc(user.uid).collection('settings').doc('appSettings');
 
     useEffect(() => {
@@ -332,8 +388,19 @@ const AcademicTaskManager = ({ user }) => {
             setTasks(tasksData);
             setLoading(false);
         }, error => { console.error("Error fetching tasks:", error); setLoading(false); });
+
+        const unsubscribeHistory = historyCollectionRef.orderBy('archivedAt', 'desc').onSnapshot(snapshot => {
+            const historyData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setHistory(historyData);
+        }, error => console.error("Error fetching history:", error));
+
         const unsubscribeSettings = settingsDocRef.onSnapshot(doc => { if (doc.exists) { setSettings(doc.data()); } }, error => { console.error("Error fetching settings:", error); });
-        return () => { unsubscribeTasks(); unsubscribeSettings(); };
+        
+        return () => { 
+            unsubscribeTasks(); 
+            unsubscribeHistory();
+            unsubscribeSettings(); 
+        };
     }, [user.uid]);
 
     useEffect(() => {
@@ -464,37 +531,62 @@ const AcademicTaskManager = ({ user }) => {
 
     const cancelEditing = () => { setEditingTask(null); setNewTask({ subject: '', title: '', description: '', dueDate: '', dueTime: '', type: 'Tarea' }); setShowAddTask(false); };
     
-    const toggleTask = (id, currentCompleted) => {
-        tasksCollectionRef.doc(id).update({ completed: !currentCompleted })
-            .catch(error => showAlert("Error al cambiar el estado: " + error.message));
+    const toggleTask = async (id) => {
+        const taskRef = tasksCollectionRef.doc(id);
+        const taskDoc = await taskRef.get();
+        if (!taskDoc.exists) return;
+
+        const taskData = taskDoc.data();
+        
+        // Mover a historial como "completada"
+        await historyCollectionRef.add({
+            ...taskData,
+            status: 'completed',
+            archivedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Eliminar de la lista de tareas activas
+        await taskRef.delete();
     };
 
     const deleteTask = (id) => {
-        showConfirm('¿Estás seguro de que quieres eliminar esta tarea?', () => {
-            tasksCollectionRef.doc(id).delete()
-                .catch(error => showAlert("Error al eliminar la tarea: " + error.message));
+        showConfirm('¿Estás seguro de que quieres eliminar esta tarea? Se moverá al historial.', async () => {
+            const taskRef = tasksCollectionRef.doc(id);
+            const taskDoc = await taskRef.get();
+            if (!taskDoc.exists) {
+                showAlert("La tarea ya no existe.");
+                return;
+            }
+            const taskData = taskDoc.data();
+
+            // Mover a historial como "eliminada"
+            await historyCollectionRef.add({
+                ...taskData,
+                status: 'deleted',
+                archivedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // Eliminar de la lista de tareas activas
+            await taskRef.delete();
+            
             if (editingTask && editingTask.id === id) cancelEditing();
         });
     };
 
-    const deleteAllCompleted = () => {
-        const completedTasks = tasks.filter(task => task.completed);
-        if (completedTasks.length === 0) {
-            showAlert('No hay tareas completadas para eliminar.');
-            return;
-        }
-        showConfirm(`¿Estás seguro de que quieres eliminar ${completedTasks.length} tarea(s) completada(s)?`, () => {
-            const batch = db.batch();
-            completedTasks.forEach(task => {
-                batch.delete(tasksCollectionRef.doc(task.id));
-            });
-            batch.commit().catch(error => showAlert("Error al eliminar tareas: " + error.message));
-            if (editingTask && tasks.find(t => t.id === editingTask.id)?.completed) cancelEditing();
+    const permanentDeleteFromHistory = (id) => {
+        showConfirm('Esta acción es irreversible. ¿Seguro que quieres eliminar esta tarea permanentemente del historial?', () => {
+            historyCollectionRef.doc(id).delete()
+                .catch(error => showAlert("Error al eliminar la tarea del historial: " + error.message));
         });
     };
 
     const formatDate = (dateString) => createLocalDate(dateString).toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-    const formatDateTime = (dateString, timeString) => { const formattedDate = formatDate(dateString); const formattedTime = timeString || ''; return formattedTime ? `${formattedDate} a las ${formattedTime}` : formattedDate; };
+    const formatDateTime = (dateObj) => {
+        if (!dateObj) return '';
+        return dateObj.toLocaleString('es-ES', {
+            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+    };
     const getDaysUntilDue = (dueDate) => { const todayMidnight = new Date(); todayMidnight.setHours(0, 0, 0, 0); const dueMidnight = createLocalDate(dueDate); const diffTime = dueMidnight.getTime() - todayMidnight.getTime(); const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); if (diffDays < 0) return `${Math.abs(diffDays)} días atrasado`; if (diffDays === 0) return 'Vence hoy'; if (diffDays === 1) return 'Vence mañana'; return `${diffDays} días restantes`; };
     
     const highlightCalendarDate = (dateString, highlightBg) => {
@@ -503,7 +595,6 @@ const AcademicTaskManager = ({ user }) => {
         }
         setHighlightedDate({ date: dateString, highlightBg, isAnimating: true });
 
-        // Cambiado de 10 segundos a 5 minutos (300000 ms)
         highlightTimeoutRef.current = setTimeout(() => {
             setHighlightedDate(prev => (prev && prev.date === dateString) ? { ...prev, isAnimating: false } : prev);
             highlightTimeoutRef.current = null;
@@ -545,6 +636,28 @@ const AcademicTaskManager = ({ user }) => {
             </div>
         );
     }
+
+    const renderCurrentView = () => {
+        switch (view) {
+            case 'list':
+                return <div id="taskListSection" className="bg-white rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4"> <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-3 sm:mb-6">Lista de tareas</h2> {[...tasks].sort((a, b) => { if (a.completed && !b.completed) return 1; if (!a.completed && b.completed) return -1; const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`); const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`); return dateA - dateB; }).map(task => { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); const cardStyle = getTaskCardStyle(status, task.completed); return ( <div key={task.id} id={task.id} onClick={(e) => { if (e.target.tagName !== 'BUTTON' && e.target.closest('button') === null) handleTaskCardClick(task); }} className={`rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} ${cardStyle.hoverClasses} cursor-pointer`}> <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0"> <div className="flex items-start space-x-2.5 sm:space-x-4 flex-1"> <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }} className={`mt-0.5 w-6 h-6 sm:w-6.5 sm:h-6.5 rounded border-2 flex items-center justify-center flex-shrink-0 border-gray-300 hover:border-green-500 hover:bg-green-100`}></button> <div className="flex-1 min-w-0">
+                                 <h3 className={`font-semibold text-sm sm:text-lg text-gray-900`}>{task.subject}</h3>
+                                 <p className={`text-sm sm:text-base text-gray-800`}>
+                                     {task.title}
+                                     <span className="text-xs sm:text-sm bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded-md ml-2 align-middle">{task.type}</span>
+                                 </p>
+                                 {task.description && <p className="text-xs sm:text-base text-gray-600 mt-1.5 mb-1.5">{task.description}</p>} 
+                                 <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-5 text-xs sm:text-base text-gray-500 mt-2"> <span>📅 {formatDateTime(task.dueDate, task.dueTime)}</span> <span>⏰ {getDaysUntilDue(task.dueDate)}</span> </div> </div> </div> <div className="flex items-center space-x-2.5"> <div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconClock width="22" height="22" /></div> <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Editar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconEdit width="22" height="22" /></div></button> <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Eliminar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconTrash width="22" height="22" /></div></button> </div> </div> </div> ); })} </div>;
+            case 'daily':
+                return <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} getDaysUntilDue={getDaysUntilDue} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} />;
+            case 'calendar':
+                return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} originTaskForCalendar={originTaskForCalendar} backToOriginTask={backToOriginTask} />;
+            case 'history':
+                return <HistoryView history={history} permanentDeleteFromHistory={permanentDeleteFromHistory} formatDateTime={formatDateTime} />;
+            default:
+                return null;
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-200">
@@ -600,16 +713,14 @@ const AcademicTaskManager = ({ user }) => {
             <div className="max-w-5xl mx-auto px-3 sm:px-6">
                  {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-50 border border-orange-400 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
                  <div id="addTaskFormSection" className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 border border-gray-200 transition-all duration-500 hover:shadow-blue-400/60 hover:ring-2 hover:ring-blue-300/50 hover:shadow-2xl hover:border-blue-300 mt-3"> <button onClick={() => setShowAddTask(!showAddTask)} className="w-full flex items-center justify-between text-left mb-3"> <h3 className="font-semibold text-blue-600 text-lg sm:text-xl text-left">{editingTask ? 'Editar tarea' : 'Agregar nueva tarea'}</h3> {showAddTask ? <div className="text-blue-600"><IconChevronUp width="20" height="20" /></div> : <div className="text-blue-600"><IconChevronDown width="20" height="20" /></div>} </button> {showAddTask && ( <div className="space-y-3"> <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3"> <input type="text" placeholder="Asignatura" value={newTask.subject} onChange={(e) => setNewTask({...newTask, subject: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <input type="text" placeholder="Título de la tarea" value={newTask.title} onChange={(e) => setNewTask({...newTask, title: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <select value={newTask.type} onChange={(e) => setNewTask({...newTask, type: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="Tarea">Tarea</option> <option value="Examen">Examen</option> <option value="Recuperación de Clases">Recuperación de Clases</option> <option value="Proyecto">Proyecto</option> <option value="Monografía">Monografía</option> <option value="Informe">Informe</option> </select> <input type="date" value={newTask.dueDate} onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> <input type="time" placeholder="Hora (opcional)" value={newTask.dueTime} onChange={(e) => setNewTask({...newTask, dueTime: e.target.value})} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" /> </div> <textarea placeholder="Descripción (opcional)" value={newTask.description} onChange={(e) => setNewTask({...newTask, description: e.target.value})} rows="2" className="w-full border border-gray-300 rounded-xl px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea> <div className="flex space-x-3"> <button onClick={editingTask ? updateTask : addTask} className="flex-1 bg-blue-600 text-white rounded-xl px-3 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-1.5 text-base font-medium"> {editingTask ? <><IconCheck width="18" height="18" /><span>Actualizar</span></> : <><IconPlus width="18" height="18" /><span>Agregar</span></>} </button> {editingTask && <button onClick={cancelEditing} className="flex-1 bg-gray-500 text-white rounded-xl px-3 py-2.5 hover:bg-gray-600 flex items-center justify-center space-x-1.5 text-base font-medium"><span>Cancelar</span></button>} </div> </div> )} </div>
-                 <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl"> <div className="max-w-5xl mx-auto px-3 sm:px-6"> <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-5">Tareas</h2> <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0"> <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto"> <div className="grid grid-cols-3 gap-1.5 sm:flex sm:gap-3 w-full sm:w-auto"> <button onClick={() => { setView('list'); setHighlightedDate(null); setTimeout(() => document.getElementById('taskListSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'list' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconBook width="18" height="18" /><span className="font-medium text-center sm:text-center">Lista</span></button> <button onClick={() => { setView('daily'); setHighlightedDate(null); setTimeout(() => document.getElementById('dailyTasksSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'daily' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center sm:text-center">Por Día</span></button> <button onClick={() => { setView('calendar'); setHighlightedDate(null); setTimeout(() => document.getElementById('calendarSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'calendar' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center sm:text-center">Calendario</span></button> </div> </div> {tasks.filter(task => task.completed).length > 0 && <button onClick={deleteAllCompleted} className="px-3 py-2 bg-red-500 text-white rounded-2xl hover:bg-red-600 flex items-center space-x-1.5 text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-red-200"><IconTrash width="16" height="16" /><span>Eliminar Completadas ({tasks.filter(task => task.completed).length})</span></button>} </div> </div> </div>
+                 <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg border-b border-blue-100 w-full py-2.5 sm:py-3.5 mt-5 mb-5 backdrop-blur-sm shadow-blue-200/50 ring-1 ring-blue-200/30 transition-all duration-500 rounded-2xl"> <div className="max-w-5xl mx-auto px-3 sm:px-6"> <h2 className="text-lg sm:text-xl font-semibold text-blue-600 text-left mb-5">Vistas</h2> <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0"> <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto"> <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:flex sm:gap-3 w-full sm:w-auto"> 
+                    <button onClick={() => setView('list')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'list' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconBook width="18" height="18" /><span className="font-medium text-center sm:text-center">Lista</span></button> 
+                    <button onClick={() => setView('daily')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'daily' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center sm:text-center">Por Día</span></button> 
+                    <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'calendar' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center sm:text-center">Calendario</span></button> 
+                    <button onClick={() => setView('history')} className={`px-2 py-2 sm:px-6 sm:py-3 sm:w-40 rounded-2xl flex flex-col sm:flex-row items-center justify-center sm:justify-center space-y-0.5 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-md ${view === 'history' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300'}`}><IconHistory width="20" height="20" /><span className="font-medium text-center sm:text-center">Historial</span></button> 
+                 </div> </div> </div> </div> </div>
                  <div className="border-t-4 border-gray-100 mb-2 sm:my-3"></div>
-                 {view === 'list' ? ( <div id="taskListSection" className="bg-white rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4"> <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left mb-3 sm:mb-6">Lista de tareas</h2> {[...tasks].sort((a, b) => { if (a.completed && !b.completed) return 1; if (!a.completed && b.completed) return -1; const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`); const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`); return dateA - dateB; }).map(task => { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); const cardStyle = getTaskCardStyle(status, task.completed); return ( <div key={task.id} id={task.id} onClick={(e) => { if (e.target.tagName !== 'BUTTON' && e.target.closest('button') === null) handleTaskCardClick(task); }} className={`rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} ${cardStyle.hoverClasses} cursor-pointer`}> <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0"> <div className="flex items-start space-x-2.5 sm:space-x-4 flex-1"> <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id, task.completed); }} className={`mt-0.5 w-6 h-6 sm:w-6.5 sm:h-6.5 rounded border-2 flex items-center justify-center flex-shrink-0 ${task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 hover:border-gray-400'}`}>{task.completed && <IconCheck width="15" height="15" />}</button> <div className="flex-1 min-w-0">
-                                 <h3 className={`font-semibold text-sm sm:text-lg ${task.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>{task.subject}</h3>
-                                 <p className={`text-sm sm:text-base ${task.completed ? 'line-through text-gray-500' : status === 'overdue' ? 'line-through text-gray-700' : 'text-gray-800'}`}>
-                                     {task.title}
-                                     <span className="text-xs sm:text-sm bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded-md ml-2 align-middle">{task.type}</span>
-                                 </p>
-                                 {task.description && <p className="text-xs sm:text-base text-gray-600 mt-1.5 mb-1.5">{task.description}</p>} 
-                                 <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-5 text-xs sm:text-base text-gray-500 mt-2"> <span>📅 {formatDateTime(task.dueDate, task.dueTime)}</span> <span>⏰ {getDaysUntilDue(task.dueDate)}</span> </div> </div> </div> <div className="flex items-center space-x-2.5"> <div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconClock width="22" height="22" /></div> <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Editar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconEdit width="22" height="22" /></div></button> <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 sm:p-3 rounded-xl transition-colors" title="Eliminar tarea"><div className="w-4.5 h-4.5 sm:w-6 sm:h-6"><IconTrash width="22" height="22" /></div></button> </div> </div> </div> ); })} </div> ) : view === 'daily' ? ( <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} getDaysUntilDue={getDaysUntilDue} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} /> ) : ( <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} originTaskForCalendar={originTaskForCalendar} backToOriginTask={backToOriginTask} /> )}
+                 {renderCurrentView()}
                  <div className="mt-7 sm:mt-9 bg-white rounded-xl shadow-lg p-3 sm:p-5"> <div className="text-center text-gray-600 space-y-1.5"> <div className="border-b border-gray-200 pb-1.5"> <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p> <p className="text-xs text-gray-700">Creado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span></p> <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p> </div> </div> </div>
             </div>
 
