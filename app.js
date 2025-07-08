@@ -305,12 +305,14 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
     );
 };
 
-const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate, originTaskForCalendar, backToOriginTask, onDayDoubleClick }) => {
+const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate, onBackToList, onDayDoubleClick }) => {
     return (
         <div className="bg-white rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200" id="calendarSection">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 text-left">Calendario</h2>
-                {originTaskForCalendar && (<button onClick={backToOriginTask} className="p-2 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center z-10" title="Volver a la tarea original"><IconArrowBack width="20" height="20" /></button>)}
+                <button onClick={onBackToList} className="p-2 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors flex items-center justify-center z-10" title="Volver a la lista">
+                    <IconArrowBack width="20" height="20" />
+                </button>
             </div>
             <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onDayDoubleClick={onDayDoubleClick} />
         </div>
@@ -506,7 +508,6 @@ const AcademicTaskManager = ({ user }) => {
     const [highlightedDate, setHighlightedDate] = useState(null);
     const [currentCalendarViewDate, setCurrentCalendarViewDate] = useState(new Date());
     const todayGlobal = new Date();
-    const [originTaskForCalendar, setOriginTaskForCalendar] = useState(null);
     const highlightTimeoutRef = useRef(null);
     const alertHideTimeoutRef = useRef(null);
 
@@ -663,7 +664,6 @@ const AcademicTaskManager = ({ user }) => {
     };
     
     const handleTaskCardClick = (task) => {
-        setOriginTaskForCalendar({ taskId: task.id, scrollY: window.scrollY });
         setView('calendar');
         setCurrentCalendarViewDate(createLocalDate(task.dueDate));
         
@@ -676,18 +676,6 @@ const AcademicTaskManager = ({ user }) => {
             const cardStyle = getTaskCardStyle(status, task.completed);
             highlightCalendarDate(task.dueDate, cardStyle.highlightBg);
         }, 100);
-    };
-
-    const backToOriginTask = () => { 
-        if (originTaskForCalendar) { 
-            setView('list'); 
-            setHighlightedDate(null);
-            setTimeout(() => { 
-                const taskElement = document.getElementById(originTaskForCalendar.taskId); 
-                if (taskElement) taskElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
-                setOriginTaskForCalendar(null); 
-            }, 0); 
-        } 
     };
     
     if (loading) {
@@ -728,7 +716,7 @@ const AcademicTaskManager = ({ user }) => {
             case 'daily':
                 return <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} getDaysUntilDue={getDaysUntilDue} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} />;
             case 'calendar':
-                return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} originTaskForCalendar={originTaskForCalendar} backToOriginTask={backToOriginTask} onDayDoubleClick={handleDayDoubleClick} />;
+                return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={handleDayDoubleClick} />;
             case 'history':
                 return <HistoryView history={history} permanentDeleteFromHistory={permanentDeleteFromHistory} formatTimestamp={formatTimestamp} />;
             default:
@@ -800,7 +788,7 @@ const AcademicTaskManager = ({ user }) => {
                  <div className="mt-7 sm:mt-9 bg-white rounded-xl shadow-lg p-3 sm:p-5"> <div className="text-center text-gray-600 space-y-1.5"> <div className="border-b border-gray-200 pb-1.5"> <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p> <p className="text-xs text-gray-700">Creado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span></p> <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p> </div> </div> </div>
             </div>
 
-            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-110 z-40">
+            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 lg:right-12 xl:right-24 2xl:right-48 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-110 z-40">
                 <IconPlus width="24" height="24" />
             </button>
 
