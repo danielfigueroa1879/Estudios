@@ -811,27 +811,27 @@ const AcademicTaskManager = ({ user }) => {
                 </div>
                 {showQuickAccess && (
                     <div className="absolute top-full left-0 right-0 w-full md:hidden">
-                         <div className="p-4 bg-black/50 dark:bg-black/70 backdrop-blur-2xl shadow-lg w-full rounded-b-xl">
+                         <div className="p-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl shadow-lg w-full rounded-b-xl">
                             <div className="max-w-5xl mx-auto">
                                 <div className="space-y-1">
-                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-blue-800 dark:text-blue-200 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconBook width="20" height="20" className="text-blue-800 dark:text-blue-200" /> <span>Lista</span>
+                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-blue-500/20 text-blue-800 dark:text-blue-300 font-medium text-base flex items-center justify-center space-x-3 group">
+                                        <IconBook width="20" height="20" className="text-blue-800 dark:text-blue-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" /> <span className="group-hover:text-blue-600 dark:group-hover:text-blue-400">Lista</span>
                                     </button>
-                                    <hr className="border-white/10" />
-                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-blue-800 dark:text-blue-200 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconCalendar width="20" height="20" className="text-blue-800 dark:text-blue-200" /> <span>Por Día</span>
+                                    <hr className="border-gray-200/50 dark:border-gray-700/50" />
+                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-blue-500/20 text-blue-800 dark:text-blue-300 font-medium text-base flex items-center justify-center space-x-3 group">
+                                        <IconCalendar width="20" height="20" className="text-blue-800 dark:text-blue-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" /> <span className="group-hover:text-blue-600 dark:group-hover:text-blue-400">Por Día</span>
                                     </button>
-                                    <hr className="border-white/10" />
-                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-blue-800 dark:text-blue-200 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconCalendar width="20" height="20" className="text-blue-800 dark:text-blue-200" /> <span>Calendario</span>
+                                    <hr className="border-gray-200/50 dark:border-gray-700/50" />
+                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-blue-500/20 text-blue-800 dark:text-blue-300 font-medium text-base flex items-center justify-center space-x-3 group">
+                                        <IconCalendar width="20" height="20" className="text-blue-800 dark:text-blue-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" /> <span className="group-hover:text-blue-600 dark:group-hover:text-blue-400">Calendario</span>
                                     </button>
-                                    <hr className="border-white/10" />
-                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-blue-800 dark:text-blue-200 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconHistory width="20" height="20" className="text-blue-800 dark:text-blue-200" /> <span>Historial</span>
+                                    <hr className="border-gray-200/50 dark:border-gray-700/50" />
+                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-blue-500/20 text-blue-800 dark:text-blue-300 font-medium text-base flex items-center justify-center space-x-3 group">
+                                        <IconHistory width="20" height="20" className="text-blue-800 dark:text-blue-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" /> <span className="group-hover:text-blue-600 dark:group-hover:text-blue-400">Historial</span>
                                     </button>
-                                    <hr className="border-white/10" />
-                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-blue-800 dark:text-blue-200 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconPlus width="20" height="20" className="text-blue-800 dark:text-blue-200" /> <span>Agregar nueva tarea</span>
+                                    <hr className="border-gray-200/50 dark:border-gray-700/50" />
+                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-blue-500/20 text-blue-800 dark:text-blue-300 font-medium text-base flex items-center justify-center space-x-3 group">
+                                        <IconPlus width="20" height="20" className="text-blue-800 dark:text-blue-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" /> <span className="group-hover:text-blue-600 dark:group-hover:text-blue-400">Agregar nueva tarea</span>
                                     </button>
                                 </div>
                             </div>
@@ -851,8 +851,8 @@ const AcademicTaskManager = ({ user }) => {
                             <button onClick={() => {
                                 setIsViewsCollapsed(!isViewsCollapsed);
                                 if (viewsCollapseTimeoutRef.current) clearTimeout(viewsCollapseTimeoutRef.current);
-                            }} className="sm:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                                {isViewsCollapsed ? <IconChevronDown className="w-8 h-8 text-red-500" /> : <IconChevronUp className="w-8 h-8 text-red-500" />}
+                            }} className="sm:hidden p-2">
+                                {isViewsCollapsed ? <IconChevronDown className="text-red-500" /> : <IconChevronUp className="text-red-500" />}
                             </button>
                         </div>
                         <div className={`sm:block mt-4 sm:mt-5 ${isViewsCollapsed ? 'hidden' : ''}`}>
