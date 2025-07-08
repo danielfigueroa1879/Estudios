@@ -37,7 +37,7 @@ const IconTrash = ({ width = "18", height = "18" }) => ( <svg width={width} heig
 const IconCheck = ({ width = "18", height = "18" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <polyline points="20,6 9,17 4,12"/> </svg> );
 const IconEdit = ({ width = "18", height = "18" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/> <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/> </svg> );
 const IconHamburger = ({ width = "24", height = "24" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <line x1="3" y1="12" x2="21" y2="12"></line> <line x1="3" y1="6" x2="21" y2="6"></line> <line x1="3" y1="18" x2="21" y2="18"></line> </svg> );
-const IconBackArrowhead = ({ width = "22", height = "22", className }) => ( <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"> <polyline points="15 18 9 12 15 6"/> </svg> );
+const IconBackArrowhead = ({ width = "28", height = "28", className, onClick, title }) => ( <svg onClick={onClick} title={title} className={className} width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"> <polyline points="15 18 9 12 15 6"/> </svg> );
 const IconLock = ({ width = "20", height = "20" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect> <path d="M7 11V7a5 5 0 0 1 10 0v4"></path> </svg> );
 const IconLogOut = ({ width = "22", height = "22" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path> <polyline points="16 17 21 12 16 7"></polyline> <line x1="21" y1="12" x2="9" y2="12"></line> </svg> );
 const IconSpinner = () => (<svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"> <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle> <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path> </svg>);
@@ -704,7 +704,6 @@ const AcademicTaskManager = ({ user }) => {
 
         highlightTimeoutRef.current = setTimeout(() => {
             setHighlightedDate(prev => (prev && prev.date === dateString) ? { ...prev, isAnimating: false } : prev);
-            highlightTimeoutRef.current = null;
         }, 180000); 
     };
     
@@ -821,26 +820,26 @@ const AcademicTaskManager = ({ user }) => {
                 </div>
                 {showQuickAccess && (
                     <div className="absolute top-full left-0 right-0 w-full md:hidden">
-                         <div className="p-4 bg-black/10 dark:bg-black/30 backdrop-blur-2xl shadow-lg w-full rounded-b-xl">
+                         <div className="p-4 bg-black/50 dark:bg-black/70 backdrop-blur-2xl shadow-lg w-full rounded-b-xl">
                             <div className="max-w-5xl mx-auto">
                                 <div className="space-y-1">
-                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-sky-300 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconBook width="20" height="20" /> <span>Lista</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-sky-300 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconCalendar width="20" height="20" /> <span>Por Día</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-sky-300 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconCalendar width="20" height="20" /> <span>Calendario</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-sky-300 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconHistory width="20" height="20" /> <span>Historial</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-sky-300 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 hover:text-blue-400 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconPlus width="20" height="20" /> <span>Agregar nueva tarea</span>
                                     </button>
                                 </div>
