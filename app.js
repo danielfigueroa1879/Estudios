@@ -402,8 +402,8 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[98%] max-w-2xl mx-auto border-t-4 border-blue-500">
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-2">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border-t-4 border-blue-500">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="font-semibold text-blue-600 dark:text-blue-400 text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
                     <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded-full">
@@ -798,7 +798,7 @@ const AcademicTaskManager = ({ user }) => {
                         </div>
                     </div>
                     {showQuickAccess && (
-                        <div className="mt-4 pt-4 border-t border-white/20 bg-white/10 backdrop-blur-lg rounded-b-2xl -mx-3 sm:-mx-6 px-3 sm:px-6 pb-2">
+                        <div className="mt-4 pt-4 border-t border-white/20 bg-white/20 backdrop-blur-xl rounded-2xl -mx-3 sm:-mx-6 px-3 sm:px-6 pb-2">
                             <div className="space-y-1">
                                 <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/20 transition-colors text-white font-medium text-base flex items-center space-x-3">
                                     <IconBook width="20" height="20" /> <span>Lista</span>
