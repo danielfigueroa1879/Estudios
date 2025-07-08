@@ -788,7 +788,7 @@ const AcademicTaskManager = ({ user }) => {
                  <div className="mt-7 sm:mt-9 bg-white rounded-xl shadow-lg p-3 sm:p-5"> <div className="text-center text-gray-600 space-y-1.5"> <div className="border-b border-gray-200 pb-1.5"> <p className="text-sm font-semibold text-gray-800 mb-0.5">© Derechos Reservados</p> <p className="text-xs text-gray-700">Creado por <span className="font-semibold text-blue-600">Daniel Figueroa Chacama</span></p> <p className="text-xs text-gray-600 mt-0.5">Ingeniero en Informática</p> </div> </div> </div>
             </div>
 
-            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 lg:right-12 xl:right-24 2xl:right-48 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-110 z-40">
+            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 lg:right-24 xl:right-48 2xl:right-64 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-110 z-40">
                 <IconPlus width="24" height="24" />
             </button>
 
