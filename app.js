@@ -232,14 +232,14 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
             <div className="grid grid-cols-7 bg-blue-600 dark:bg-gray-700 text-white rounded-t-lg">{dayNames.map((day, index) => <div key={index} className="text-center font-semibold py-2 text-sm">{day}</div>)}</div>
             <div className="grid grid-cols-7 border-l border-t border-gray-200 dark:border-gray-700">
                 {daysArray.map((day, index) => {
-                    if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28 bg-gray-50 dark:bg-gray-800/40 border-r border-b border-gray-200 dark:border-gray-600"></div>;
+                    if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28 bg-gray-50 dark:bg-gray-800/50 border-r border-b border-gray-200 dark:border-gray-600"></div>;
                     const dayObj = new Date(year, month, day);
                     const isToday = todayGlobal.getDate() === dayObj.getDate() && todayGlobal.getMonth() === dayObj.getMonth() && todayGlobal.getFullYear() === dayObj.getFullYear();
                     const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                     const isHoliday = chileanHolidays.includes(currentDayFormatted);
                     const highlightEntry = highlightedDate && highlightedDate.date === currentDayFormatted ? highlightedDate : null;
                     
-                    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 dark:border-gray-600 ${isHoliday ? 'bg-red-50 dark:bg-red-800/70' : ''} ${isToday ? 'bg-blue-100 dark:bg-blue-800/80' : 'bg-white dark:bg-gray-700/90 hover:bg-gray-50 dark:hover:bg-gray-600/90'}`;
+                    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 dark:border-gray-600 ${isHoliday ? 'bg-red-50 dark:bg-red-800/60' : ''} ${isToday ? 'bg-blue-100 dark:bg-blue-800/70' : 'bg-white dark:bg-gray-700/80 hover:bg-gray-50 dark:hover:bg-gray-600/80'}`;
                     
                     if (highlightEntry) {
                         dayClasses += ` ${highlightEntry.highlightBg} z-10`;
@@ -534,32 +534,32 @@ const AcademicTaskManager = ({ user }) => {
                     highlightBg = 'bg-gray-200 dark:bg-gray-600';
                     break;
                 case 'due-today':
-                    baseStyles = { bg: 'bg-red-50 dark:bg-red-900/60', border: 'border-red-500 dark:border-red-500', text: 'text-red-800 dark:text-red-200' };
+                    baseStyles = { bg: 'bg-red-50 dark:bg-red-900/50', border: 'border-red-500 dark:border-red-500', text: 'text-red-800 dark:text-red-200' };
                     highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
                     borderColorRgb = '239,68,68';
                     hoverClasses = 'hover:border-red-600 dark:hover:border-red-500 hover:ring-2 hover:ring-red-600/50 dark:hover:ring-red-500/50 hover:shadow-xl hover:shadow-red-300/50 dark:hover:shadow-red-900/50';
-                    highlightBg = 'bg-red-200 dark:bg-red-800/70';
+                    highlightBg = 'bg-red-200 dark:bg-red-800/60';
                     break;
                 case 'due-tomorrow':
-                    baseStyles = { bg: 'bg-orange-50 dark:bg-orange-900/60', border: 'border-orange-400 dark:border-orange-500', text: 'text-orange-800 dark:text-orange-200' };
+                    baseStyles = { bg: 'bg-orange-50 dark:bg-orange-900/50', border: 'border-orange-400 dark:border-orange-500', text: 'text-orange-800 dark:text-orange-200' };
                     highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
                     borderColorRgb = '249,115,22';
                     hoverClasses = 'hover:border-orange-500 dark:hover:border-orange-500 hover:ring-2 hover:ring-orange-500/50 dark:hover:ring-orange-500/50 hover:shadow-xl hover:shadow-orange-300/50 dark:hover:shadow-orange-900/50';
-                    highlightBg = 'bg-orange-200 dark:bg-orange-800/70';
+                    highlightBg = 'bg-orange-200 dark:bg-orange-800/60';
                     break;
                 case 'due-soon':
-                    baseStyles = { bg: 'bg-yellow-50 dark:bg-yellow-900/60', border: 'border-yellow-400 dark:border-yellow-500', text: 'text-yellow-800 dark:text-yellow-200' };
+                    baseStyles = { bg: 'bg-yellow-50 dark:bg-yellow-900/50', border: 'border-yellow-400 dark:border-yellow-500', text: 'text-yellow-800 dark:text-yellow-200' };
                     highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
                     borderColorRgb = '245,158,11';
                     hoverClasses = 'hover:border-yellow-500 dark:hover:border-yellow-500 hover:ring-2 hover:ring-yellow-500/50 dark:hover:ring-yellow-500/50 hover:shadow-xl hover:shadow-yellow-300/50 dark:hover:shadow-yellow-900/50';
-                    highlightBg = 'bg-yellow-200 dark:bg-yellow-800/70';
+                    highlightBg = 'bg-yellow-200 dark:bg-yellow-800/60';
                     break;
                 default: // 'on-time'
-                    baseStyles = { bg: 'bg-green-50 dark:bg-green-900/60', border: 'border-green-400 dark:border-green-500', text: 'text-green-800 dark:text-green-200' };
+                    baseStyles = { bg: 'bg-green-50 dark:bg-green-900/50', border: 'border-green-400 dark:border-green-500', text: 'text-green-800 dark:text-green-200' };
                     highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
                     borderColorRgb = '34,197,94';
                     hoverClasses = 'hover:border-green-500 dark:hover:border-green-500 hover:ring-2 hover:ring-green-500/50 dark:hover:ring-green-500/50 hover:shadow-xl hover:shadow-green-300/50 dark:hover:shadow-green-900/50';
-                    highlightBg = 'bg-green-200 dark:bg-green-800/70';
+                    highlightBg = 'bg-green-200 dark:bg-green-800/60';
                     break;
             }
         }
