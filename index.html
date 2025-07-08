@@ -66,13 +66,34 @@
     <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore-compat.js"></script>
     
+    <!-- Tailwind CSS Dark Mode Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    // Puedes extender el tema aquí si es necesario
+                }
+            }
+        }
+    </script>
+    
+    <!-- Dark Mode Toggler Script -->
+    <script>
+        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
+
     <!-- Custom Styles -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f3f4f6; /* Consistent background */
         }
         .highlight-animation {
             animation: pulse-border 1.5s infinite alternate;
@@ -95,7 +116,7 @@
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 dark:bg-gray-900">
     <!-- The React application will be rendered here -->
     <div id="root"></div>
 
