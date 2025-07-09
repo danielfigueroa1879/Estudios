@@ -20,9 +20,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storage = firebase.storage();
 
 
 // --- Iconos SVG ---
+const IconUser = ({ width = "22", height = "22" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path> <circle cx="12" cy="7" r="4"></circle> </svg> );
 const IconBook = ({ width = "20", height = "20", className }) => ( <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/> <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/> </svg> );
 const IconCalendar = ({ width = "20", height = "20", className }) => ( <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/> <line x1="16" y1="2" x2="16" y2="6"/> <line x1="8" y1="2" x2="8" y2="6"/> <line x1="3" y1="10" x2="21" y2="10"/> </svg> );
 const IconPlus = ({ width = "20", height = "20", className }) => ( <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <line x1="12" y1="5" x2="12" y2="19"/> <line x1="5" y1="12" x2="19" y2="12"/> </svg> );
@@ -35,7 +37,7 @@ const IconChevronUp = ({ width = "32", height = "32", className }) => ( <svg cla
 const IconTrash = ({ width = "18", height = "18" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <polyline points="3,6 5,6 21,6"/> <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/> <line x1="10" y1="11" x2="10" y2="17"/> <line x1="14" y1="11" x2="14" y2="17"/> </svg> );
 const IconCheck = ({ width = "18", height = "18" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <polyline points="20,6 9,17 4,12"/> </svg> );
 const IconEdit = ({ width = "18", height = "18" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/> <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/> </svg> );
-const IconHamburger = ({ width = "24", height = "24" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <line x1="3" y1="12" x2="21" y2="12"></line> <line x1="3" y1="6" x2="21" y2="6"></line> <line x1="3" y1="18" x2="21" y2="18"></line> </svg> );
+const IconHamburger = ({ width = "24", height = "24" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"> <line x1="3" y1="12" x2="21" y2="12"></line> <line x1="3" y1="6" x2="21" y2="6"></line> <line x1="3" y1="18" x2="21" y2="18"></line> </svg> );
 const IconBackArrowhead = ({ width = "32", height = "32", className, onClick, title }) => ( <svg onClick={onClick} title={title} className={className} width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"> <polyline points="15 18 9 12 15 6"/> </svg> );
 const IconChevronRight = ({ width = "32", height = "32", className, onClick, title }) => ( <svg onClick={onClick} title={title} className={className} width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"> <polyline points="9 6 15 12 9 18"/> </svg> );
 const IconLock = ({ width = "20", height = "20" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect> <path d="M7 11V7a5 5 0 0 1 10 0v4"></path> </svg> );
@@ -461,13 +463,118 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
     );
 };
 
+const ProfileModal = ({ isOpen, onClose, user, showAlert }) => {
+    const [profileData, setProfileData] = useState({
+        displayName: user.displayName || '',
+        photoURL: user.photoURL || '',
+    });
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const fileInputRef = useRef(null);
+
+    useEffect(() => {
+        setProfileData({
+            displayName: user.displayName || '',
+            photoURL: user.photoURL || '',
+        });
+    }, [user]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setProfileData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const storageRef = storage.ref(`profile_pictures/${user.uid}`);
+            const uploadTask = storageRef.put(file);
+            uploadTask.on('state_changed', 
+                (snapshot) => {}, 
+                (error) => { showAlert('Error al subir la imagen.'); },
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        setProfileData(prev => ({ ...prev, photoURL: downloadURL }));
+                    });
+                }
+            );
+        }
+    };
+
+    const handleUpdateProfile = () => {
+        const { displayName, photoURL } = profileData;
+        user.updateProfile({ displayName, photoURL })
+            .then(() => {
+                showAlert('Perfil actualizado con éxito.');
+            })
+            .catch((error) => {
+                showAlert('Error al actualizar el perfil.');
+            });
+    };
+    
+    const handleUpdatePassword = () => {
+        if (newPassword !== confirmPassword) {
+            showAlert('Las contraseñas no coinciden.');
+            return;
+        }
+        if (newPassword.length < 6) {
+            showAlert('La contraseña debe tener al menos 6 caracteres.');
+            return;
+        }
+        user.updatePassword(newPassword)
+            .then(() => {
+                showAlert('Contraseña actualizada con éxito.');
+                setNewPassword('');
+                setConfirmPassword('');
+            })
+            .catch((error) => {
+                showAlert('Error al actualizar la contraseña. Es posible que necesites volver a iniciar sesión.');
+            });
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sm:p-8 w-full max-w-md mx-auto border-2 border-blue-500 animate-pulse-blue">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="font-semibold text-gray-800 dark:text-white text-2xl">Perfil de Usuario</h3>
+                    <button onClick={onClose} className="text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white p-1 rounded-full">
+                        <IconClose className="w-6 h-6" />
+                    </button>
+                </div>
+                <div className="flex flex-col items-center space-y-6">
+                    <div className="relative">
+                        <img src={profileData.photoURL || 'https://via.placeholder.com/150'} alt="Foto de perfil" className="w-32 h-32 rounded-full object-cover border-4 border-blue-500" />
+                        <button onClick={() => fileInputRef.current.click()} className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors">
+                            <IconEdit width="16" height="16" />
+                        </button>
+                        <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
+                    </div>
+                    <div className="w-full space-y-4">
+                        <input type="text" name="displayName" placeholder="Nombre y Apellido" value={profileData.displayName} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <button onClick={handleUpdateProfile} className="w-full bg-blue-600 text-white rounded-xl py-3 text-base font-semibold hover:bg-blue-700 transition-colors">Actualizar Perfil</button>
+                    </div>
+                    <div className="w-full border-t border-gray-300 dark:border-gray-700 pt-6 space-y-4">
+                         <h4 className="text-lg font-semibold text-gray-800 dark:text-white">Cambiar Contraseña</h4>
+                        <input type="password" placeholder="Nueva Contraseña" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="password" placeholder="Confirmar Nueva Contraseña" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <button onClick={handleUpdatePassword} className="w-full bg-green-600 text-white rounded-xl py-3 text-base font-semibold hover:bg-green-700 transition-colors">Actualizar Contraseña</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 
 // --- Academic Task Manager Component ---
-const AcademicTaskManager = ({ user }) => {
+const AcademicTaskManager = ({ user, showAlert }) => {
     const [tasks, setTasks] = useState([]);
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [settings, setSettings] = useState({ view: 'list', emailNotifications: false });
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
     const tasksCollectionRef = db.collection('users').doc(user.uid).collection('tasks');
     const historyCollectionRef = db.collection('users').doc(user.uid).collection('history');
@@ -509,7 +616,8 @@ const AcademicTaskManager = ({ user }) => {
     const confirmCallbackRef = useRef(null);
 
     const chileanHolidays = [ '2025-01-01', '2025-04-18', '2025-04-19', '2025-05-01', '2025-05-21', '2025-06-20', '2025-06-29', '2025-07-16', '2025-08-15', '2025-09-18', '2025-09-19', '2025-10-12', '2025-10-31', '2025-11-01', '2025-12-08', '2025-12-25' ];
-    const showAlert = (message) => { setAlertDialogMessage(message); setIsAlertDialogOpen(true); };
+    
+    const internalShowAlert = (message) => { setAlertDialogMessage(message); setIsAlertDialogOpen(true); };
     const showConfirm = (message, onConfirmCallback) => { setConfirmDialogMessage(message); confirmCallbackRef.current = onConfirmCallback; setIsConfirmDialogOpen(true); };
     const handleAlertDialogClose = () => setIsAlertDialogOpen(false);
     const handleConfirmDialogConfirm = () => { if (confirmCallbackRef.current) confirmCallbackRef.current(); setIsConfirmDialogOpen(false); };
@@ -625,10 +733,10 @@ const AcademicTaskManager = ({ user }) => {
         if (taskData.id) { // Update existing task
             const { id, ...dataToUpdate } = taskData;
             tasksCollectionRef.doc(id).update(dataToUpdate)
-                .catch(error => showAlert("Error al actualizar la tarea: " + error.message));
+                .catch(error => internalShowAlert("Error al actualizar la tarea: " + error.message));
         } else { // Add new task
             tasksCollectionRef.add({ ...taskData, completed: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
-                .catch(error => showAlert("Error al agregar la tarea: " + error.message));
+                .catch(error => internalShowAlert("Error al agregar la tarea: " + error.message));
         }
     };
 
@@ -658,7 +766,7 @@ const AcademicTaskManager = ({ user }) => {
             const taskRef = tasksCollectionRef.doc(id);
             const taskDoc = await taskRef.get();
             if (!taskDoc.exists) {
-                showAlert("La tarea ya no existe.");
+                internalShowAlert("La tarea ya no existe.");
                 return;
             }
             const taskData = taskDoc.data();
@@ -678,7 +786,7 @@ const AcademicTaskManager = ({ user }) => {
     const permanentDeleteFromHistory = (id) => {
         showConfirm('Esta acción es irreversible. ¿Seguro que quieres eliminar esta tarea permanentemente del historial?', () => {
             historyCollectionRef.doc(id).delete()
-                .catch(error => showAlert("Error al eliminar la tarea del historial: " + error.message));
+                .catch(error => internalShowAlert("Error al eliminar la tarea del historial: " + error.message));
         });
     };
 
@@ -806,27 +914,30 @@ const AcademicTaskManager = ({ user }) => {
                                 <div className="text-white"><IconBook width="26" height="26" /></div>
                                 <div>
                                     <h1 className="text-lg sm:text-3xl font-bold text-white leading-tight">GESTOR ACADÉMICO</h1>
-                                    <p className="text-xs sm:text-base text-blue-200 mt-1">Usuario: <span className="font-semibold text-white">{user.email}</span></p>
+                                    <p className="text-xs sm:text-sm text-blue-200 mt-1"><span className="hidden sm:inline">Usuario: </span><span className="font-semibold text-white">{user.email}</span></p>
                                 </div>
                             </div>
                             <div className="flex-shrink-0 flex items-center space-x-1 sm:space-x-2">
+                                <button onClick={() => setIsProfileModalOpen(true)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Perfil">
+                                    <IconUser />
+                                </button>
                                 {notifications.length > 0 && (
                                     <button onClick={() => setShowAlerts(!showAlerts)} className="relative text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title={showAlerts ? "Ocultar alertas" : "Mostrar alertas"}>
-                                        <IconBell width="22" height="22" />
+                                        <IconBell />
                                         <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{notifications.length}</span>
                                     </button>
                                 )}
                                 <div className="hidden sm:flex items-center space-x-2 p-1 rounded-full hover:bg-blue-600 dark:hover:bg-gray-700 transition-colors">
-                                    <IconMail width="22" height="22" className="text-white" />
+                                    <IconMail className="text-white" />
                                     <button onClick={() => setEmailNotifications(!emailNotifications)} className={`w-10 h-5 rounded-full transition-colors flex items-center p-0.5 ${emailNotifications ? 'bg-blue-400' : 'bg-gray-500'}`}>
                                         <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${emailNotifications ? 'translate-x-5' : 'translate-x-0'}`} />
                                     </button>
                                 </div>
                                 <button onClick={() => auth.signOut()} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Cerrar sesión">
-                                    <IconLogOut width="22" height="22" />
+                                    <IconLogOut />
                                 </button>
                                 <button onClick={() => setShowQuickAccess(!showQuickAccess)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors md:hidden" title="Acceso Rápido">
-                                    {showQuickAccess ? <IconClose className="w-6 h-6"/> : <IconHamburger width="22" height="22" />}
+                                    {showQuickAccess ? <IconClose className="w-6 h-6"/> : <IconHamburger />}
                                 </button>
                             </div>
                         </div>
@@ -837,23 +948,27 @@ const AcademicTaskManager = ({ user }) => {
                          <div className="p-4 bg-black/10 dark:bg-black/30 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-2xl">
                             <div className="max-w-5xl md:max-w-xs mx-auto">
                                 <div className="space-y-1">
-                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setIsProfileModalOpen(true); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-lg flex items-center justify-center space-x-3">
+                                        <IconUser width="20" height="20" /> <span>Perfil</span>
+                                    </button>
+                                    <hr className="border-white/10" />
+                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-lg flex items-center justify-center space-x-3">
                                         <IconBook width="20" height="20" /> <span>Lista</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-lg flex items-center justify-center space-x-3">
                                         <IconCalendar width="20" height="20" /> <span>Por Día</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-lg flex items-center justify-center space-x-3">
                                         <IconCalendar width="20" height="20" /> <span>Calendario</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-lg flex items-center justify-center space-x-3">
                                         <IconHistory width="20" height="20" /> <span>Historial</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-lg flex items-center justify-center space-x-3">
                                         <IconPlus width="20" height="20" /> <span>Agregar nueva tarea</span>
                                     </button>
                                 </div>
@@ -905,9 +1020,15 @@ const AcademicTaskManager = ({ user }) => {
                 isOpen={isTaskModalOpen} 
                 onClose={() => setIsTaskModalOpen(false)} 
                 onSave={handleSaveTask} 
-                showAlert={showAlert}
+                showAlert={internalShowAlert}
                 taskToEdit={editingTask}
                 selectedDate={selectedDateForNewTask}
+            />
+            <ProfileModal
+                isOpen={isProfileModalOpen}
+                onClose={() => setIsProfileModalOpen(false)}
+                user={user}
+                showAlert={internalShowAlert}
             />
         </div>
     );
@@ -974,7 +1095,7 @@ const App = () => {
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(currentUser => {
-            if (currentUser && currentUser.emailVerified) {
+            if (currentUser) {
                 setUser(currentUser);
             } else {
                 setUser(null);
@@ -1019,7 +1140,7 @@ const App = () => {
     return (
         <div>
             {user ? (
-                <AcademicTaskManager user={user} />
+                <AcademicTaskManager user={user} showAlert={showAlert} />
             ) : (
                 <LoginScreen showAlert={showAlert} />
             )}
