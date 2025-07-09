@@ -794,7 +794,7 @@ const AcademicTaskManager = ({ user }) => {
                                     </button>
                                 )}
                                 <div className="hidden sm:flex items-center space-x-2 p-1 rounded-full hover:bg-blue-600 dark:hover:bg-gray-700 transition-colors">
-                                    <IconMail width="16" height="16" className="text-white sm:w-6 sm:h-6" />
+                                    <IconMail width="16" height="16" className="text-white sm:w-4 sm:h-4" />
                                     <button onClick={() => setEmailNotifications(!emailNotifications)} className={`w-10 h-5 rounded-full transition-colors flex items-center p-0.5 ${emailNotifications ? 'bg-blue-400' : 'bg-gray-500'}`}>
                                         <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${emailNotifications ? 'translate-x-5' : 'translate-x-0'}`} />
                                     </button>
