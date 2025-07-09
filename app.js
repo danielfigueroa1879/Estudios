@@ -227,15 +227,28 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
 
     return (
         <div className="relative">
-            <h2 className="text-2xl sm:text-3xl font-bold text-red-600 dark:text-red-400 text-center mb-1 sm:mb-0 uppercase">{monthNames[month]} {year}</h2>
-            <div className="flex justify-center space-x-1 sm:space-x-2 w-full mt-1 sm:mt-2 mb-4">
-                <button onClick={goToPreviousMonth} className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors flex items-center justify-center">
-                    <IconBackArrowhead width="20" height="20" />
-                </button>
-                <button onClick={goToToday} className="px-3 py-1.5 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm">Hoy</button>
-                <button onClick={goToNextMonth} className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors flex items-center justify-center">
-                    <IconChevronRight width="20" height="20" />
-                </button>
+            <div className="flex items-center justify-between mb-4">
+                <IconBackArrowhead 
+                    onClick={goToPreviousMonth} 
+                    className="text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-300 transition-colors" 
+                    width="32" 
+                    height="32" 
+                    title="Mes anterior" 
+                />
+                <h2 
+                    className="text-2xl sm:text-3xl font-bold text-red-600 dark:text-red-400 text-center uppercase select-none cursor-pointer" 
+                    onClick={goToToday} 
+                    title="Ir a Hoy"
+                >
+                    {monthNames[month]} {year}
+                </h2>
+                <IconChevronRight 
+                    onClick={goToNextMonth} 
+                    className="text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-300 transition-colors" 
+                    width="32" 
+                    height="32" 
+                    title="Mes siguiente"
+                />
             </div>
             <div className="grid grid-cols-7 bg-blue-600 dark:bg-gray-700 text-white rounded-t-lg">{dayNames.map((day, index) => <div key={index} className="text-center font-semibold py-2 text-sm">{day}</div>)}</div>
             <div className="grid grid-cols-7 border-l border-t border-gray-200 dark:border-gray-700">
