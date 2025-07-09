@@ -915,6 +915,7 @@ const AcademicTaskManager = ({ user, showAlert }) => {
                                 <div>
                                     <h1 className="text-base sm:text-2xl font-bold text-white leading-tight">GESTOR ACADÉMICO</h1>
                                     <p className="text-xs text-blue-200"><span className="hidden sm:inline">Usuario: </span><span className="font-semibold text-white">{user.email}</span></p>
+                                    className="hidden sm:inline-flex"
                                 </div>
                             </div>
                             <div className="flex-shrink-0 flex items-center space-x-1 sm:space-x-2">
