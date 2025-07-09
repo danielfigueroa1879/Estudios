@@ -416,10 +416,10 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
 
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2">
-            <div className="bg-sky-100/30 dark:bg-sky-900/30 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
+            <div className="bg-sky-100/40 dark:bg-sky-900/40 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
                 <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
-                    <button onClick={onClose} className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white p-1 rounded-full">
+                    <h3 className="font-semibold text-white text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
+                    <button onClick={onClose} className="text-gray-200 hover:text-white p-1 rounded-full">
                         <IconClose className="w-6 h-6" />
                     </button>
                 </div>
@@ -821,7 +821,7 @@ const AcademicTaskManager = ({ user }) => {
                 </div>
                 {showQuickAccess && (
                     <div className="absolute top-full left-0 right-0 w-full md:flex md:justify-end">
-                         <div className="p-4 bg-sky-800/20 dark:bg-sky-900/40 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs md:rounded-b-3xl">
+                         <div className="p-4 bg-blue-900/40 dark:bg-blue-950/60 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-[2.5rem]">
                             <div className="max-w-5xl md:max-w-xs mx-auto">
                                 <div className="space-y-1">
                                     <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center space-x-3">
