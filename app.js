@@ -800,7 +800,7 @@ const AcademicTaskManager = ({ user }) => {
                                     </button>
                                 </div>
                                 <button onClick={() => auth.signOut()} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Cerrar sesión">
-                                    <IconLogOut width="16" height="16" />
+                                    <IconLogOut width="16" height="16" className="sm:w-6 sm:h-6" />
                                 </button>
                                 <button onClick={() => setShowQuickAccess(!showQuickAccess)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors md:hidden" title="Acceso Rápido">
                                     {showQuickAccess ? <IconClose className="w-6 h-6"/> : <IconHamburger width="26" height="26" />}
