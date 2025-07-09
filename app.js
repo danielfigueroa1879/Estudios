@@ -782,7 +782,7 @@ const AcademicTaskManager = ({ user }) => {
                             <div className="flex items-center space-x-2">
                                 <div className="text-white"><IconBook width="26" height="26" /></div>
                                 <div>
-                                    <h1 className="text-sm sm:text-xl font-bold text-white leading-tight">GESTOR ACADÉMICO</h1>
+                                    <h1 className="text-sm sm:text-3xl font-bold text-white leading-tight">GESTOR ACADÉMICO</h1>
                                     <p className="text-[06px] text-blue-200 mt-1"><span className="font-semibold text-white">{user.email}</span></p>
                                 </div>
                             </div>
