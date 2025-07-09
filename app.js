@@ -789,18 +789,18 @@ const AcademicTaskManager = ({ user }) => {
                             <div className="flex-shrink-0 flex items-center space-x-1 sm:space-x-2">
                                 {notifications.length > 0 && (
                                     <button onClick={() => setShowAlerts(!showAlerts)} className="relative text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title={showAlerts ? "Ocultar alertas" : "Mostrar alertas"}>
-                                        <IconBell width="22" height="22" />
+                                        <IconBell width="16" height="16" />
                                         <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{notifications.length}</span>
                                     </button>
                                 )}
                                 <div className="hidden sm:flex items-center space-x-2 p-1 rounded-full hover:bg-blue-600 dark:hover:bg-gray-700 transition-colors">
-                                    <IconMail width="22" height="22" className="text-white" />
+                                    <IconMail width="16" height="16" className="text-white" />
                                     <button onClick={() => setEmailNotifications(!emailNotifications)} className={`w-10 h-5 rounded-full transition-colors flex items-center p-0.5 ${emailNotifications ? 'bg-blue-400' : 'bg-gray-500'}`}>
                                         <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${emailNotifications ? 'translate-x-5' : 'translate-x-0'}`} />
                                     </button>
                                 </div>
                                 <button onClick={() => auth.signOut()} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Cerrar sesión">
-                                    <IconLogOut width="22" height="22" />
+                                    <IconLogOut width="16" height="16" />
                                 </button>
                                 <button onClick={() => setShowQuickAccess(!showQuickAccess)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors md:hidden" title="Acceso Rápido">
                                     {showQuickAccess ? <IconClose className="w-6 h-6"/> : <IconHamburger width="22" height="22" />}
