@@ -922,12 +922,7 @@ const AcademicTaskManager = ({ user, showAlert }) => {
                                 <button onClick={() => setIsProfileModalOpen(true)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Perfil">
                                     <IconUser width="20" height="20" />
                                 </button>
-                                <button
-                                onClick={() => setIsProfileModalOpen(true)}
-                                className="hidden sm:inline-flex"
-                                >
-                                <IconUser />
-                                </button>
+                    
                                
                                 {notifications.length > 0 && (
                                     <button onClick={() => setShowAlerts(!showAlerts)} className="relative text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title={showAlerts ? "Ocultar alertas" : "Mostrar alertas"}>
