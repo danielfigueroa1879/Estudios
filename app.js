@@ -425,19 +425,17 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
 
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2">
-            <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-semibold text-white text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
+            <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-lg mx-auto border-2 border-blue-500 animate-pulse-blue">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-semibold text-white text-xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
                     <button onClick={onClose} className="text-gray-200 hover:text-white p-1 rounded-full">
                         <IconClose className="w-6 h-6" />
                     </button>
                 </div>
-                <div className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <input type="text" name="subject" placeholder="Asignatura" value={taskData.subject || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                        <input type="text" name="title" placeholder="Título de la tarea" value={taskData.title || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                    </div>
-                    <select name="type" value={taskData.type || 'Tarea'} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <div className="space-y-3">
+                    <input type="text" name="subject" placeholder="Asignatura" value={taskData.subject || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-2.5 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    <input type="text" name="title" placeholder="Título de la tarea" value={taskData.title || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-2.5 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    <select name="type" value={taskData.type || 'Tarea'} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-2.5 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="Tarea">Tarea</option>
                         <option value="Examen">Examen</option>
                         <option value="Recuperación de Clases">Recuperación de Clases</option>
@@ -445,14 +443,14 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
                         <option value="Monografía">Monografía</option>
                         <option value="Informe">Informe</option>
                     </select>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <input type="date" name="dueDate" value={taskData.dueDate || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                        <input type="time" name="dueTime" placeholder="Hora (opcional)" value={taskData.dueTime || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    <div className="grid grid-cols-2 gap-3">
+                        <input type="date" name="dueDate" value={taskData.dueDate || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-2.5 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="time" name="dueTime" placeholder="Hora (opcional)" value={taskData.dueTime || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-2.5 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
-                    <textarea name="description" placeholder="Descripción (opcional)" value={taskData.description || ''} onChange={handleChange} rows="3" className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea>
-                    <div className="flex justify-center w-full space-x-4 pt-2">
-                        <button onClick={onClose} className="bg-gray-500/50 text-white rounded-xl px-5 py-2.5 hover:bg-gray-500/70 text-base font-medium">Cancelar</button>
-                        <button onClick={handleSubmit} className="bg-blue-600 text-white rounded-xl px-5 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-2 text-base font-medium">
+                    <textarea name="description" placeholder="Descripción (opcional)" value={taskData.description || ''} onChange={handleChange} rows="2" className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-2.5 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea>
+                    <div className="flex justify-end w-full space-x-3 pt-2">
+                        <button onClick={onClose} className="bg-gray-500/50 text-white rounded-xl px-5 py-2 hover:bg-gray-500/70 text-base font-medium">Cancelar</button>
+                        <button onClick={handleSubmit} className="bg-blue-600 text-white rounded-xl px-5 py-2 hover:bg-blue-700 flex items-center justify-center space-x-2 text-base font-medium">
                             {isEditMode ? <IconCheck width="18" height="18" /> : <IconPlus width="18" height="18" />}
                             <span>{isEditMode ? 'Actualizar' : 'Agregar'}</span>
                         </button>
@@ -790,6 +788,13 @@ const AcademicTaskManager = ({ user }) => {
                 }
                 .animate-fast-pulse {
                     animation: fast-pulse 0.8s infinite ease-in-out;
+                }
+                @keyframes pulse-blue {
+                    0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+                    50% { box-shadow: 0 0 20px 10px rgba(59, 130, 246, 0); }
+                }
+                .animate-pulse-blue {
+                    animation: pulse-blue 2s infinite;
                 }
             `}</style>
             {/* Header */}
