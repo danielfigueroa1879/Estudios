@@ -789,7 +789,7 @@ const AcademicTaskManager = ({ user }) => {
                             <div className="flex-shrink-0 flex items-center space-x-1 sm:space-x-2">
                                 {notifications.length > 0 && (
                                     <button onClick={() => setShowAlerts(!showAlerts)} className="relative text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title={showAlerts ? "Ocultar alertas" : "Mostrar alertas"}>
-                                        <IconBell width="16" height="16" />
+                                        <IconBell width="18" height="18" className="sm:w-6 sm:h-6" />
                                         <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{notifications.length}</span>
                                     </button>
                                 )}
