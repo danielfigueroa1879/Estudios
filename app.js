@@ -923,7 +923,7 @@ const AcademicTaskManager = ({ user, showAlert }) => {
                                 </button>
                                 <button
                                 onClick={() => setIsProfileModalOpen(true)}
-                                className="hidden md:inline-flex"
+                                className="hidden sm:inline-flex"
                                 >
                                 <IconUser />
                                 </button>
