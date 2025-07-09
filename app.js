@@ -821,26 +821,26 @@ const AcademicTaskManager = ({ user }) => {
                 </div>
                 {showQuickAccess && (
                     <div className="absolute top-full left-0 right-0 w-full md:flex md:justify-end">
-                         <div className="p-4 bg-blue-900/40 dark:bg-blue-950/60 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-[2.5rem]">
+                         <div className="p-4 bg-black/10 dark:bg-black/30 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-2xl">
                             <div className="max-w-5xl md:max-w-xs mx-auto">
                                 <div className="space-y-1">
-                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center space-x-3">
+                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconBook width="20" height="20" /> <span>Lista</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center space-x-3">
+                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconCalendar width="20" height="20" /> <span>Por Día</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center space-x-3">
+                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconCalendar width="20" height="20" /> <span>Calendario</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center space-x-3">
+                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconHistory width="20" height="20" /> <span>Historial</span>
                                     </button>
                                     <hr className="border-white/10" />
-                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center space-x-3">
+                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-white font-medium text-base flex items-center justify-center space-x-3">
                                         <IconPlus width="20" height="20" /> <span>Agregar nueva tarea</span>
                                     </button>
                                 </div>
