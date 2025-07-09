@@ -120,7 +120,7 @@ const LoginScreen = ({ showAlert }) => {
                 )}
                 <div className="text-center mb-8">
                     <IconBook width="48" height="48" className="mx-auto text-blue-600" />
-                   <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 mt-4">Gestor Académico</h1>
+                   <h1 className="text-lg sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mt-4">Gestor Académico</h1>
                     <p className="text-gray-500 dark:text-gray-400">{isRegister ? 'Crea una nueva cuenta' : 'Bienvenido de vuelta'}</p>
                 </div>
                 <div className="space-y-6">
