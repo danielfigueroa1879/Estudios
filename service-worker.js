@@ -1,4 +1,4 @@
-const CACHE_NAME = 'academic-task-manager-cache-v4';
+const CACHE_NAME = 'academic-task-manager-cache-v5';
 const urlsToCache = [
     './',
     './index.html',
@@ -12,6 +12,7 @@ const urlsToCache = [
     'https://www.gstatic.com/firebasejs/9.19.1/firebase-app-compat.js',
     'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth-compat.js',
     'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore-compat.js',
+    'https://www.gstatic.com/firebasejs/9.19.1/firebase-storage-compat.js',
     './icons/favicon-96x96.png',
     './icons/web-app-manifest-192x192.png',
     './icons/apple-touch-icon.png',
