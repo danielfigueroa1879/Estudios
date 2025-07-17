@@ -479,8 +479,8 @@ const ClassModal = ({ isOpen, onClose, onSave, showAlert, classToEdit, selectedD
 
     const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
     const timeSlots = [
-        '08:00', '09:00', '10:00', '11:00', '12:00',
-        '13:00', '14:00', '15:00', '16:00', '17:00'
+        '08:00', '10:00', '12:00', '14:00', '16:00',
+        '18:00', '20:00', '22:00', '00:00'
     ];
 
     return (
@@ -521,9 +521,10 @@ const ClassModal = ({ isOpen, onClose, onSave, showAlert, classToEdit, selectedD
 // --- NEW: Weekly Calendar View Component ---
 const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackToList, onAddClass, onEditClass, onDeleteClass }) => {
     const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    // Updated time slots for 2-hour intervals from 08:00 to 00:00
     const timeSlots = [
-        '08:00', '09:00', '10:00', '11:00', '12:00',
-        '13:00', '14:00', '15:00', '16:00', '17:00'
+        '08:00', '10:00', '12:00', '14:00', '16:00',
+        '18:00', '20:00', '22:00', '00:00'
     ];
 
     // Get the current week's dates
@@ -587,7 +588,7 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                                     
                                     return (
                                         <td key={`${day}-${time}`} 
-                                            className={`relative px-2 py-2 border-r border-gray-200 dark:border-gray-700 ${isHoliday ? 'bg-red-50 dark:bg-red-800/70' : ''} ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
+                                            className={`relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isHoliday ? 'bg-red-50 dark:bg-red-800/70' : ''} ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
                                             onDoubleClick={() => onAddClass(day, time)}
                                         >
                                             <div className="flex flex-col space-y-1">
@@ -605,6 +606,101 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                                                         <IconPlus width="16" height="16" className="inline-block" />
                                                     </button>
                                                 )}
+                                            </div>
+                                        </td>
+                                    );
+                                })}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
+// --- NEW: Mini Weekly Calendar Component ---
+const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
+    const daysOfWeek = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+    const timeSlots = [
+        '08', '10', '12', '14', '16',
+        '18', '20', '22', '00'
+    ];
+
+    const today = new Date();
+    const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday
+    const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1; // Days to subtract to get to Monday
+    const mondayOfCurrentWeek = new Date(today.setDate(today.getDate() - diff));
+    mondayOfCurrentWeek.setHours(0, 0, 0, 0); // Normalize to start of day
+
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(mondayOfCurrentWeek);
+        date.setDate(mondayOfCurrentWeek.getDate() + i);
+        weekDates.push(date);
+    }
+
+    const classesByDayAndTime = classes.reduce((acc, cls) => {
+        if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
+        if (!acc[cls.dayOfWeek][cls.startTime]) acc[cls.dayOfWeek][cls.startTime] = [];
+        acc[cls.dayOfWeek][cls.startTime].push(cls);
+        return acc;
+    }, {});
+
+    const getFormattedDateForDay = (dayIndex) => {
+        const date = weekDates[dayIndex];
+        return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    };
+
+    return (
+        <div className="fixed top-4 right-4 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80">
+            <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
+                Semana Actual
+            </div>
+            <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-blue-500 dark:bg-gray-600 text-white">
+                        <tr>
+                            <th className="px-1 py-1 text-left text-[0.6rem] font-medium uppercase tracking-wider">Hr</th>
+                            {daysOfWeek.map((day, index) => {
+                                const formattedDate = getFormattedDateForDay(index);
+                                const isHoliday = chileanHolidays.includes(formattedDate);
+                                const isToday = formattedDate === today.toISOString().split('T')[0];
+                                return (
+                                    <th key={day} className={`px-1 py-1 text-center text-[0.6rem] font-medium uppercase tracking-wider ${isHoliday ? 'bg-red-600' : ''} ${isToday ? 'bg-blue-700' : ''}`}>
+                                        {day}
+                                    </th>
+                                );
+                            })}
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        {timeSlots.map(time => (
+                            <tr key={time}>
+                                <td className="px-1 py-1 whitespace-nowrap text-[0.6rem] font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700">{time}</td>
+                                {daysOfWeek.map((day, dayIndex) => {
+                                    const classesInSlot = classesByDayAndTime[
+                                        ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex] // Map abbreviated day back to full day
+                                    ] && classesByDayAndTime[
+                                        ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
+                                    ][`${time}:00`] ? classesByDayAndTime[
+                                        ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
+                                    ][`${time}:00`] : [];
+                                    
+                                    const formattedDate = getFormattedDateForDay(dayIndex);
+                                    const isHoliday = chileanHolidays.includes(formattedDate);
+                                    const isToday = formattedDate === today.toISOString().split('T')[0];
+
+                                    return (
+                                        <td key={`${day}-${time}`} 
+                                            className={`px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isHoliday ? 'bg-red-50 dark:bg-red-800/70' : ''} ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
+                                        >
+                                            <div className="flex flex-col space-y-0.5">
+                                                {classesInSlot.map(cls => (
+                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.55rem] font-medium rounded-sm px-0.5 py-0.5 truncate" title={`${cls.subject} (${cls.description})`}>
+                                                        {cls.subject}
+                                                    </div>
+                                                ))}
                                             </div>
                                         </td>
                                     );
@@ -847,13 +943,6 @@ const AcademicTaskManager = ({ user }) => {
         });
     };
 
-    const permanentDeleteFromHistory = (id) => {
-        showConfirm('Esta acción es irreversible. ¿Seguro que quieres eliminar esta tarea permanentemente del historial?', () => {
-            historyCollectionRef.doc(id).delete()
-                .catch(error => showAlert("Error al eliminar la tarea del historial: " + error.message));
-        });
-    };
-
     const handleDayDoubleClick = (date) => {
         setEditingTask(null);
         setSelectedDateForNewTask(date);
@@ -894,6 +983,13 @@ const AcademicTaskManager = ({ user }) => {
         showConfirm('¿Estás seguro de que quieres eliminar esta clase?', () => {
             classesCollectionRef.doc(id).delete()
                 .catch(error => showAlert("Error al eliminar la clase: " + error.message));
+        });
+    };
+
+    const permanentDeleteFromHistory = (id) => {
+        showConfirm('Esta acción es irreversible. ¿Seguro que quieres eliminar esta tarea permanentemente del historial?', () => {
+            historyCollectionRef.doc(id).delete()
+                .catch(error => showAlert("Error al eliminar la tarea del historial: " + error.message));
         });
     };
 
@@ -1122,6 +1218,8 @@ const AcademicTaskManager = ({ user }) => {
                 selectedDay={selectedDayForNewClass}
                 selectedTime={selectedTimeForNewClass}
             />
+            {/* NEW: Mini Weekly Calendar */}
+            <MiniWeeklyCalendar classes={classes} chileanHolidays={chileanHolidays} />
         </div>
     );
 };
