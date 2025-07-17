@@ -137,7 +137,7 @@ const LoginScreen = ({ showAlert }) => {
                         <button 
                             type="button"
                             onClick={() => setShowPassword(!showPassword)} 
-                            className="absolute inset-y-0 right-6 px-4 flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+                            className="absolute inset-y-0 right-0 px-4 flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                         >
                             {showPassword ? <IconEyeOff /> : <IconEye />}
                         </button>
@@ -680,7 +680,7 @@ const MiniWeeklyCalendar = ({ classes }) => {
     };
 
     return (
-        <div className="fixed top-20 right-4 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 block">
+        <div className="fixed top-20 left-4 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 block">
             <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
                 Semana Actual
             </div>
