@@ -7,7 +7,7 @@ const urlsToCache = [
     'https://unpkg.com/react@18/umd/react.production.min.js',
     'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
     'https://unpkg.com/@babel/standalone/babel.min.js',
-    'https://cdn.tailwindcss.com/3.4.0',
+    // 'https://cdn.tailwindcss.com/3.4.0', // REMOVED THIS LINE due to CORS issues
     'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap',
     'https://www.gstatic.com/firebasejs/9.19.1/firebase-app-compat.js',
     'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth-compat.js',
