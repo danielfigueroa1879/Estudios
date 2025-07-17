@@ -198,7 +198,7 @@ const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle
     );
 };
 
-const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate, onDayDoubleClick }) => {
+const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate, onDayDoubleClick, getTaskCardStyle }) => {
     const year = currentViewDate.getFullYear();
     const month = currentViewDate.getMonth();
     const firstDay = new Date(year, month, 1);
@@ -247,8 +247,13 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
                     if (highlightEntry) {
                         dayClasses += ` ${highlightEntry.highlightBg} z-10`;
                         if (highlightEntry.isAnimating) {
-                             dayClasses += ` animate-fast-pulse`;
+                             dayClasses += ` highlight-animation`;
                         }
+                    }
+                    
+                    let dynamicStyle = {};
+                    if (highlightEntry && highlightEntry.isAnimating) {
+                        dynamicStyle = { '--ring-color-rgb': highlightEntry.borderColorRgb };
                     }
 
                     const dayTasks = tasksByDate[day] || [];
@@ -270,14 +275,16 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
                     
                     const renderTaskBar = (task) => {
                          const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-                         let bgColor = '', title = '';
-                         switch (status) { case 'overdue': bgColor = 'bg-gray-600'; title = `${task.subject} - Vencida`; break; case 'due-today': bgColor = 'bg-red-400'; title = `${task.subject} - Vence hoy`; break; case 'due-tomorrow': bgColor = 'bg-orange-400'; title = `${task.subject} - Vence mañana`; break; case 'due-soon': bgColor = 'bg-yellow-400'; title = `${task.subject} - Por vencer`; break; case 'completed': bgColor = 'bg-gray-400'; title = `${task.subject} - Completada`; break; default: bgColor = 'bg-green-400'; title = `${task.subject} - A tiempo`; }
+                         const cardStyle = getTaskCardStyle(status, task.completed);
+                         let bgColor = cardStyle.border.replace('border-', 'bg-').replace('dark:border-', 'dark:bg-'); // Derive from border color
+                         let title = '';
+                         switch (status) { case 'overdue': title = `${task.subject} - Vencida`; break; case 'due-today': title = `${task.subject} - Vence hoy`; break; case 'due-tomorrow': title = `${task.subject} - Vence mañana`; break; case 'due-soon': title = `${task.subject} - Por vencer`; break; case 'completed': title = `${task.subject} - Completada`; break; default: title = `${task.subject} - A tiempo`; }
                          if (task.dueTime) title += ` - ${task.dueTime}`;
                          return <div className={`w-full h-1.5 ${bgColor} rounded`} title={title}></div>;
                     };
 
                     return (
-                        <div key={currentDayFormatted} onDoubleClick={() => onDayDoubleClick(currentDayFormatted)} className={dayClasses}>
+                        <div key={currentDayFormatted} style={dynamicStyle} onDoubleClick={() => onDayDoubleClick(currentDayFormatted)} className={dayClasses}>
                             <div className={`text-xs sm:text-sm font-medium ${isToday ? 'text-blue-700 dark:text-blue-300' : (isHoliday ? 'text-red-600 dark:text-red-400' : 'text-gray-800 dark:text-gray-300')}`}>{day}</div>
                             <div className="absolute top-4 left-0.5 right-0.5 bottom-1">
                                 {/* All-day tasks stacked at the top */}
@@ -308,14 +315,14 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
     );
 };
 
-const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate, onBackToList, onDayDoubleClick }) => {
+const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, getTaskCardStyle, chileanHolidays, createLocalDate, onBackToList, onDayDoubleClick }) => {
     return (
         <div className="bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700" id="calendarSection">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Calendario Mensual</h2>
                 <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
             </div>
-            <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={onDayDoubleClick} />
+            <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={onDayDoubleClick} />
         </div>
     );
 };
@@ -530,7 +537,7 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
     const today = new Date();
     const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday
     const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1; // Days to subtract to get to Monday
-    const mondayOfCurrentWeek = new Date(today.setDate(today.getDate() - diff));
+    const mondayOfCurrentWeek = new Date(new Date().setDate(today.getDate() - diff));
     mondayOfCurrentWeek.setHours(0, 0, 0, 0); // Normalize to start of day
 
     const weekDates = [];
@@ -579,9 +586,9 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                             <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg">Hora</th>
                             {daysOfWeek.map((day, index) => {
                                 const formattedDate = getFormattedDateForDay(index);
-                                const isToday = formattedDate === today.toISOString().split('T')[0];
+                                const isToday = formattedDate === new Date().toISOString().split('T')[0];
                                 return (
-                                    <th key={day} className={`px-2 py-3 text-center text-xs font-medium uppercase tracking-wider ${isToday && day !== 'Lunes' ? 'bg-blue-800' : ''} ${index === 6 ? 'rounded-tr-lg' : ''}`}>
+                                    <th key={day} className={`px-2 py-3 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-800' : ''} ${index === 6 ? 'rounded-tr-lg' : ''}`}>
                                         {day} <br /> <span className="font-normal text-xs">{formattedDate.substring(5)}</span>
                                     </th>
                                 );
@@ -595,11 +602,11 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                                 {daysOfWeek.map((day, dayIndex) => {
                                     const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
                                     const formattedDate = getFormattedDateForDay(dayIndex);
-                                    const isToday = formattedDate === today.toISOString().split('T')[0];
+                                    const isToday = formattedDate === new Date().toISOString().split('T')[0];
                                     
                                     return (
                                         <td key={`${day}-${time}`} 
-                                            className={`relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isToday && day !== 'Lunes' ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
+                                            className={`relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
                                             onDoubleClick={() => onAddClass(day, time)}
                                         >
                                             <div className="flex flex-col space-y-1">
@@ -616,7 +623,6 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                                                         </div>
                                                     </div>
                                                 ))}
-                                                {/* Removed the IconPlus button as per user request */}
                                             </div>
                                         </td>
                                     );
@@ -631,16 +637,15 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
 };
 
 // --- NEW: Mini Weekly Calendar Component ---
-const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
+const MiniWeeklyCalendar = ({ classes }) => {
     const daysOfWeek = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-    // Using the globally defined time slots, but only the hour part for brevity
     const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS.map(time => time.substring(0, 2));
 
     const today = new Date();
-    const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday
-    const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1; // Days to subtract to get to Monday
-    const mondayOfCurrentWeek = new Date(today.setDate(today.getDate() - diff));
-    mondayOfCurrentWeek.setHours(0, 0, 0, 0); // Normalize to start of day
+    const currentDayOfWeek = today.getDay();
+    const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
+    const mondayOfCurrentWeek = new Date(new Date().setDate(today.getDate() - diff));
+    mondayOfCurrentWeek.setHours(0, 0, 0, 0);
 
     const weekDates = [];
     for (let i = 0; i < 7; i++) {
@@ -650,7 +655,6 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
     }
 
     const classesByDayAndFullTimeSlot = classes.reduce((acc, cls) => {
-        // Find the closest time slot for grouping based on the full WEEKLY_CALENDAR_TIME_SLOTS
         const classHour = parseInt(cls.startTime.split(':')[0]);
         let closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[0];
         let minDiff = Math.abs(classHour - parseInt(closestFullSlot.split(':')[0]));
@@ -660,7 +664,7 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
             const diff = Math.abs(classHour - slotHour);
             if (diff < minDiff) {
                 minDiff = diff;
-                closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[i]; // Store the full time slot string as key
+                closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[i];
             }
         }
 
@@ -676,9 +680,7 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
     };
 
     return (
-        // Adjusted position: top-20 (below banner), right-4 (more to the right)
-        // Added hidden md:block to only show on desktop
-        <div className="fixed top-26 right-14 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80 hidden md:block">
+        <div className="fixed top-24 right-4 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80 block">
             <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
                 Semana Actual
             </div>
@@ -689,9 +691,9 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
                             <th className="px-1 py-1 text-left text-[0.6rem] font-medium uppercase tracking-wider">Hr</th>
                             {daysOfWeek.map((day, index) => {
                                 const formattedDate = getFormattedDateForDay(index);
-                                const isToday = formattedDate === today.toISOString().split('T')[0];
+                                const isToday = formattedDate === new Date().toISOString().split('T')[0];
                                 return (
-                                    <th key={day} className={`px-1 py-1 text-center text-[0.6rem] font-medium uppercase tracking-wider ${isToday && day !== 'Lun' ? 'bg-blue-700' : ''}`}>
+                                    <th key={day} className={`px-1 py-1 text-center text-[0.6rem] font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''}`}>
                                         {day}
                                     </th>
                                 );
@@ -699,32 +701,25 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
                         </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        {WEEKLY_CALENDAR_TIME_SLOTS.map(fullTimeSlot => ( // Iterate over full time slots for data lookup
+                        {WEEKLY_CALENDAR_TIME_SLOTS.map(fullTimeSlot => (
                             <tr key={fullTimeSlot}>
                                 <td className="px-1 py-1 whitespace-nowrap text-[0.6rem] font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">
-                                    {fullTimeSlot.substring(0, 2)} {/* Display abbreviated hour */}
+                                    {fullTimeSlot.substring(0, 2)}
                                 </td>
                                 {daysOfWeek.map((day, dayIndex) => {
-                                    const classesInSlot = classesByDayAndFullTimeSlot[
-                                        ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
-                                    ] && classesByDayAndFullTimeSlot[
-                                        ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
-                                    ][fullTimeSlot] ? classesByDayAndFullTimeSlot[ // Lookup using full time slot
-                                        ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
-                                    ][fullTimeSlot] : [];
-                                    
+                                    const dayName = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex];
+                                    const classesInSlot = (classesByDayAndFullTimeSlot[dayName] && classesByDayAndFullTimeSlot[dayName][fullTimeSlot]) || [];
                                     const formattedDate = getFormattedDateForDay(dayIndex);
-                                    const isToday = formattedDate === today.toISOString().split('T')[0];
+                                    const isToday = formattedDate === new Date().toISOString().split('T')[0];
 
                                     return (
                                         <td key={`${day}-${fullTimeSlot}`} 
-                                            className={`px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isToday && day !== 'Lunes' ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
+                                            className={`px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
                                         >
                                             <div className="flex flex-col space-y-0.5">
                                                 {classesInSlot.map(cls => (
                                                     <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.55rem] font-medium rounded-sm px-0.5 py-0.5 truncate" title={`${cls.subject} (${cls.description})`}>
                                                         {cls.subject}
-                                                        {/* Display time range below subject */}
                                                         <span className="text-[0.45rem] text-blue-700 dark:text-blue-300 block">
                                                             {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
                                                         </span>
@@ -1031,11 +1026,11 @@ const AcademicTaskManager = ({ user }) => {
     };
     const getDaysUntilDue = (dueDate) => { const todayMidnight = new Date(); todayMidnight.setHours(0, 0, 0, 0); const dueMidnight = createLocalDate(dueDate); const diffTime = dueMidnight.getTime() - todayMidnight.getTime(); const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); if (diffDays < 0) return `${Math.abs(diffDays)} días atrasado`; if (diffDays === 0) return 'Vence hoy'; if (diffDays === 1) return 'Vence mañana'; return `${diffDays} días restantes`; };
     
-    const highlightCalendarDate = (dateString, highlightBg) => {
+    const highlightCalendarDate = (dateString, highlightBg, borderColorRgb) => {
         if (highlightTimeoutRef.current) {
             clearTimeout(highlightTimeoutRef.current);
         }
-        setHighlightedDate({ date: dateString, highlightBg, isAnimating: true });
+        setHighlightedDate({ date: dateString, highlightBg, borderColorRgb, isAnimating: true });
 
         highlightTimeoutRef.current = setTimeout(() => {
             setHighlightedDate(prev => (prev && prev.date === dateString) ? { ...prev, isAnimating: false } : prev);
@@ -1053,7 +1048,7 @@ const AcademicTaskManager = ({ user }) => {
             }
             const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
             const cardStyle = getTaskCardStyle(status, task.completed);
-            highlightCalendarDate(task.dueDate, cardStyle.highlightBg);
+            highlightCalendarDate(task.dueDate, cardStyle.highlightBg, cardStyle.borderColorRgb);
         }, 100);
     };
     
@@ -1095,7 +1090,7 @@ const AcademicTaskManager = ({ user }) => {
             case 'daily':
                 return <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} getDaysUntilDue={getDaysUntilDue} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} onBackToList={() => setView('list')} />;
             case 'calendar':
-                return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={handleDayDoubleClick} />;
+                return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={handleDayDoubleClick} />;
             case 'weeklyCalendar': // NEW: Weekly calendar view
                 return <WeeklyCalendarView classes={classes} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onAddClass={handleAddClass} onEditClass={handleEditClass} onDeleteClass={handleDeleteClass} />;
             case 'history':
@@ -1238,7 +1233,7 @@ const AcademicTaskManager = ({ user }) => {
                 selectedTime={selectedTimeForNewClass}
             />
             {/* NEW: Mini Weekly Calendar */}
-            <MiniWeeklyCalendar classes={classes} chileanHolidays={chileanHolidays} />
+            <MiniWeeklyCalendar classes={classes} />
         </div>
     );
 };
