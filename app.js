@@ -137,7 +137,7 @@ const LoginScreen = ({ showAlert }) => {
                         <button 
                             type="button"
                             onClick={() => setShowPassword(!showPassword)} 
-                            className="absolute inset-y-0 right-0 px-4 flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+                            className="absolute inset-y-0 right-6 px-4 flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                         >
                             {showPassword ? <IconEyeOff /> : <IconEye />}
                         </button>
