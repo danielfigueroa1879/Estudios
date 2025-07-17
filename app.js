@@ -315,7 +315,7 @@ const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewD
                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Calendario Mensual</h2>
                 <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
             </div>
-            <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onDayDoubleClick={onDayDoubleClick} />
+            <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={onDayDoubleClick} />
         </div>
     );
 };
@@ -448,7 +448,7 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
 // Define time slots globally for easier modification
 const WEEKLY_CALENDAR_TIME_SLOTS = [
     '06:00', '08:00', '10:00', '12:00', '14:00',
-    '16:00', '18:00', '20:00', '22:00', '00:00'
+    '16:00', '18:00', '20:00', '22:00' // 9 rows
 ];
 
 // --- NEW: Class Modal Component ---
@@ -460,7 +460,7 @@ const ClassModal = ({ isOpen, onClose, onSave, showAlert, classToEdit, selectedD
         const initialData = {
             subject: '',
             dayOfWeek: selectedDay || 'Lunes',
-            startTime: selectedTime || '08:00',
+            startTime: selectedTime || '', // Default to empty string for manual input
             endTime: '', // Optional
             description: '' // Optional
         };
@@ -502,9 +502,8 @@ const ClassModal = ({ isOpen, onClose, onSave, showAlert, classToEdit, selectedD
                         <select name="dayOfWeek" value={classData.dayOfWeek || 'Lunes'} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             {daysOfWeek.map(day => <option key={day} value={day}>{day}</option>)}
                         </select>
-                        <select name="startTime" value={classData.startTime || '08:00'} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            {WEEKLY_CALENDAR_TIME_SLOTS.map(time => <option key={time} value={time}>{time}</option>)}
-                        </select>
+                        {/* Changed to input type="time" for manual input */}
+                        <input type="time" name="startTime" placeholder="Hora de inicio" value={classData.startTime || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
                     <input type="time" name="endTime" placeholder="Hora de fin (opcional)" value={classData.endTime || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     <textarea name="description" placeholder="Descripción (opcional)" value={classData.description || ''} onChange={handleChange} rows="3" className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea>
@@ -542,9 +541,23 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
     }
 
     const classesByDayAndTime = classes.reduce((acc, cls) => {
+        // Find the closest time slot for display
+        const classHour = parseInt(cls.startTime.split(':')[0]);
+        let closestSlot = timeSlots[0];
+        let minDiff = Math.abs(classHour - parseInt(closestSlot.split(':')[0]));
+
+        for (let i = 1; i < timeSlots.length; i++) {
+            const slotHour = parseInt(timeSlots[i].split(':')[0]);
+            const diff = Math.abs(classHour - slotHour);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestSlot = timeSlots[i];
+            }
+        }
+
         if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
-        if (!acc[cls.dayOfWeek][cls.startTime]) acc[cls.dayOfWeek][cls.startTime] = [];
-        acc[cls.dayOfWeek][cls.startTime].push(cls);
+        if (!acc[cls.dayOfWeek][closestSlot]) acc[cls.dayOfWeek][closestSlot] = [];
+        acc[cls.dayOfWeek][closestSlot].push(cls);
         return acc;
     }, {});
 
@@ -567,6 +580,7 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                             {daysOfWeek.map((day, index) => {
                                 const formattedDate = getFormattedDateForDay(index);
                                 const isHoliday = chileanHolidays.includes(formattedDate);
+                                // The blue highlight is only for the current day.
                                 const isToday = formattedDate === today.toISOString().split('T')[0];
                                 return (
                                     <th key={day} className={`px-2 py-3 text-center text-xs font-medium uppercase tracking-wider ${isHoliday ? 'bg-red-700' : ''} ${isToday ? 'bg-blue-800' : ''} ${index === 6 ? 'rounded-tr-lg' : ''}`}>
@@ -595,6 +609,10 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                                                 {classesInSlot.map(cls => (
                                                     <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-1 py-0.5 truncate flex items-center justify-between group">
                                                         <span title={`${cls.subject} (${cls.description})`}>{cls.subject}</span>
+                                                        {/* Display time range below subject */}
+                                                        <span className="text-[0.6rem] text-blue-700 dark:text-blue-300">
+                                                            {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
+                                                        </span>
                                                         <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <button onClick={() => onEditClass(cls)} className="text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100" title="Editar clase"><IconEdit width="12" height="12" /></button>
                                                             <button onClick={() => onDeleteClass(cls.id)} className="text-red-600 dark:text-red-300 hover:text-red-800 dark:hover:text-red-100" title="Eliminar clase"><IconTrash width="12" height="12" /></button>
@@ -635,9 +653,23 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
     }
 
     const classesByDayAndTime = classes.reduce((acc, cls) => {
+        // Find the closest time slot for display in mini calendar
+        const classHour = parseInt(cls.startTime.split(':')[0]);
+        let closestSlot = timeSlots[0];
+        let minDiff = Math.abs(classHour - parseInt(closestSlot.split(':')[0]));
+
+        for (let i = 1; i < timeSlots.length; i++) {
+            const slotHour = parseInt(timeSlots[i].split(':')[0]);
+            const diff = Math.abs(classHour - slotHour);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestSlot = timeSlots[i];
+            }
+        }
+
         if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
-        if (!acc[cls.dayOfWeek][cls.startTime]) acc[cls.dayOfWeek][cls.startTime] = [];
-        acc[cls.dayOfWeek][cls.startTime].push(cls);
+        if (!acc[cls.dayOfWeek][closestSlot]) acc[cls.dayOfWeek][closestSlot] = [];
+        acc[cls.dayOfWeek][closestSlot].push(cls);
         return acc;
     }, {});
 
@@ -647,8 +679,8 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
     };
 
     return (
-        // Adjusted position: top-20 (below header), right-4 (from right edge)
-        <div className="fixed top-20 right-4 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80">
+        // Adjusted position: top-20 (below header), right-20 (more centered from extreme right)
+        <div className="fixed top-20 right-20 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80">
             <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
                 Semana Actual
             </div>
@@ -660,6 +692,7 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
                             {daysOfWeek.map((day, index) => {
                                 const formattedDate = getFormattedDateForDay(index);
                                 const isHoliday = chileanHolidays.includes(formattedDate);
+                                // The blue highlight is only for the current day.
                                 const isToday = formattedDate === today.toISOString().split('T')[0];
                                 return (
                                     <th key={day} className={`px-1 py-1 text-center text-[0.6rem] font-medium uppercase tracking-wider ${isHoliday ? 'bg-red-600' : ''} ${isToday ? 'bg-blue-700' : ''}`}>
@@ -694,6 +727,10 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
                                                 {classesInSlot.map(cls => (
                                                     <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.55rem] font-medium rounded-sm px-0.5 py-0.5 truncate" title={`${cls.subject} (${cls.description})`}>
                                                         {cls.subject}
+                                                        {/* Display time range below subject */}
+                                                        <span className="text-[0.45rem] text-blue-700 dark:text-blue-300 block">
+                                                            {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
+                                                        </span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -1117,39 +1154,6 @@ const AcademicTaskManager = ({ user }) => {
                                 <button onClick={() => setShowQuickAccess(!showQuickAccess)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors md:hidden" title="Acceso Rápido">
                                     {showQuickAccess ? <IconClose className="w-6 h-6"/> : <IconHamburger width="26" height="26" />}
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {showQuickAccess && (
-                    <div className="absolute top-full left-0 right-0 w-full md:hidden">
-                         <div className="p-4 bg-black/10 dark:bg-black/30 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-2xl">
-                            <div className="max-w-5xl md:max-w-xs mx-auto">
-                                <div className="space-y-1">
-                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconBook width="20" height="20" /> <span>Lista</span>
-                                    </button>
-                                    <hr className="border-white/10" />
-                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconCalendar width="20" height="20" /> <span>Por Día</span>
-                                    </button>
-                                    <hr className="border-white/10" />
-                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconCalendar width="20" height="20" /> <span>Calendario Mensual</span>
-                                    </button>
-                                    <hr className="border-white/10" />
-                                    <button onClick={() => { setView('weeklyCalendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconCalendar width="20" height="20" /> <span>Calendario Semanal</span>
-                                    </button>
-                                    <hr className="border-white/10" />
-                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconHistory width="20" height="20" /> <span>Historial</span>
-                                    </button>
-                                    <hr className="border-white/10" />
-                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconPlus width="20" height="20" /> <span>Agregar nueva tarea</span>
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     </div>
