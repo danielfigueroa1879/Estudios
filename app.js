@@ -1176,7 +1176,7 @@ const AcademicTaskManager = ({ user }) => {
             </div>
 
             {/* Main Content Layout */}
-            <div className="max-w-screen-2xl mx-auto flex items-start justify-center pl-3 sm:pl-6 pr-2 sm:pr-3">
+            <div className="max-w-screen-2xl mx-auto flex items-start justify-center pl-3 sm:pl-6 pr-1 sm:pr-2">
                 
                 {/* Main Content Column */}
                 <main className="w-full max-w-5xl flex-shrink-0">
