@@ -247,7 +247,7 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
                     if (highlightEntry) {
                         dayClasses += ` ${highlightEntry.highlightBg} z-10`;
                         if (highlightEntry.isAnimating) {
-                             dayClasses += ` highlight-animation`;
+                             dayClasses += ` animate-fast-pulse`;
                         }
                     }
 
