@@ -593,7 +593,7 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {timeSlots.map(time => (
                             <tr key={time}>
-                                <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700">{time}</td>
+                                <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">{time}</td>
                                 {daysOfWeek.map((day, dayIndex) => {
                                     const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
                                     const formattedDate = getFormattedDateForDay(dayIndex);
@@ -607,19 +607,20 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                                         >
                                             <div className="flex flex-col space-y-1">
                                                 {classesInSlot.map(cls => (
-                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-1 py-0.5 truncate flex items-center justify-between group">
-                                                        <span title={`${cls.subject} (${cls.description})`}>{cls.subject}</span>
+                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-1 py-0.5 truncate flex flex-col group">
+                                                        <div className="flex justify-between items-start">
+                                                            <span className="flex-1 truncate" title={`${cls.subject} (${cls.description})`}>{cls.subject}</span>
+                                                            <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <button onClick={(e) => { e.stopPropagation(); onEditClass(cls); }} className="text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100" title="Editar clase"><IconEdit width="12" height="12" /></button>
+                                                                <button onClick={(e) => { e.stopPropagation(); onDeleteClass(cls.id); }} className="text-red-600 dark:text-red-300 hover:text-red-800 dark:hover:text-red-100" title="Eliminar clase"><IconTrash width="12" height="12" /></button>
+                                                            </div>
+                                                        </div>
                                                         {/* Display time range below subject */}
-                                                        <span className="text-[0.6rem] text-blue-700 dark:text-blue-300">
+                                                        <span className="text-[0.6rem] text-blue-700 dark:text-blue-300 block">
                                                             {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
                                                         </span>
-                                                        <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <button onClick={() => onEditClass(cls)} className="text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100" title="Editar clase"><IconEdit width="12" height="12" /></button>
-                                                            <button onClick={() => onDeleteClass(cls.id)} className="text-red-600 dark:text-red-300 hover:text-red-800 dark:hover:text-red-100" title="Eliminar clase"><IconTrash width="12" height="12" /></button>
-                                                        </div>
                                                     </div>
                                                 ))}
-                                                {/* Removed the IconPlus button as per user request */}
                                             </div>
                                         </td>
                                     );
@@ -1147,39 +1148,6 @@ const AcademicTaskManager = ({ user }) => {
                                 <button onClick={() => setShowQuickAccess(!showQuickAccess)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors md:hidden" title="Acceso Rápido">
                                     {showQuickAccess ? <IconClose className="w-6 h-6"/> : <IconHamburger width="26" height="26" />}
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {showQuickAccess && (
-                    <div className="absolute top-full left-0 right-0 w-full md:hidden">
-                         <div className="p-4 bg-black/10 dark:bg-black/30 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-2xl">
-                            <div className="max-w-5xl md:max-w-xs mx-auto">
-                                <div className="space-y-1">
-                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconBook width="20" height="20" /> <span>Lista</span>
-                                    </button>
-                                    <hr className="border-white/10" />
-                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconCalendar width="20" height="20" /> <span>Por Día</span>
-                                    </button>
-                                    <hr className="border-white/10" />
-                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconCalendar width="20" height="20" /> <span>Calendario Mensual</span>
-                                    </button>
-                                    <hr className="border-white/10" />
-                                    <button onClick={() => { setView('weeklyCalendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconCalendar width="20" height="20" /> <span>Calendario Semanal</span>
-                                    </button>
-                                    <hr className="border-white/10" />
-                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconHistory width="20" height="20" /> <span>Historial</span>
-                                    </button>
-                                    <hr className="border-white/10" />
-                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconPlus width="20" height="20" /> <span>Agregar nueva tarea</span>
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     </div>
