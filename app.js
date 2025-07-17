@@ -445,6 +445,12 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
     );
 };
 
+// Define time slots globally for easier modification
+const WEEKLY_CALENDAR_TIME_SLOTS = [
+    '06:00', '08:00', '10:00', '12:00', '14:00',
+    '16:00', '18:00', '20:00', '22:00', '00:00'
+];
+
 // --- NEW: Class Modal Component ---
 const ClassModal = ({ isOpen, onClose, onSave, showAlert, classToEdit, selectedDay, selectedTime }) => {
     const [classData, setClassData] = useState({});
@@ -478,10 +484,7 @@ const ClassModal = ({ isOpen, onClose, onSave, showAlert, classToEdit, selectedD
     if (!isOpen) return null;
 
     const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-    const timeSlots = [
-        '08:00', '10:00', '12:00', '14:00', '16:00',
-        '18:00', '20:00', '22:00', '00:00'
-    ];
+    
 
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2">
@@ -500,7 +503,7 @@ const ClassModal = ({ isOpen, onClose, onSave, showAlert, classToEdit, selectedD
                             {daysOfWeek.map(day => <option key={day} value={day}>{day}</option>)}
                         </select>
                         <select name="startTime" value={classData.startTime || '08:00'} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            {timeSlots.map(time => <option key={time} value={time}>{time}</option>)}
+                            {WEEKLY_CALENDAR_TIME_SLOTS.map(time => <option key={time} value={time}>{time}</option>)}
                         </select>
                     </div>
                     <input type="time" name="endTime" placeholder="Hora de fin (opcional)" value={classData.endTime || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
@@ -521,11 +524,8 @@ const ClassModal = ({ isOpen, onClose, onSave, showAlert, classToEdit, selectedD
 // --- NEW: Weekly Calendar View Component ---
 const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackToList, onAddClass, onEditClass, onDeleteClass }) => {
     const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-    // Updated time slots for 2-hour intervals from 08:00 to 00:00
-    const timeSlots = [
-        '08:00', '10:00', '12:00', '14:00', '16:00',
-        '18:00', '20:00', '22:00', '00:00'
-    ];
+    // Using the globally defined time slots
+    const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS;
 
     // Get the current week's dates
     const today = new Date();
@@ -601,11 +601,7 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                                                         </div>
                                                     </div>
                                                 ))}
-                                                {classesInSlot.length === 0 && (
-                                                    <button onClick={() => onAddClass(day, time)} className="w-full text-center text-gray-400 hover:text-blue-500 transition-colors text-xs py-1">
-                                                        <IconPlus width="16" height="16" className="inline-block" />
-                                                    </button>
-                                                )}
+                                                {/* Removed the IconPlus button as per user request */}
                                             </div>
                                         </td>
                                     );
@@ -622,10 +618,8 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
 // --- NEW: Mini Weekly Calendar Component ---
 const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
     const daysOfWeek = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-    const timeSlots = [
-        '08', '10', '12', '14', '16',
-        '18', '20', '22', '00'
-    ];
+    // Using the globally defined time slots, but only the hour part for brevity
+    const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS.map(time => time.substring(0, 2));
 
     const today = new Date();
     const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday
@@ -653,7 +647,8 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
     };
 
     return (
-        <div className="fixed top-4 right-4 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80">
+        // Adjusted position: top-20 (below header), right-4 (from right edge)
+        <div className="fixed top-20 right-4 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80">
             <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
                 Semana Actual
             </div>
