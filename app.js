@@ -679,8 +679,8 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
     };
 
     return (
-        // Adjusted position: top-20 (below banner), right-40 (more centered from extreme right)
-        <div className="fixed top-20 right-40 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80 hidden md:block">
+        // Adjusted position: top-20 (below header), right-20 (more centered from extreme right)
+        <div className="fixed top-20 right-20 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80">
             <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
                 Semana Actual
             </div>
@@ -1368,4 +1368,3 @@ const App = () => {
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 root.render(<App />);
-
