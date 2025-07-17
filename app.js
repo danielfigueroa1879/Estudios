@@ -680,7 +680,7 @@ const MiniWeeklyCalendar = ({ classes }) => {
     };
 
     return (
-        <div className="fixed top-28 right-3 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-[28rem] block">
+        <div className="fixed top-28 right-1 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-[28rem] block">
             <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
                 Semana Actual
             </div>
