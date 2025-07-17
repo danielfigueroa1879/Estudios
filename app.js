@@ -593,7 +593,7 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {timeSlots.map(time => (
                             <tr key={time}>
-                                <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">{time}</td>
+                                <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700">{time}</td>
                                 {daysOfWeek.map((day, dayIndex) => {
                                     const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
                                     const formattedDate = getFormattedDateForDay(dayIndex);
@@ -605,20 +605,18 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                                             className={`relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isHoliday ? 'bg-red-50 dark:bg-red-800/70' : ''} ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
                                             onDoubleClick={() => onAddClass(day, time)}
                                         >
-                                            <div className="flex flex-col space-y-1"> {/* Changed to flex-col */}
+                                            <div className="flex flex-col space-y-1">
                                                 {classesInSlot.map(cls => (
-                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-1 py-0.5 truncate flex flex-col group"> {/* Added flex-col here */}
-                                                        <div className="flex justify-between items-start"> {/* New div for subject and icons */}
-                                                            <span className="flex-1 truncate" title={`${cls.subject} (${cls.description})`}>{cls.subject}</span>
-                                                            <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <button onClick={(e) => { e.stopPropagation(); onEditClass(cls); }} className="text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100" title="Editar clase"><IconEdit width="12" height="12" /></button>
-                                                                <button onClick={(e) => { e.stopPropagation(); onDeleteClass(cls.id); }} className="text-red-600 dark:text-red-300 hover:text-red-800 dark:hover:text-red-100" title="Eliminar clase"><IconTrash width="12" height="12" /></button>
-                                                            </div>
-                                                        </div>
+                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-1 py-0.5 truncate flex items-center justify-between group">
+                                                        <span title={`${cls.subject} (${cls.description})`}>{cls.subject}</span>
                                                         {/* Display time range below subject */}
-                                                        <span className="text-[0.6rem] text-blue-700 dark:text-blue-300 block">
+                                                        <span className="text-[0.6rem] text-blue-700 dark:text-blue-300">
                                                             {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
                                                         </span>
+                                                        <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <button onClick={() => onEditClass(cls)} className="text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100" title="Editar clase"><IconEdit width="12" height="12" /></button>
+                                                            <button onClick={() => onDeleteClass(cls.id)} className="text-red-600 dark:text-red-300 hover:text-red-800 dark:hover:text-red-100" title="Eliminar clase"><IconTrash width="12" height="12" /></button>
+                                                        </div>
                                                     </div>
                                                 ))}
                                                 {/* Removed the IconPlus button as per user request */}
@@ -654,24 +652,24 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
         weekDates.push(date);
     }
 
-    const classesByDayAndFullTimeSlot = classes.reduce((acc, cls) => {
-        // Find the closest time slot for grouping based on the full WEEKLY_CALENDAR_TIME_SLOTS
+    const classesByDayAndTime = classes.reduce((acc, cls) => {
+        // Find the closest time slot for display in mini calendar
         const classHour = parseInt(cls.startTime.split(':')[0]);
-        let closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[0];
-        let minDiff = Math.abs(classHour - parseInt(closestFullSlot.split(':')[0]));
+        let closestSlot = timeSlots[0];
+        let minDiff = Math.abs(classHour - parseInt(closestSlot.split(':')[0]));
 
-        for (let i = 1; i < WEEKLY_CALENDAR_TIME_SLOTS.length; i++) {
-            const slotHour = parseInt(WEEKLY_CALENDAR_TIME_SLOTS[i].split(':')[0]);
+        for (let i = 1; i < timeSlots.length; i++) {
+            const slotHour = parseInt(timeSlots[i].split(':')[0]);
             const diff = Math.abs(classHour - slotHour);
             if (diff < minDiff) {
                 minDiff = diff;
-                closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[i]; // Store the full time slot string as key
+                closestSlot = timeSlots[i];
             }
         }
 
         if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
-        if (!acc[cls.dayOfWeek][closestFullSlot]) acc[cls.dayOfWeek][closestFullSlot] = [];
-        acc[cls.dayOfWeek][closestFullSlot].push(cls);
+        if (!acc[cls.dayOfWeek][closestSlot]) acc[cls.dayOfWeek][closestSlot] = [];
+        acc[cls.dayOfWeek][closestSlot].push(cls);
         return acc;
     }, {});
 
@@ -682,7 +680,6 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
 
     return (
         // Adjusted position: top-20 (below banner), right-40 (more centered from extreme right)
-        // Added hidden md:block to only show on desktop
         <div className="fixed top-20 right-40 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80 hidden md:block">
             <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
                 Semana Actual
@@ -706,26 +703,24 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
                         </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        {WEEKLY_CALENDAR_TIME_SLOTS.map(fullTimeSlot => ( // Iterate over full time slots for data lookup
-                            <tr key={fullTimeSlot}>
-                                <td className="px-1 py-1 whitespace-nowrap text-[0.6rem] font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">
-                                    {fullTimeSlot.substring(0, 2)} {/* Display abbreviated hour */}
-                                </td>
+                        {timeSlots.map(time => (
+                            <tr key={time}>
+                                <td className="px-1 py-1 whitespace-nowrap text-[0.6rem] font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700">{time}</td>
                                 {daysOfWeek.map((day, dayIndex) => {
-                                    const classesInSlot = classesByDayAndFullTimeSlot[
+                                    const classesInSlot = classesByDayAndTime[
+                                        ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex] // Map abbreviated day back to full day
+                                    ] && classesByDayAndTime[
                                         ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
-                                    ] && classesByDayAndFullTimeSlot[
+                                    ][`${time}:00`] ? classesByDayAndTime[
                                         ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
-                                    ][fullTimeSlot] ? classesByDayAndFullTimeSlot[ // Lookup using full time slot
-                                        ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
-                                    ][fullTimeSlot] : [];
+                                    ][`${time}:00`] : [];
                                     
                                     const formattedDate = getFormattedDateForDay(dayIndex);
                                     const isHoliday = chileanHolidays.includes(formattedDate);
                                     const isToday = formattedDate === today.toISOString().split('T')[0];
 
                                     return (
-                                        <td key={`${day}-${fullTimeSlot}`} 
+                                        <td key={`${day}-${time}`} 
                                             className={`px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isHoliday ? 'bg-red-50 dark:bg-red-800/70' : ''} ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
                                         >
                                             <div className="flex flex-col space-y-0.5">
@@ -1152,6 +1147,39 @@ const AcademicTaskManager = ({ user }) => {
                             </div>
                         </div>
                     </div>
+                </div>
+                {showQuickAccess && (
+                    <div className="absolute top-full left-0 right-0 w-full md:hidden">
+                         <div className="p-4 bg-black/10 dark:bg-black/30 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-2xl">
+                            <div className="max-w-5xl md:max-w-xs mx-auto">
+                                <div className="space-y-1">
+                                    <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                        <IconBook width="20" height="20" /> <span>Lista</span>
+                                    </button>
+                                    <hr className="border-white/10" />
+                                    <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                        <IconCalendar width="20" height="20" /> <span>Por Día</span>
+                                    </button>
+                                    <hr className="border-white/10" />
+                                    <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                        <IconCalendar width="20" height="20" /> <span>Calendario Mensual</span>
+                                    </button>
+                                    <hr className="border-white/10" />
+                                    <button onClick={() => { setView('weeklyCalendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                        <IconCalendar width="20" height="20" /> <span>Calendario Semanal</span>
+                                    </button>
+                                    <hr className="border-white/10" />
+                                    <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                        <IconHistory width="20" height="20" /> <span>Historial</span>
+                                    </button>
+                                    <hr className="border-white/10" />
+                                    <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                        <IconPlus width="20" height="20" /> <span>Agregar nueva tarea</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 )}
             </div>
 
@@ -1340,3 +1368,4 @@ const App = () => {
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 root.render(<App />);
+
