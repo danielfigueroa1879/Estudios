@@ -1108,7 +1108,7 @@ const AcademicTaskManager = ({ user }) => {
             {/* Header */}
             <div className="sticky top-0 z-30">
                 <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4">
-                    <div className="max-w-5xl mx-auto px-3 sm:px-6">
+                    <div className="max-w-screen-2xl ml-auto mr-4 px-3 sm:px-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                                 <div className="text-white"><IconBook width="26" height="26" /></div>
@@ -1176,7 +1176,7 @@ const AcademicTaskManager = ({ user }) => {
             </div>
 
             {/* Main Content Layout */}
-            <div className="max-w-screen-2xl mx-auto flex items-start justify-center pl-3 sm:pl-6 pr-1 sm:pr-2">
+            <div className="max-w-screen-2xl ml-auto mr-4 flex items-start justify-start pl-3 sm:pl-6 relative">
                 
                 {/* Main Content Column */}
                 <main className="w-full max-w-5xl flex-shrink-0">
@@ -1213,17 +1213,18 @@ const AcademicTaskManager = ({ user }) => {
                 </main>
 
                 {/* Sidebar Column for Mini Calendar */}
-                <aside className="hidden md:block w-[34rem] flex-shrink-0 ml-4">
+                <aside className="hidden md:block w-[30rem] flex-shrink-0 ml-4">
                     <div className="sticky top-24">
                         <MiniWeeklyCalendar classes={classes} />
                     </div>
                 </aside>
+                
+                {/* FAB Button */}
+                <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 md:absolute md:right-4 bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
+                    <IconPlus width="24" height="24" />
+                </button>
             </div>
 
-
-            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
-                <IconPlus width="24" height="24" />
-            </button>
 
             {/* Custom Dialogs and Menus */}
             <CustomAlertDialog message={alertDialogMessage} isOpen={isAlertDialogOpen} onClose={handleAlertDialogClose} />
