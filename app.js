@@ -1166,6 +1166,7 @@ const AcademicTaskManager = ({ user }) => {
 };
 
 // --- NUEVO: Banner de Instalación ---
+
 const InstallBanner = ({ onInstall, onClose }) => {
     return (
         <div className="fixed top-0 left-0 right-0 p-4 z-50">
@@ -1185,6 +1186,7 @@ const InstallBanner = ({ onInstall, onClose }) => {
                     </button>
                 </div>
             </div>
+            {/* Moved style block to index.html */}
         </div>
     );
 };
@@ -1285,61 +1287,4 @@ const App = () => {
 
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
-root.render(<App />); acc;
-    }, {});
-
-    return (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative">
-            <div className="flex items-center justify-between mb-6">
-                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Tareas por día</h2>
-                 <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
-                    <div key={date} className="bg-white dark:bg-gray-700/50 rounded-xl shadow-lg p-2.5 sm:p-5 transition-all duration-300">
-                        <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 dark:text-gray-200 mb-2 sm:mb-3">{formatDate(date)}</h3>
-                        <div className="space-y-1">
-                            {dayTasks.sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')).map(task => {
-                                const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-                                const cardStyle = getTaskCardStyle(status, task.completed);
-                                return (
-                                    <div key={task.id} onClick={() => handleTaskCardClick(task)} className={`p-1.5 sm:p-3 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300 cursor-pointer ${cardStyle.hoverClasses}`}>
-                                        <div className="flex items-center justify-between mb-2">
-                                            <div className="flex items-center space-x-1"><IconClock width="18" height="18" className="text-gray-600 dark:text-gray-300" /><span className={`text-xs sm:text-sm px-2 py-0.5 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>{task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate)}</span></div>
-                                            <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id, task.completed); }} className={`w-5 h-5 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center ${task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-400 dark:border-gray-500'}`}>{task.completed && <IconCheck width="14" height="14" />}</button>
-                                        </div>
-                                        <div><p className="font-medium text-sm sm:text-lg text-gray-800 dark:text-gray-100">{task.subject}</p><p className="text-xs sm:text-base text-gray-600 dark:text-gray-300 mt-0.5">{task.title}</p><p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{task.type}</p></div>
-                                        <div className="flex justify-end mt-3 space-x-1">
-                                            <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/50 p-1 rounded-xl transition-colors" title="Editar tarea"><IconEdit width="16" height="16" /></button>
-                                            <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 p-1 rounded-xl transition-colors" title="Eliminar tarea"><IconTrash width="16" height="16" /></button>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
-
-const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate, onDayDoubleClick }) => {
-    const year = currentViewDate.getFullYear();
-    const month = currentViewDate.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
-    const daysArray = [];
-    const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1; // Adjust to start Monday as 0
-    for (let i = 0; i < adjustedStartingDay; i++) { daysArray.push(null); }
-    for (let day = 1; day <= daysInMonth; day++) { daysArray.push(day); }
-    const tasksByDate = tasks.reduce((acc, task) => {
-        const taskDate = createLocalDate(task.dueDate);
-        if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
-            const day = taskDate.getDate();
-            if (!acc[day]) acc[day] = [];
-            acc[day].push(task);
-        }
-        return
+root.render(<App />);
