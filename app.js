@@ -242,7 +242,7 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
                     const isHoliday = chileanHolidays.includes(currentDayFormatted);
                     const highlightEntry = highlightedDate && highlightedDate.date === currentDayFormatted ? highlightedDate : null;
                     
-                    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 dark:border-gray-600 ${isHoliday ? 'bg-red-50 dark:bg-red-800/70' : ''} ${isToday ? 'bg-blue-100 dark:bg-blue-800/80' : 'bg-white dark:bg-gray-700/90 hover:bg-gray-50 dark:hover:bg-gray-600/90'}`;
+                    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 dark:border-gray-600 ${isToday ? 'bg-blue-100 dark:bg-blue-800/80' : 'bg-white dark:bg-gray-700/90 hover:bg-gray-50 dark:hover:bg-gray-600/90'}`;
                     
                     if (highlightEntry) {
                         dayClasses += ` ${highlightEntry.highlightBg} z-10`;
@@ -448,7 +448,7 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
 // Define time slots globally for easier modification
 const WEEKLY_CALENDAR_TIME_SLOTS = [
     '06:00', '08:00', '10:00', '12:00', '14:00',
-    '16:00', '18:00', '20:00', '22:00' // 9 rows
+    '16:00', '19:00', '20:00', '22:00' // 9 rows
 ];
 
 // --- NEW: Class Modal Component ---
@@ -579,11 +579,9 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                             <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg">Hora</th>
                             {daysOfWeek.map((day, index) => {
                                 const formattedDate = getFormattedDateForDay(index);
-                                const isHoliday = chileanHolidays.includes(formattedDate);
-                                // The blue highlight is only for the current day.
                                 const isToday = formattedDate === today.toISOString().split('T')[0];
                                 return (
-                                    <th key={day} className={`px-2 py-3 text-center text-xs font-medium uppercase tracking-wider ${isHoliday ? 'bg-red-700' : ''} ${isToday ? 'bg-blue-800' : ''} ${index === 6 ? 'rounded-tr-lg' : ''}`}>
+                                    <th key={day} className={`px-2 py-3 text-center text-xs font-medium uppercase tracking-wider ${isToday && day !== 'Lunes' ? 'bg-blue-800' : ''} ${index === 6 ? 'rounded-tr-lg' : ''}`}>
                                         {day} <br /> <span className="font-normal text-xs">{formattedDate.substring(5)}</span>
                                     </th>
                                 );
@@ -593,16 +591,15 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {timeSlots.map(time => (
                             <tr key={time}>
-                                <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700">{time}</td>
+                                <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700">{time} horas</td>
                                 {daysOfWeek.map((day, dayIndex) => {
                                     const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
                                     const formattedDate = getFormattedDateForDay(dayIndex);
-                                    const isHoliday = chileanHolidays.includes(formattedDate);
                                     const isToday = formattedDate === today.toISOString().split('T')[0];
                                     
                                     return (
                                         <td key={`${day}-${time}`} 
-                                            className={`relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isHoliday ? 'bg-red-50 dark:bg-red-800/70' : ''} ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
+                                            className={`relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isToday && day !== 'Lunes' ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
                                             onDoubleClick={() => onAddClass(day, time)}
                                         >
                                             <div className="flex flex-col space-y-1">
@@ -679,9 +676,9 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
     };
 
     return (
-        // Adjusted position: top-20 (below banner), right-40 (more centered from extreme right)
+        // Adjusted position: top-20 (below banner), right-4 (more to the right)
         // Added hidden md:block to only show on desktop
-        <div className="fixed top-20 right-40 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80 hidden md:block">
+        <div className="fixed top-20 right-4 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80 hidden md:block">
             <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
                 Semana Actual
             </div>
@@ -692,11 +689,9 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
                             <th className="px-1 py-1 text-left text-[0.6rem] font-medium uppercase tracking-wider">Hr</th>
                             {daysOfWeek.map((day, index) => {
                                 const formattedDate = getFormattedDateForDay(index);
-                                const isHoliday = chileanHolidays.includes(formattedDate);
-                                // The blue highlight is only for the current day.
                                 const isToday = formattedDate === today.toISOString().split('T')[0];
                                 return (
-                                    <th key={day} className={`px-1 py-1 text-center text-[0.6rem] font-medium uppercase tracking-wider ${isHoliday ? 'bg-red-600' : ''} ${isToday ? 'bg-blue-700' : ''}`}>
+                                    <th key={day} className={`px-1 py-1 text-center text-[0.6rem] font-medium uppercase tracking-wider ${isToday && day !== 'Lun' ? 'bg-blue-700' : ''}`}>
                                         {day}
                                     </th>
                                 );
@@ -719,12 +714,11 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
                                     ][fullTimeSlot] : [];
                                     
                                     const formattedDate = getFormattedDateForDay(dayIndex);
-                                    const isHoliday = chileanHolidays.includes(formattedDate);
                                     const isToday = formattedDate === today.toISOString().split('T')[0];
 
                                     return (
                                         <td key={`${day}-${fullTimeSlot}`} 
-                                            className={`px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isHoliday ? 'bg-red-50 dark:bg-red-800/70' : ''} ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
+                                            className={`px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isToday && day !== 'Lunes' ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
                                         >
                                             <div className="flex flex-col space-y-0.5">
                                                 {classesInSlot.map(cls => (
