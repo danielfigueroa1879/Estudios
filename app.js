@@ -206,7 +206,7 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
     const daysArray = [];
-    const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
+    const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1; // Adjust to start Monday as 0
     for (let i = 0; i < adjustedStartingDay; i++) { daysArray.push(null); }
     for (let day = 1; day <= daysInMonth; day++) { daysArray.push(day); }
     const tasksByDate = tasks.reduce((acc, task) => {
@@ -312,10 +312,10 @@ const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewD
     return (
         <div className="bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700" id="calendarSection">
             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Calendario</h2>
+                <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Calendario Mensual</h2>
                 <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
             </div>
-            <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onDayDoubleClick={onDayDoubleClick} />
+            <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={onDayDoubleClick} />
         </div>
     );
 };
@@ -445,15 +445,321 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
     );
 };
 
+// Define time slots globally for easier modification
+const WEEKLY_CALENDAR_TIME_SLOTS = [
+    '06:00', '08:00', '10:00', '12:00', '14:00',
+    '16:00', '18:00', '20:00', '22:00' // 9 rows
+];
+
+// --- NEW: Class Modal Component ---
+const ClassModal = ({ isOpen, onClose, onSave, showAlert, classToEdit, selectedDay, selectedTime }) => {
+    const [classData, setClassData] = useState({});
+    const isEditMode = !!classToEdit;
+
+    useEffect(() => {
+        const initialData = {
+            subject: '',
+            dayOfWeek: selectedDay || 'Lunes',
+            startTime: selectedTime || '', // Default to empty string for manual input
+            endTime: '', // Optional
+            description: '' // Optional
+        };
+        setClassData(isEditMode ? { ...classToEdit } : initialData);
+    }, [isOpen, classToEdit, selectedDay, selectedTime]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setClassData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = () => {
+        if (classData.subject && classData.dayOfWeek && classData.startTime) {
+            onSave(classData);
+            onClose();
+        } else {
+            showAlert('Por favor, completa los campos de Asignatura, Día y Hora de inicio.');
+        }
+    };
+
+    if (!isOpen) return null;
+
+    const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    
+
+    return (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2">
+            <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="font-semibold text-white text-xl sm:text-2xl">{isEditMode ? 'Editar Clase' : 'Agregar Nueva Clase'}</h3>
+                    <button onClick={onClose} className="text-gray-200 hover:text-white p-1 rounded-full">
+                        <IconClose className="w-6 h-6" />
+                    </button>
+                </div>
+                <div className="space-y-4">
+                    <input type="text" name="subject" placeholder="Asignatura" value={classData.subject || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <select name="dayOfWeek" value={classData.dayOfWeek || 'Lunes'} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            {daysOfWeek.map(day => <option key={day} value={day}>{day}</option>)}
+                        </select>
+                        {/* Changed to input type="time" for manual input */}
+                        <input type="time" name="startTime" placeholder="Hora de inicio" value={classData.startTime || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    </div>
+                    <input type="time" name="endTime" placeholder="Hora de fin (opcional)" value={classData.endTime || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    <textarea name="description" placeholder="Descripción (opcional)" value={classData.description || ''} onChange={handleChange} rows="3" className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea>
+                    <div className="flex justify-center w-full space-x-4 pt-2">
+                        <button onClick={onClose} className="bg-gray-500/50 text-white rounded-xl px-5 py-2.5 hover:bg-gray-500/70 text-base font-medium">Cancelar</button>
+                        <button onClick={handleSubmit} className="bg-blue-600 text-white rounded-xl px-5 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-2 text-base font-medium">
+                            {isEditMode ? <IconCheck width="18" height="18" /> : <IconPlus width="18" height="18" />}
+                            <span>{isEditMode ? 'Actualizar' : 'Agregar'}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// --- NEW: Weekly Calendar View Component ---
+const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackToList, onAddClass, onEditClass, onDeleteClass }) => {
+    const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    // Using the globally defined time slots
+    const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS;
+
+    // Get the current week's dates
+    const today = new Date();
+    const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday
+    const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1; // Days to subtract to get to Monday
+    const mondayOfCurrentWeek = new Date(today.setDate(today.getDate() - diff));
+    mondayOfCurrentWeek.setHours(0, 0, 0, 0); // Normalize to start of day
+
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(mondayOfCurrentWeek);
+        date.setDate(mondayOfCurrentWeek.getDate() + i);
+        weekDates.push(date);
+    }
+
+    const classesByDayAndTime = classes.reduce((acc, cls) => {
+        // Find the closest time slot for display
+        const classHour = parseInt(cls.startTime.split(':')[0]);
+        let closestSlot = timeSlots[0];
+        let minDiff = Math.abs(classHour - parseInt(closestSlot.split(':')[0]));
+
+        for (let i = 1; i < timeSlots.length; i++) {
+            const slotHour = parseInt(timeSlots[i].split(':')[0]);
+            const diff = Math.abs(classHour - slotHour);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestSlot = timeSlots[i];
+            }
+        }
+
+        if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
+        if (!acc[cls.dayOfWeek][closestSlot]) acc[cls.dayOfWeek][closestSlot] = [];
+        acc[cls.dayOfWeek][closestSlot].push(cls);
+        return acc;
+    }, {});
+
+    const getFormattedDateForDay = (dayIndex) => {
+        const date = weekDates[dayIndex];
+        return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    };
+
+    return (
+        <div className="bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700" id="weeklyCalendarSection">
+            <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Calendario Semanal</h2>
+                <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
+            </div>
+            <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg">
+                    <thead className="bg-blue-600 dark:bg-gray-700 text-white">
+                        <tr>
+                            <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg">Hora</th>
+                            {daysOfWeek.map((day, index) => {
+                                const formattedDate = getFormattedDateForDay(index);
+                                const isHoliday = chileanHolidays.includes(formattedDate);
+                                // The blue highlight is only for the current day.
+                                const isToday = formattedDate === today.toISOString().split('T')[0];
+                                return (
+                                    <th key={day} className={`px-2 py-3 text-center text-xs font-medium uppercase tracking-wider ${isHoliday ? 'bg-red-700' : ''} ${isToday ? 'bg-blue-800' : ''} ${index === 6 ? 'rounded-tr-lg' : ''}`}>
+                                        {day} <br /> <span className="font-normal text-xs">{formattedDate.substring(5)}</span>
+                                    </th>
+                                );
+                            })}
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        {timeSlots.map(time => (
+                            <tr key={time}>
+                                <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700">{time}</td>
+                                {daysOfWeek.map((day, dayIndex) => {
+                                    const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
+                                    const formattedDate = getFormattedDateForDay(dayIndex);
+                                    const isHoliday = chileanHolidays.includes(formattedDate);
+                                    const isToday = formattedDate === today.toISOString().split('T')[0];
+                                    
+                                    return (
+                                        <td key={`${day}-${time}`} 
+                                            className={`relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isHoliday ? 'bg-red-50 dark:bg-red-800/70' : ''} ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
+                                            onDoubleClick={() => onAddClass(day, time)}
+                                        >
+                                            <div className="flex flex-col space-y-1">
+                                                {classesInSlot.map(cls => (
+                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-1 py-0.5 truncate flex items-center justify-between group">
+                                                        <span title={`${cls.subject} (${cls.description})`}>{cls.subject}</span>
+                                                        {/* Display time range below subject */}
+                                                        <span className="text-[0.6rem] text-blue-700 dark:text-blue-300">
+                                                            {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
+                                                        </span>
+                                                        <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <button onClick={() => onEditClass(cls)} className="text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100" title="Editar clase"><IconEdit width="12" height="12" /></button>
+                                                            <button onClick={() => onDeleteClass(cls.id)} className="text-red-600 dark:text-red-300 hover:text-red-800 dark:hover:text-red-100" title="Eliminar clase"><IconTrash width="12" height="12" /></button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                                {/* Removed the IconPlus button as per user request */}
+                                            </div>
+                                        </td>
+                                    );
+                                })}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
+// --- NEW: Mini Weekly Calendar Component ---
+const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
+    const daysOfWeek = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+    // Using the globally defined time slots, but only the hour part for brevity
+    const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS.map(time => time.substring(0, 2));
+
+    const today = new Date();
+    const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday
+    const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1; // Days to subtract to get to Monday
+    const mondayOfCurrentWeek = new Date(today.setDate(today.getDate() - diff));
+    mondayOfCurrentWeek.setHours(0, 0, 0, 0); // Normalize to start of day
+
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(mondayOfCurrentWeek);
+        date.setDate(mondayOfCurrentWeek.getDate() + i);
+        weekDates.push(date);
+    }
+
+    const classesByDayAndFullTimeSlot = classes.reduce((acc, cls) => {
+        // Find the closest time slot for grouping based on the full WEEKLY_CALENDAR_TIME_SLOTS
+        const classHour = parseInt(cls.startTime.split(':')[0]);
+        let closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[0];
+        let minDiff = Math.abs(classHour - parseInt(closestFullSlot.split(':')[0]));
+
+        for (let i = 1; i < WEEKLY_CALENDAR_TIME_SLOTS.length; i++) {
+            const slotHour = parseInt(WEEKLY_CALENDAR_TIME_SLOTS[i].split(':')[0]);
+            const diff = Math.abs(classHour - slotHour);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[i]; // Store the full time slot string as key
+            }
+        }
+
+        if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
+        if (!acc[cls.dayOfWeek][closestFullSlot]) acc[cls.dayOfWeek][closestFullSlot] = [];
+        acc[cls.dayOfWeek][closestFullSlot].push(cls);
+        return acc;
+    }, {});
+
+    const getFormattedDateForDay = (dayIndex) => {
+        const date = weekDates[dayIndex];
+        return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    };
+
+    return (
+        // Adjusted position: top-20 (below banner), right-40 (more centered from extreme right)
+        // Added hidden md:block to only show on desktop
+        <div className="fixed top-20 right-40 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80 hidden md:block">
+            <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
+                Semana Actual
+            </div>
+            <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-blue-500 dark:bg-gray-600 text-white">
+                        <tr>
+                            <th className="px-1 py-1 text-left text-[0.6rem] font-medium uppercase tracking-wider">Hr</th>
+                            {daysOfWeek.map((day, index) => {
+                                const formattedDate = getFormattedDateForDay(index);
+                                const isHoliday = chileanHolidays.includes(formattedDate);
+                                // The blue highlight is only for the current day.
+                                const isToday = formattedDate === today.toISOString().split('T')[0];
+                                return (
+                                    <th key={day} className={`px-1 py-1 text-center text-[0.6rem] font-medium uppercase tracking-wider ${isHoliday ? 'bg-red-600' : ''} ${isToday ? 'bg-blue-700' : ''}`}>
+                                        {day}
+                                    </th>
+                                );
+                            })}
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        {WEEKLY_CALENDAR_TIME_SLOTS.map(fullTimeSlot => ( // Iterate over full time slots for data lookup
+                            <tr key={fullTimeSlot}>
+                                <td className="px-1 py-1 whitespace-nowrap text-[0.6rem] font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">
+                                    {fullTimeSlot.substring(0, 2)} {/* Display abbreviated hour */}
+                                </td>
+                                {daysOfWeek.map((day, dayIndex) => {
+                                    const classesInSlot = classesByDayAndFullTimeSlot[
+                                        ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
+                                    ] && classesByDayAndFullTimeSlot[
+                                        ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
+                                    ][fullTimeSlot] ? classesByDayAndFullTimeSlot[ // Lookup using full time slot
+                                        ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
+                                    ][fullTimeSlot] : [];
+                                    
+                                    const formattedDate = getFormattedDateForDay(dayIndex);
+                                    const isHoliday = chileanHolidays.includes(formattedDate);
+                                    const isToday = formattedDate === today.toISOString().split('T')[0];
+
+                                    return (
+                                        <td key={`${day}-${fullTimeSlot}`} 
+                                            className={`px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isHoliday ? 'bg-red-50 dark:bg-red-800/70' : ''} ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
+                                        >
+                                            <div className="flex flex-col space-y-0.5">
+                                                {classesInSlot.map(cls => (
+                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.55rem] font-medium rounded-sm px-0.5 py-0.5 truncate" title={`${cls.subject} (${cls.description})`}>
+                                                        {cls.subject}
+                                                        {/* Display time range below subject */}
+                                                        <span className="text-[0.45rem] text-blue-700 dark:text-blue-300 block">
+                                                            {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </td>
+                                    );
+                                })}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
 
 // --- Academic Task Manager Component ---
 const AcademicTaskManager = ({ user }) => {
     const [tasks, setTasks] = useState([]);
+    const [classes, setClasses] = useState([]); // NEW: State for classes
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [settings, setSettings] = useState({ view: 'list', emailNotifications: false });
 
     const tasksCollectionRef = db.collection('users').doc(user.uid).collection('tasks');
+    const classesCollectionRef = db.collection('users').doc(user.uid).collection('classes'); // NEW: Classes collection ref
     const historyCollectionRef = db.collection('users').doc(user.uid).collection('history');
     const settingsDocRef = db.collection('users').doc(user.uid).collection('settings').doc('appSettings');
 
@@ -465,6 +771,12 @@ const AcademicTaskManager = ({ user }) => {
             setLoading(false);
         }, error => { console.error("Error fetching tasks:", error); setLoading(false); });
 
+        // NEW: Subscribe to classes collection
+        const unsubscribeClasses = classesCollectionRef.onSnapshot(snapshot => {
+            const classesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setClasses(classesData);
+        }, error => console.error("Error fetching classes:", error));
+
         const unsubscribeHistory = historyCollectionRef.orderBy('archivedAt', 'desc').onSnapshot(snapshot => {
             const historyData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setHistory(historyData);
@@ -474,6 +786,7 @@ const AcademicTaskManager = ({ user }) => {
         
         return () => { 
             unsubscribeTasks(); 
+            unsubscribeClasses(); // NEW: Unsubscribe from classes
             unsubscribeHistory();
             unsubscribeSettings(); 
         };
@@ -502,6 +815,12 @@ const AcademicTaskManager = ({ user }) => {
     const [editingTask, setEditingTask] = useState(null);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [selectedDateForNewTask, setSelectedDateForNewTask] = useState('');
+
+    // NEW: State for class modal
+    const [editingClass, setEditingClass] = useState(null);
+    const [isClassModalOpen, setIsClassModalOpen] = useState(false);
+    const [selectedDayForNewClass, setSelectedDayForNewClass] = useState('');
+    const [selectedTimeForNewClass, setSelectedTimeForNewClass] = useState('');
     
     const { view, emailNotifications } = settings;
     const setView = (newView) => setSettings(prev => ({...prev, view: newView}));
@@ -602,7 +921,7 @@ const AcademicTaskManager = ({ user }) => {
         return { ...baseStyles, highlightClass, borderColorRgb, hoverClasses, highlightBg };
     };
 
-    useEffect(() => { const checkNotifications = () => { const newNotifications = []; tasks.forEach(task => { if (!task.completed) { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); if (['due-today', 'due-tomorrow', 'overdue'].includes(status)) { let label = ''; switch (status) { case 'overdue': label = 'Vencido'; break; case 'due-today': label = 'Vence hoy'; break; case 'due-tomorrow': label = 'Vence mañana'; break; } newNotifications.push({ id: task.id, message: `${task.subject}: ${task.title} - ${label}`, type: status, dueDate: task.dueDate, timestamp: new Date() }); } } }); setNotifications(newNotifications); }; checkNotifications(); const interval = setInterval(checkNotifications, 60000); return () => clearInterval(interval); }, [tasks, currentTime]);
+    useEffect(() => { const checkNotifications = () => { const newNotifications = []; tasks.forEach(task => { if (!task.completed) { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); if (['due-today', 'due-tomorrow', 'overdue'].includes(status)) { let label = ''; switch (status) { case 'overdue': label = 'Vencido'; break; case 'due-today': label = 'Vence hoy'; break; case 'due-tomorrow': label = 'Vence mañana'; break; } newNotifications.push({ id: task.id, message: `${task.subject}: ${task.title} - ${label}`, type: status, dueDate: task.dueDate, timestamp: new Date() }); } } }); setNotifications(newNotifications); }; checkNotifications(); const interval = setInterval(() => setCurrentTime(new Date()), 60000); return () => clearInterval(interval); }, [tasks, currentTime]);
     useEffect(() => { if (showAlerts && notifications.length > 0) { if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = setTimeout(() => { setShowAlerts(false); alertHideTimeoutRef.current = null; }, 25000); } else if (!showAlerts && alertHideTimeoutRef.current) { clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; } return () => { if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); }; }, [showAlerts, notifications.length]);
 
     const handleSaveTask = (taskData) => {
@@ -659,13 +978,6 @@ const AcademicTaskManager = ({ user }) => {
         });
     };
 
-    const permanentDeleteFromHistory = (id) => {
-        showConfirm('Esta acción es irreversible. ¿Seguro que quieres eliminar esta tarea permanentemente del historial?', () => {
-            historyCollectionRef.doc(id).delete()
-                .catch(error => showAlert("Error al eliminar la tarea del historial: " + error.message));
-        });
-    };
-
     const handleDayDoubleClick = (date) => {
         setEditingTask(null);
         setSelectedDateForNewTask(date);
@@ -676,6 +988,44 @@ const AcademicTaskManager = ({ user }) => {
         setEditingTask(null);
         setSelectedDateForNewTask(new Date().toISOString().split('T')[0]);
         setIsTaskModalOpen(true);
+    };
+
+    // NEW: Class related functions
+    const handleSaveClass = (classData) => {
+        if (classData.id) { // Update existing class
+            const { id, ...dataToUpdate } = classData;
+            classesCollectionRef.doc(id).update(dataToUpdate)
+                .catch(error => showAlert("Error al actualizar la clase: " + error.message));
+        } else { // Add new class
+            classesCollectionRef.add({ ...classData, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+                .catch(error => showAlert("Error al agregar la clase: " + error.message));
+        }
+    };
+
+    const handleAddClass = (day, time) => {
+        setEditingClass(null);
+        setSelectedDayForNewClass(day);
+        setSelectedTimeForNewClass(time);
+        setIsClassModalOpen(true);
+    };
+
+    const handleEditClass = (cls) => {
+        setEditingClass(cls);
+        setIsClassModalOpen(true);
+    };
+
+    const handleDeleteClass = (id) => {
+        showConfirm('¿Estás seguro de que quieres eliminar esta clase?', () => {
+            classesCollectionRef.doc(id).delete()
+                .catch(error => showAlert("Error al eliminar la clase: " + error.message));
+        });
+    };
+
+    const permanentDeleteFromHistory = (id) => {
+        showConfirm('Esta acción es irreversible. ¿Seguro que quieres eliminar esta tarea permanentemente del historial?', () => {
+            historyCollectionRef.doc(id).delete()
+                .catch(error => showAlert("Error al eliminar la tarea del historial: " + error.message));
+        });
     };
 
     const formatDate = (dateString) => createLocalDate(dateString).toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
@@ -752,6 +1102,8 @@ const AcademicTaskManager = ({ user }) => {
                 return <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} getDaysUntilDue={getDaysUntilDue} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} onBackToList={() => setView('list')} />;
             case 'calendar':
                 return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={handleDayDoubleClick} />;
+            case 'weeklyCalendar': // NEW: Weekly calendar view
+                return <WeeklyCalendarView classes={classes} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onAddClass={handleAddClass} onEditClass={handleEditClass} onDeleteClass={handleDeleteClass} />;
             case 'history':
                 return <HistoryView history={history} permanentDeleteFromHistory={permanentDeleteFromHistory} formatTimestamp={formatTimestamp} onBackToList={() => setView('list')} />;
             default:
@@ -764,16 +1116,6 @@ const AcademicTaskManager = ({ user }) => {
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-            <style>{`
-                @keyframes fast-pulse {
-                    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,0.1); }
-                    50% { transform: scale(1.07); box-shadow: 0 0 15px 7px rgba(0,0,0,0.25); }
-                    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,0.1); }
-                }
-                .animate-fast-pulse {
-                    animation: fast-pulse 0.8s infinite ease-in-out;
-                }
-            `}</style>
             {/* Header */}
             <div className="sticky top-0 z-30">
                 <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4">
@@ -823,7 +1165,11 @@ const AcademicTaskManager = ({ user }) => {
                                     </button>
                                     <hr className="border-white/10" />
                                     <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                        <IconCalendar width="20" height="20" /> <span>Calendario</span>
+                                        <IconCalendar width="20" height="20" /> <span>Calendario Mensual</span>
+                                    </button>
+                                    <hr className="border-white/10" />
+                                    <button onClick={() => { setView('weeklyCalendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                        <IconCalendar width="20" height="20" /> <span>Calendario Semanal</span>
                                     </button>
                                     <hr className="border-white/10" />
                                     <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
@@ -859,7 +1205,8 @@ const AcademicTaskManager = ({ user }) => {
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                                 <button onClick={() => setView('list')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'list' ? selectedButtonClasses : unselectedButtonClasses}`}><IconBook width="18" height="18" /><span className="font-medium text-center">Lista</span></button>
                                 <button onClick={() => setView('daily')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'daily' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center">Por Día</span></button>
-                                <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario</span></button>
+                                <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Mensual</span></button>
+                                <button onClick={() => setView('weeklyCalendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'weeklyCalendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Semanal</span></button>
                                 <button onClick={() => setView('history')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'history' ? selectedButtonClasses : unselectedButtonClasses}`}><IconHistory width="20" height="20" /><span className="font-medium text-center">Historial</span></button>
                             </div>
                         </div>
@@ -886,6 +1233,18 @@ const AcademicTaskManager = ({ user }) => {
                 taskToEdit={editingTask}
                 selectedDate={selectedDateForNewTask}
             />
+            {/* NEW: Class Modal */}
+            <ClassModal
+                isOpen={isClassModalOpen}
+                onClose={() => setIsClassModalOpen(false)}
+                onSave={handleSaveClass}
+                showAlert={showAlert}
+                classToEdit={editingClass}
+                selectedDay={selectedDayForNewClass}
+                selectedTime={selectedTimeForNewClass}
+            />
+            {/* NEW: Mini Weekly Calendar */}
+            <MiniWeeklyCalendar classes={classes} chileanHolidays={chileanHolidays} />
         </div>
     );
 };
@@ -910,13 +1269,7 @@ const InstallBanner = ({ onInstall, onClose }) => {
                     </button>
                 </div>
             </div>
-            <style>{`
-                @keyframes slide-down {
-                    from { transform: translateY(-100%); opacity: 0; }
-                    to { transform: translateY(0); opacity: 1; }
-                }
-                .animate-slide-down { animation: slide-down 0.5s ease-out forwards; }
-            `}</style>
+            {/* Moved style block to index.html */}
         </div>
     );
 };
