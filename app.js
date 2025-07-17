@@ -1176,7 +1176,7 @@ const AcademicTaskManager = ({ user }) => {
             </div>
 
             {/* Main Content Layout */}
-            <div className="max-w-screen-2xl mx-auto flex items-start justify-center px-3 sm:px-6">
+            <div className="max-w-screen-2xl mx-auto flex items-start justify-center pl-3 sm:pl-6 pr-2 sm:pr-3">
                 
                 {/* Main Content Column */}
                 <main className="w-full max-w-5xl flex-shrink-0">
@@ -1213,7 +1213,7 @@ const AcademicTaskManager = ({ user }) => {
                 </main>
 
                 {/* Sidebar Column for Mini Calendar */}
-                <aside className="hidden md:block w-[34rem] flex-shrink-0 ml-6">
+                <aside className="hidden md:block w-[34rem] flex-shrink-0 ml-4">
                     <div className="sticky top-24">
                         <MiniWeeklyCalendar classes={classes} />
                     </div>
