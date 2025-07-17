@@ -579,7 +579,7 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Calendario Semanal</h2>
                 <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
             </div>
-            <div className="overflow-x-auto max-w-4xl mx-auto">
+            <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg">
                     <thead className="bg-blue-600 dark:bg-gray-700 text-white">
                         <tr>
@@ -680,7 +680,7 @@ const MiniWeeklyCalendar = ({ classes }) => {
     };
 
     return (
-        <div className="fixed top-24 right-20 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-80 block">
+        <div className="fixed top-28 right-24 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-96 block">
             <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
                 Semana Actual
             </div>
