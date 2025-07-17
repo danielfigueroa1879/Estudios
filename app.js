@@ -678,7 +678,7 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
     return (
         // Adjusted position: top-20 (below banner), right-4 (more to the right)
         // Added hidden md:block to only show on desktop
-        <div className="fixed top-20 right-12 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80 hidden md:block">
+        <div className="fixed top-20 right-14 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80 hidden md:block">
             <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
                 Semana Actual
             </div>
