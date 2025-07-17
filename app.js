@@ -1,4 +1,5 @@
 const { useState, useEffect, useRef } = React;
+
 // --- INSTRUCCIONES IMPORTANTES DE FIREBASE ---
 // 1. Ve a https://firebase.google.com/ y crea un nuevo proyecto.
 // 2. En tu proyecto de Firebase, crea una aplicación web.
