@@ -652,24 +652,24 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
         weekDates.push(date);
     }
 
-    const classesByDayAndTime = classes.reduce((acc, cls) => {
-        // Find the closest time slot for display in mini calendar
+    const classesByDayAndFullTimeSlot = classes.reduce((acc, cls) => {
+        // Find the closest time slot for grouping based on the full WEEKLY_CALENDAR_TIME_SLOTS
         const classHour = parseInt(cls.startTime.split(':')[0]);
-        let closestSlot = timeSlots[0];
-        let minDiff = Math.abs(classHour - parseInt(closestSlot.split(':')[0]));
+        let closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[0];
+        let minDiff = Math.abs(classHour - parseInt(closestFullSlot.split(':')[0]));
 
-        for (let i = 1; i < timeSlots.length; i++) {
-            const slotHour = parseInt(timeSlots[i].split(':')[0]);
+        for (let i = 1; i < WEEKLY_CALENDAR_TIME_SLOTS.length; i++) {
+            const slotHour = parseInt(WEEKLY_CALENDAR_TIME_SLOTS[i].split(':')[0]);
             const diff = Math.abs(classHour - slotHour);
             if (diff < minDiff) {
                 minDiff = diff;
-                closestSlot = timeSlots[i];
+                closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[i]; // Store the full time slot string as key
             }
         }
 
         if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
-        if (!acc[cls.dayOfWeek][closestSlot]) acc[cls.dayOfWeek][closestSlot] = [];
-        acc[cls.dayOfWeek][closestSlot].push(cls);
+        if (!acc[cls.dayOfWeek][closestFullSlot]) acc[cls.dayOfWeek][closestFullSlot] = [];
+        acc[cls.dayOfWeek][closestFullSlot].push(cls);
         return acc;
     }, {});
 
@@ -680,6 +680,7 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
 
     return (
         // Adjusted position: top-20 (below banner), right-40 (more centered from extreme right)
+        // Added hidden md:block to only show on desktop
         <div className="fixed top-20 right-40 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-64 sm:w-80 hidden md:block">
             <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
                 Semana Actual
@@ -703,24 +704,26 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
                         </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        {timeSlots.map(time => (
-                            <tr key={time}>
-                                <td className="px-1 py-1 whitespace-nowrap text-[0.6rem] font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700">{time}</td>
+                        {WEEKLY_CALENDAR_TIME_SLOTS.map(fullTimeSlot => ( // Iterate over full time slots for data lookup
+                            <tr key={fullTimeSlot}>
+                                <td className="px-1 py-1 whitespace-nowrap text-[0.6rem] font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">
+                                    {fullTimeSlot.substring(0, 2)} {/* Display abbreviated hour */}
+                                </td>
                                 {daysOfWeek.map((day, dayIndex) => {
-                                    const classesInSlot = classesByDayAndTime[
-                                        ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex] // Map abbreviated day back to full day
-                                    ] && classesByDayAndTime[
+                                    const classesInSlot = classesByDayAndFullTimeSlot[
                                         ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
-                                    ][`${time}:00`] ? classesByDayAndTime[
+                                    ] && classesByDayAndFullTimeSlot[
                                         ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
-                                    ][`${time}:00`] : [];
+                                    ][fullTimeSlot] ? classesByDayAndFullTimeSlot[ // Lookup using full time slot
+                                        ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
+                                    ][fullTimeSlot] : [];
                                     
                                     const formattedDate = getFormattedDateForDay(dayIndex);
                                     const isHoliday = chileanHolidays.includes(formattedDate);
                                     const isToday = formattedDate === today.toISOString().split('T')[0];
 
                                     return (
-                                        <td key={`${day}-${time}`} 
+                                        <td key={`${day}-${fullTimeSlot}`} 
                                             className={`px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isHoliday ? 'bg-red-50 dark:bg-red-800/70' : ''} ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
                                         >
                                             <div className="flex flex-col space-y-0.5">
@@ -918,7 +921,7 @@ const AcademicTaskManager = ({ user }) => {
         return { ...baseStyles, highlightClass, borderColorRgb, hoverClasses, highlightBg };
     };
 
-    useEffect(() => { const checkNotifications = () => { const newNotifications = []; tasks.forEach(task => { if (!task.completed) { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); if (['due-today', 'due-tomorrow', 'overdue'].includes(status)) { let label = ''; switch (status) { case 'overdue': label = 'Vencido'; break; case 'due-today': label = 'Vence hoy'; break; case 'due-tomorrow': label = 'Vence mañana'; break; } newNotifications.push({ id: task.id, message: `${task.subject}: ${task.title} - ${label}`, type: status, dueDate: task.dueDate, timestamp: new Date() }); } } }); setNotifications(newNotifications); }; checkNotifications(); const interval = setInterval(checkNotifications, 60000); return () => clearInterval(interval); }, [tasks, currentTime]);
+    useEffect(() => { const checkNotifications = () => { const newNotifications = []; tasks.forEach(task => { if (!task.completed) { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); if (['due-today', 'due-tomorrow', 'overdue'].includes(status)) { let label = ''; switch (status) { case 'overdue': label = 'Vencido'; break; case 'due-today': label = 'Vence hoy'; break; case 'due-tomorrow': label = 'Vence mañana'; break; } newNotifications.push({ id: task.id, message: `${task.subject}: ${task.title} - ${label}`, type: status, dueDate: task.dueDate, timestamp: new Date() }); } } }); setNotifications(newNotifications); }; checkNotifications(); const interval = setInterval(() => setCurrentTime(new Date()), 60000); return () => clearInterval(interval); }, [tasks, currentTime]);
     useEffect(() => { if (showAlerts && notifications.length > 0) { if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = setTimeout(() => { setShowAlerts(false); alertHideTimeoutRef.current = null; }, 25000); } else if (!showAlerts && alertHideTimeoutRef.current) { clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; } return () => { if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); }; }, [showAlerts, notifications.length]);
 
     const handleSaveTask = (taskData) => {
