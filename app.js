@@ -127,16 +127,16 @@ const LoginScreen = ({ showAlert }) => {
                     <div className="relative"><span className="absolute left-4 top-3.5 text-gray-400"><IconMail /></span><input type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" /></div>
                     <div className="relative">
                         <span className="absolute left-4 top-3.5 text-gray-400"><IconLock /></span>
-                        <input
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="Contraseña"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                        <input 
+                            type={showPassword ? 'text' : 'password'} 
+                            placeholder="Contraseña" 
+                            value={password} 
+                            onChange={(e) => setPassword(e.target.value)} 
+                            className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" 
                         />
-                        <button
+                        <button 
                             type="button"
-                            onClick={() => setShowPassword(!showPassword)}
+                            onClick={() => setShowPassword(!showPassword)} 
                             className="absolute inset-y-0 right-0 px-4 flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                         >
                             {showPassword ? <IconEyeOff /> : <IconEye />}
@@ -241,9 +241,9 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
                     const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                     const isHoliday = chileanHolidays.includes(currentDayFormatted);
                     const highlightEntry = highlightedDate && highlightedDate.date === currentDayFormatted ? highlightedDate : null;
-
+                    
                     let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 dark:border-gray-600 ${isToday ? 'bg-blue-100 dark:bg-blue-800/80' : 'bg-white dark:bg-gray-700/90 hover:bg-gray-50 dark:hover:bg-gray-600/90'}`;
-
+                    
                     if (highlightEntry) {
                         dayClasses += ` ${highlightEntry.highlightBg} z-10`;
                         if (highlightEntry.isAnimating) {
@@ -267,7 +267,7 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
 
                         return Math.max(0, Math.min(100, percentage));
                     };
-
+                    
                     const renderTaskBar = (task) => {
                          const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
                          let bgColor = '', title = '';
@@ -382,8 +382,8 @@ const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDat
 
     useEffect(() => {
         const initialData = {
-            subject: '', title: '', description: '',
-            dueDate: selectedDate || new Date().toISOString().split('T')[0],
+            subject: '', title: '', description: '', 
+            dueDate: selectedDate || new Date().toISOString().split('T')[0], 
             dueTime: '', type: 'Tarea'
         };
         setTaskData(isEditMode ? { ...taskToEdit } : initialData);
@@ -484,7 +484,7 @@ const ClassModal = ({ isOpen, onClose, onSave, showAlert, classToEdit, selectedD
     if (!isOpen) return null;
 
     const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-
+    
 
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2">
@@ -497,7 +497,7 @@ const ClassModal = ({ isOpen, onClose, onSave, showAlert, classToEdit, selectedD
                 </div>
                 <div className="space-y-4">
                     <input type="text" name="subject" placeholder="Asignatura" value={classData.subject || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-
+                    
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <select name="dayOfWeek" value={classData.dayOfWeek || 'Lunes'} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             {daysOfWeek.map(day => <option key={day} value={day}>{day}</option>)}
@@ -596,9 +596,9 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                                     const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
                                     const formattedDate = getFormattedDateForDay(dayIndex);
                                     const isToday = formattedDate === today.toISOString().split('T')[0];
-
+                                    
                                     return (
-                                        <td key={`${day}-${time}`}
+                                        <td key={`${day}-${time}`} 
                                             className={`relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isToday && day !== 'Lunes' ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
                                             onDoubleClick={() => onAddClass(day, time)}
                                         >
@@ -712,12 +712,12 @@ const MiniWeeklyCalendar = ({ classes, chileanHolidays }) => {
                                     ][fullTimeSlot] ? classesByDayAndFullTimeSlot[ // Lookup using full time slot
                                         ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex]
                                     ][fullTimeSlot] : [];
-
+                                    
                                     const formattedDate = getFormattedDateForDay(dayIndex);
                                     const isToday = formattedDate === today.toISOString().split('T')[0];
 
                                     return (
-                                        <td key={`${day}-${fullTimeSlot}`}
+                                        <td key={`${day}-${fullTimeSlot}`} 
                                             className={`px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isToday && day !== 'Lunes' ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
                                         >
                                             <div className="flex flex-col space-y-0.5">
@@ -777,12 +777,12 @@ const AcademicTaskManager = ({ user }) => {
         }, error => console.error("Error fetching history:", error));
 
         const unsubscribeSettings = settingsDocRef.onSnapshot(doc => { if (doc.exists) { setSettings(doc.data()); } }, error => { console.error("Error fetching settings:", error); });
-
-        return () => {
-            unsubscribeTasks();
+        
+        return () => { 
+            unsubscribeTasks(); 
             unsubscribeClasses(); // NEW: Unsubscribe from classes
             unsubscribeHistory();
-            unsubscribeSettings();
+            unsubscribeSettings(); 
         };
     }, [user.uid]);
 
@@ -805,7 +805,7 @@ const AcademicTaskManager = ({ user }) => {
     const handleAlertDialogClose = () => setIsAlertDialogOpen(false);
     const handleConfirmDialogConfirm = () => { if (confirmCallbackRef.current) confirmCallbackRef.current(); setIsConfirmDialogOpen(false); };
     const handleConfirmDialogCancel = () => setIsConfirmDialogOpen(false);
-
+    
     const [editingTask, setEditingTask] = useState(null);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [selectedDateForNewTask, setSelectedDateForNewTask] = useState('');
@@ -815,7 +815,7 @@ const AcademicTaskManager = ({ user }) => {
     const [isClassModalOpen, setIsClassModalOpen] = useState(false);
     const [selectedDayForNewClass, setSelectedDayForNewClass] = useState('');
     const [selectedTimeForNewClass, setSelectedTimeForNewClass] = useState('');
-
+    
     const { view, emailNotifications } = settings;
     const setView = (newView) => setSettings(prev => ({...prev, view: newView}));
     const setEmailNotifications = (enabled) => setSettings(prev => ({...prev, emailNotifications: enabled}));
@@ -828,7 +828,7 @@ const AcademicTaskManager = ({ user }) => {
     const todayGlobal = new Date();
     const highlightTimeoutRef = useRef(null);
     const alertHideTimeoutRef = useRef(null);
-
+    
     const [isViewsCollapsed, setIsViewsCollapsed] = useState(window.innerWidth < 640);
     const viewsCollapseTimeoutRef = useRef(null);
 
@@ -845,7 +845,7 @@ const AcademicTaskManager = ({ user }) => {
         handleResize(); // Initial check
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-
+    
     useEffect(() => {
         if (!isViewsCollapsed && window.innerWidth < 640) {
             viewsCollapseTimeoutRef.current = setTimeout(() => {
@@ -861,10 +861,10 @@ const AcademicTaskManager = ({ user }) => {
 
 
     useEffect(() => { const interval = setInterval(() => setCurrentTime(new Date()), 60000); return () => clearInterval(interval); }, []);
-
+    
     const createLocalDate = (dateString) => { const parts = dateString.split('-').map(Number); return new Date(parts[0], parts[1] - 1, parts[2]); };
     const getTaskStatus = (dueDate, dueTime, completed) => { if (completed) return 'completed'; const now = new Date(); const todayMidnight = new Date(now); todayMidnight.setHours(0, 0, 0, 0); const dueMidnight = createLocalDate(dueDate); let dueDateTime = dueMidnight; if (dueTime) { const [hours, minutes] = dueTime.split(':').map(Number); dueDateTime = new Date(dueMidnight); dueDateTime.setHours(hours, minutes, 0, 0); } else { dueDateTime = new Date(dueMidnight); dueDateTime.setHours(23, 59, 59, 999); } if (dueDateTime < now) return 'overdue'; const diffTime = dueMidnight.getTime() - todayMidnight.getTime(); const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); if (diffDays === 0) return 'due-today'; if (diffDays === 1) return 'due-tomorrow'; if (diffDays <= 3) return 'due-soon'; return 'on-time'; };
-
+    
     const getTaskCardStyle = (status, completed) => {
         let baseStyles = {}, highlightClass = '', borderColorRgb = '0,0,0', hoverClasses = '', highlightBg = '';
         if (completed) {
@@ -940,7 +940,7 @@ const AcademicTaskManager = ({ user }) => {
         if (!taskDoc.exists) return;
 
         const taskData = taskDoc.data();
-
+        
         await historyCollectionRef.add({
             ...taskData,
             status: 'completed',
@@ -967,7 +967,7 @@ const AcademicTaskManager = ({ user }) => {
             });
 
             await taskRef.delete();
-
+            
             if (editingTask && editingTask.id === id) setEditingTask(null);
         });
     };
@@ -1030,7 +1030,7 @@ const AcademicTaskManager = ({ user }) => {
         });
     };
     const getDaysUntilDue = (dueDate) => { const todayMidnight = new Date(); todayMidnight.setHours(0, 0, 0, 0); const dueMidnight = createLocalDate(dueDate); const diffTime = dueMidnight.getTime() - todayMidnight.getTime(); const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); if (diffDays < 0) return `${Math.abs(diffDays)} días atrasado`; if (diffDays === 0) return 'Vence hoy'; if (diffDays === 1) return 'Vence mañana'; return `${diffDays} días restantes`; };
-
+    
     const highlightCalendarDate = (dateString, highlightBg) => {
         if (highlightTimeoutRef.current) {
             clearTimeout(highlightTimeoutRef.current);
@@ -1039,13 +1039,13 @@ const AcademicTaskManager = ({ user }) => {
 
         highlightTimeoutRef.current = setTimeout(() => {
             setHighlightedDate(prev => (prev && prev.date === dateString) ? { ...prev, isAnimating: false } : prev);
-        }, 180000);
+        }, 180000); 
     };
-
+    
     const handleTaskCardClick = (task) => {
         setView('calendar');
         setCurrentCalendarViewDate(createLocalDate(task.dueDate));
-
+        
         setTimeout(() => {
             const calendarSection = document.getElementById('calendarSection');
             if (calendarSection) {
@@ -1056,7 +1056,7 @@ const AcademicTaskManager = ({ user }) => {
             highlightCalendarDate(task.dueDate, cardStyle.highlightBg);
         }, 100);
     };
-
+    
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
@@ -1074,7 +1074,7 @@ const AcademicTaskManager = ({ user }) => {
                                      {task.title}
                                      <span className="text-xs sm:text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-0.5 rounded-md ml-2 align-middle">{task.type}</span>
                                  </p>
-                                 {task.description && <p className="text-xs sm:text-base text-gray-600 dark:text-gray-400 mt-1.5 mb-1.5">{task.description}</p>}
+                                 {task.description && <p className="text-xs sm:text-base text-gray-600 dark:text-gray-400 mt-1.5 mb-1.5">{task.description}</p>} 
                                  <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-base text-gray-500 dark:text-gray-400 mt-2">
                                     <span className="flex items-center">
                                         📅
@@ -1104,7 +1104,7 @@ const AcademicTaskManager = ({ user }) => {
                 return null;
         }
     };
-
+    
     const unselectedButtonClasses = "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-700 dark:hover:text-white";
     const selectedButtonClasses = "bg-blue-600 text-white shadow-lg shadow-blue-300 dark:shadow-blue-800/50 ring-2 ring-blue-400 dark:ring-blue-500";
 
@@ -1183,7 +1183,7 @@ const AcademicTaskManager = ({ user }) => {
             {/* Main Content */}
             <div className="max-w-5xl mx-auto px-3 sm:px-6 pb-24">
                  {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-100 dark:bg-orange-500/20 border border-orange-400 dark:border-orange-500/50 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 dark:text-orange-300 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600 dark:text-orange-400"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 dark:text-orange-300/90 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 dark:text-orange-400 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
-
+                 
                  <div className="relative bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-3 rounded-2xl">
                     <div className="max-w-5xl mx-auto px-3 sm:px-6">
                         <div className="flex justify-between items-center">
@@ -1219,10 +1219,10 @@ const AcademicTaskManager = ({ user }) => {
             {/* Custom Dialogs and Menus */}
             <CustomAlertDialog message={alertDialogMessage} isOpen={isAlertDialogOpen} onClose={handleAlertDialogClose} />
             <CustomConfirmDialog message={confirmDialogMessage} isOpen={isConfirmDialogOpen} onConfirm={handleConfirmDialogConfirm} onCancel={handleConfirmDialogCancel} />
-            <TaskModal
-                isOpen={isTaskModalOpen}
-                onClose={() => setIsTaskModalOpen(false)}
-                onSave={handleSaveTask}
+            <TaskModal 
+                isOpen={isTaskModalOpen} 
+                onClose={() => setIsTaskModalOpen(false)} 
+                onSave={handleSaveTask} 
                 showAlert={showAlert}
                 taskToEdit={editingTask}
                 selectedDate={selectedDateForNewTask}
@@ -1288,7 +1288,7 @@ const App = () => {
                 setShowInstallBanner(true);
                 setTimeout(() => {
                     setShowInstallBanner(false);
-                }, 15000);
+                }, 15000); 
             }
         };
 
@@ -1319,7 +1319,7 @@ const App = () => {
 
     const handleInstallClick = () => {
         if (!installPromptEvent) return;
-
+        
         installPromptEvent.prompt();
         installPromptEvent.userChoice.then((choiceResult) => {
             if (choiceResult.outcome === 'accepted') {
