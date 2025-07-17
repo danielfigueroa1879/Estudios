@@ -1179,7 +1179,7 @@ const AcademicTaskManager = ({ user }) => {
             <div className="max-w-screen-2xl ml-auto mr-4 flex items-start justify-start pl-3 sm:pl-6 relative">
                 
                 {/* Main Content Column */}
-                <main className="w-full max-w-5xl flex-shrink-0">
+                <main className="w-full max-w-4xl flex-shrink-0">
                     <div className="pb-24">
                         {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-100 dark:bg-orange-500/20 border border-orange-400 dark:border-orange-500/50 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 dark:text-orange-300 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600 dark:text-orange-400"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 dark:text-orange-300/90 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 dark:text-orange-400 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
                         
