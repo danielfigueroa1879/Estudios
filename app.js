@@ -530,13 +530,15 @@ const ClassModal = ({ isOpen, onClose, onSave, showAlert, classToEdit, selectedD
 // --- NEW: Weekly Calendar View Component ---
 const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackToList, onAddClass, onEditClass, onDeleteClass }) => {
     const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    // Using the globally defined time slots
     const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS;
 
+    // Get the current week's dates
     const today = new Date();
-    const currentDayOfWeek = today.getDay();
-    const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
+    const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday
+    const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1; // Days to subtract to get to Monday
     const mondayOfCurrentWeek = new Date(new Date().setDate(today.getDate() - diff));
-    mondayOfCurrentWeek.setHours(0, 0, 0, 0);
+    mondayOfCurrentWeek.setHours(0, 0, 0, 0); // Normalize to start of day
 
     const weekDates = [];
     for (let i = 0; i < 7; i++) {
@@ -546,6 +548,7 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
     }
 
     const classesByDayAndTime = classes.reduce((acc, cls) => {
+        // Find the closest time slot for display
         const classHour = parseInt(cls.startTime.split(':')[0]);
         let closestSlot = timeSlots[0];
         let minDiff = Math.abs(classHour - parseInt(closestSlot.split(':')[0]));
@@ -577,19 +580,16 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                 <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
             </div>
             <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
+                <table className="w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg">
                     <thead className="bg-blue-600 dark:bg-gray-700 text-white">
                         <tr>
-                            <th className="px-1 sm:px-2 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium uppercase tracking-wider rounded-tl-lg">Hora</th>
+                            <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg">Hora</th>
                             {daysOfWeek.map((day, index) => {
                                 const formattedDate = getFormattedDateForDay(index);
                                 const isToday = formattedDate === new Date().toISOString().split('T')[0];
                                 return (
-                                    <th key={day} className={`px-1 sm:px-2 py-2 sm:py-3 text-center text-[10px] sm:text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-800' : ''} ${index === 6 ? 'rounded-tr-lg' : ''}`}>
-                                        <span className="hidden sm:inline">{day}</span>
-                                        <span className="sm:hidden">{day.substring(0,3)}</span>
-                                        <br /> 
-                                        <span className="font-normal text-[10px] sm:text-xs hidden sm:inline">{formattedDate.substring(5)}</span>
+                                    <th key={day} className={`px-2 py-3 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-800' : ''} ${index === 6 ? 'rounded-tr-lg' : ''}`}>
+                                        {day} <br /> <span className="font-normal text-xs">{formattedDate.substring(5)}</span>
                                     </th>
                                 );
                             })}
@@ -598,7 +598,7 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {timeSlots.map(time => (
                             <tr key={time}>
-                                <td className="px-1 sm:px-2 py-2 whitespace-nowrap text-[10px] sm:text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700">{time}</th>
+                                <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700">{time} horas</td>
                                 {daysOfWeek.map((day, dayIndex) => {
                                     const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
                                     const formattedDate = getFormattedDateForDay(dayIndex);
@@ -606,13 +606,14 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                                     
                                     return (
                                         <td key={`${day}-${time}`} 
-                                            className={`relative p-0.5 sm:p-2 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
+                                            className={`relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
                                             onDoubleClick={() => onAddClass(day, time)}
                                         >
                                             <div className="flex flex-col space-y-1">
                                                 {classesInSlot.map(cls => (
-                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[9px] sm:text-xs font-medium rounded-md px-0.5 py-0.5 truncate flex items-center justify-between group">
+                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-1 py-0.5 truncate flex items-center justify-between group">
                                                         <span title={`${cls.subject} (${cls.description})`}>{cls.subject}</span>
+                                                        {/* Display time range below subject */}
                                                         <span className="text-[0.6rem] text-blue-700 dark:text-blue-300">
                                                             {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
                                                         </span>
@@ -1107,7 +1108,7 @@ const AcademicTaskManager = ({ user }) => {
             {/* Header */}
             <div className="sticky top-0 z-30">
                 <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4">
-                    <div className="max-w-screen-xl mx-auto px-3 sm:px-6">
+                    <div className="max-w-5xl mx-auto px-3 sm:px-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                                 <div className="text-white"><IconBook width="26" height="26" /></div>
@@ -1175,51 +1176,52 @@ const AcademicTaskManager = ({ user }) => {
             </div>
 
             {/* Main Content Layout */}
-            <div className="max-w-screen-xl mx-auto flex items-start justify-center px-3 sm:px-6 relative">
-                
-                {/* Main Content Column */}
-                <main className="w-full max-w-4xl flex-shrink-0">
-                    <div className="pb-24">
-                        {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-100 dark:bg-orange-500/20 border border-orange-400 dark:border-orange-500/50 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 dark:text-orange-300 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600 dark:text-orange-400"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 dark:text-orange-300/90 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 dark:text-orange-400 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
-                        
-                        <div className="relative bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-3 rounded-2xl">
-                            <div className="max-w-4xl mx-auto px-3 sm:px-6">
-                                <div className="flex justify-between items-center">
-                                    <h2 className="text-lg sm:text-xl font-semibold text-blue-600 dark:text-blue-400 text-left">Vistas</h2>
-                                    <button onClick={() => {
-                                        setIsViewsCollapsed(!isViewsCollapsed);
-                                        if (viewsCollapseTimeoutRef.current) clearTimeout(viewsCollapseTimeoutRef.current);
-                                    }} className="sm:hidden p-2">
-                                        {isViewsCollapsed ? <IconChevronDown className="text-red-500" /> : <IconChevronUp className="text-red-500" />}
-                                    </button>
-                                </div>
-                                <div className={`sm:block mt-4 sm:mt-5 ${isViewsCollapsed ? 'hidden' : ''}`}>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-                                        <button onClick={() => setView('list')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'list' ? selectedButtonClasses : unselectedButtonClasses}`}><IconBook width="18" height="18" /><span className="font-medium text-center">Lista</span></button>
-                                        <button onClick={() => setView('daily')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'daily' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center">Por Día</span></button>
-                                        <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Mensual</span></button>
-                                        <button onClick={() => setView('weeklyCalendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'weeklyCalendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Semanal</span></button>
-                                        <button onClick={() => setView('history')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'history' ? selectedButtonClasses : unselectedButtonClasses}`}><IconHistory width="20" height="20" /><span className="font-medium text-center">Historial</span></button>
+            <div className="w-full flex justify-end px-3 sm:px-6 relative">
+                <div className="flex items-start">
+                    {/* Main Content Column */}
+                    <main className="w-full max-w-4xl flex-shrink-0">
+                        <div className="pb-24">
+                            {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-100 dark:bg-orange-500/20 border border-orange-400 dark:border-orange-500/50 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 dark:text-orange-300 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600 dark:text-orange-400"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 dark:text-orange-300/90 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 dark:text-orange-400 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
+                            
+                            <div className="relative bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-3 rounded-2xl">
+                                <div className="max-w-4xl mx-auto px-3 sm:px-6">
+                                    <div className="flex justify-between items-center">
+                                        <h2 className="text-lg sm:text-xl font-semibold text-blue-600 dark:text-blue-400 text-left">Vistas</h2>
+                                        <button onClick={() => {
+                                            setIsViewsCollapsed(!isViewsCollapsed);
+                                            if (viewsCollapseTimeoutRef.current) clearTimeout(viewsCollapseTimeoutRef.current);
+                                        }} className="sm:hidden p-2">
+                                            {isViewsCollapsed ? <IconChevronDown className="text-red-500" /> : <IconChevronUp className="text-red-500" />}
+                                        </button>
+                                    </div>
+                                    <div className={`sm:block mt-4 sm:mt-5 ${isViewsCollapsed ? 'hidden' : ''}`}>
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                                            <button onClick={() => setView('list')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'list' ? selectedButtonClasses : unselectedButtonClasses}`}><IconBook width="18" height="18" /><span className="font-medium text-center">Lista</span></button>
+                                            <button onClick={() => setView('daily')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'daily' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center">Por Día</span></button>
+                                            <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Mensual</span></button>
+                                            <button onClick={() => setView('weeklyCalendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'weeklyCalendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Semanal</span></button>
+                                            <button onClick={() => setView('history')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'history' ? selectedButtonClasses : unselectedButtonClasses}`}><IconHistory width="20" height="20" /><span className="font-medium text-center">Historial</span></button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="border-t-4 border-gray-100 dark:border-gray-800 mb-2 sm:my-3"></div>
+                            {renderCurrentView()}
+                            <div className="mt-7 sm:mt-9 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5"> <div className="text-center text-gray-600 dark:text-gray-400 space-y-1.5"> <div className="border-b border-gray-200 dark:border-gray-700 pb-1.5"> <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-0.5">© Derechos Reservados</p> <p className="text-xs text-gray-700 dark:text-gray-300">Creado por <span className="font-semibold text-blue-600 dark:text-blue-400">Daniel Figueroa Chacama</span></p> <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Ingeniero en Informática</p> </div> </div> </div>
                         </div>
+                    </main>
 
-                        <div className="border-t-4 border-gray-100 dark:border-gray-800 mb-2 sm:my-3"></div>
-                        {renderCurrentView()}
-                        <div className="mt-7 sm:mt-9 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5"> <div className="text-center text-gray-600 dark:text-gray-400 space-y-1.5"> <div className="border-b border-gray-200 dark:border-gray-700 pb-1.5"> <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-0.5">© Derechos Reservados</p> <p className="text-xs text-gray-700 dark:text-gray-300">Creado por <span className="font-semibold text-blue-600 dark:text-blue-400">Daniel Figueroa Chacama</span></p> <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Ingeniero en Informática</p> </div> </div> </div>
-                    </div>
-                </main>
-
-                {/* Sidebar Column for Mini Calendar */}
-                <aside className="hidden md:block w-[22rem] flex-shrink-0 ml-6">
-                    <div className="sticky top-24">
-                        <MiniWeeklyCalendar classes={classes} />
-                    </div>
-                </aside>
+                    {/* Sidebar Column for Mini Calendar */}
+                    <aside className="hidden md:block w-[30rem] flex-shrink-0 ml-6">
+                        <div className="sticky top-24">
+                            <MiniWeeklyCalendar classes={classes} />
+                        </div>
+                    </aside>
+                </div>
                 
                 {/* FAB Button */}
-                <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 md:absolute md:right-4 bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
+                <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 md:right-[32rem] bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
                     <IconPlus width="24" height="24" />
                 </button>
             </div>
