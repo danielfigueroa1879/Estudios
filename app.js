@@ -580,7 +580,7 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
                 <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
             </div>
             <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg">
+                <table className="w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg">
                     <thead className="bg-blue-600 dark:bg-gray-700 text-white">
                         <tr>
                             <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg">Hora</th>
@@ -680,7 +680,7 @@ const MiniWeeklyCalendar = ({ classes }) => {
     };
 
     return (
-        <div className="fixed top-28 right-18 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-96 block">
+        <div className="fixed top-32 right-28 z-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-[26rem] block">
             <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
                 Semana Actual
             </div>
@@ -688,12 +688,12 @@ const MiniWeeklyCalendar = ({ classes }) => {
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead className="bg-blue-500 dark:bg-gray-600 text-white">
                         <tr>
-                            <th className="px-1 py-1 text-left text-[0.6rem] font-medium uppercase tracking-wider">Hr</th>
+                            <th className="px-1 py-1 text-left text-xs font-medium uppercase tracking-wider">Hr</th>
                             {daysOfWeek.map((day, index) => {
                                 const formattedDate = getFormattedDateForDay(index);
                                 const isToday = formattedDate === new Date().toISOString().split('T')[0];
                                 return (
-                                    <th key={day} className={`px-1 py-1 text-center text-[0.6rem] font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''}`}>
+                                    <th key={day} className={`px-1 py-1 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''}`}>
                                         {day}
                                     </th>
                                 );
@@ -703,7 +703,7 @@ const MiniWeeklyCalendar = ({ classes }) => {
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {WEEKLY_CALENDAR_TIME_SLOTS.map(fullTimeSlot => (
                             <tr key={fullTimeSlot}>
-                                <td className="px-1 py-1 whitespace-nowrap text-[0.6rem] font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">
+                                <td className="px-1 py-1 whitespace-nowrap text-xs font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">
                                     {fullTimeSlot.substring(0, 2)}
                                 </td>
                                 {daysOfWeek.map((day, dayIndex) => {
@@ -718,9 +718,9 @@ const MiniWeeklyCalendar = ({ classes }) => {
                                         >
                                             <div className="flex flex-col space-y-0.5">
                                                 {classesInSlot.map(cls => (
-                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.55rem] font-medium rounded-sm px-0.5 py-0.5 truncate" title={`${cls.subject} (${cls.description})`}>
+                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 truncate" title={`${cls.subject} (${cls.description})`}>
                                                         {cls.subject}
-                                                        <span className="text-[0.45rem] text-blue-700 dark:text-blue-300 block">
+                                                        <span className="text-[0.5rem] text-blue-700 dark:text-blue-300 block">
                                                             {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
                                                         </span>
                                                     </div>
