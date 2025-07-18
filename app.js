@@ -1093,7 +1093,7 @@ const AcademicTaskManager = ({ user }) => {
             {/* Header */}
             <div className="sticky top-0 z-30">
                 <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4">
-                    <div className="max-w-7xl mx-auto px-3 sm:px-6">
+                    <div className="max-w-5xl mx-auto px-3 sm:px-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                                 <div className="text-white"><IconBook width="26" height="26" /></div>
@@ -1161,8 +1161,8 @@ const AcademicTaskManager = ({ user }) => {
             </div>
 
             {/* Main Content Layout */}
-            <div className="max-w-7xl mx-auto px-3 sm:px-6">
-                <div className="flex flex-col md:flex-row items-start md:space-x-6">
+            <div className="w-full flex justify-center px-3 sm:px-6">
+                <div className="flex w-full max-w-7xl">
                     {/* Main Content Column */}
                     <main className="w-full md:flex-1">
                         <div className="pb-24">
@@ -1195,7 +1195,7 @@ const AcademicTaskManager = ({ user }) => {
                     </main>
 
                     {/* Sidebar Column for Mini Calendar */}
-                    <aside className="hidden md:block w-full md:w-[25rem] flex-shrink-0 mt-6 md:mt-0">
+                    <aside className="hidden md:block w-[30rem] flex-shrink-0 ml-6">
                         <div className="sticky top-24">
                             <MiniWeeklyCalendar classes={classes} />
                         </div>
