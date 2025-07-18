@@ -1093,7 +1093,7 @@ const AcademicTaskManager = ({ user }) => {
             {/* Header */}
             <div className="sticky top-0 z-30">
                 <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4">
-                    <div className="max-w-5xl mx-auto px-3 sm:px-6">
+                    <div className="max-w-7xl mx-auto px-3 sm:px-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                                 <div className="text-white"><IconBook width="26" height="26" /></div>
@@ -1161,10 +1161,10 @@ const AcademicTaskManager = ({ user }) => {
             </div>
 
             {/* Main Content Layout */}
-            <div className="w-full flex justify-end px-3 sm:px-6 relative">
-                <div className="flex items-start">
+            <div className="max-w-7xl mx-auto px-3 sm:px-6">
+                <div className="flex flex-col md:flex-row items-start md:space-x-6">
                     {/* Main Content Column */}
-                    <main className="w-full max-w-4xl flex-shrink-0">
+                    <main className="w-full md:flex-1">
                         <div className="pb-24">
                             {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-100 dark:bg-orange-500/20 border border-orange-400 dark:border-orange-500/50 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 dark:text-orange-300 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600 dark:text-orange-400"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 dark:text-orange-300/90 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 dark:text-orange-400 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
 
@@ -1172,9 +1172,7 @@ const AcademicTaskManager = ({ user }) => {
                                 <div className="max-w-4xl mx-auto px-3 sm:px-6">
                                     <div className="flex justify-between items-center">
                                         <h2 className="text-lg sm:text-xl font-semibold text-blue-600 dark:text-blue-400 text-left">Vistas</h2>
-                                        <button onClick={() => {
-                                            setIsViewsCollapsed(!isViewsCollapsed);
-                                        }} className="sm:hidden p-2">
+                                        <button onClick={() => { setIsViewsCollapsed(!isViewsCollapsed); }} className="sm:hidden p-2">
                                             {isViewsCollapsed ? <IconChevronDown className="text-red-500" /> : <IconChevronUp className="text-red-500" />}
                                         </button>
                                     </div>
@@ -1197,18 +1195,19 @@ const AcademicTaskManager = ({ user }) => {
                     </main>
 
                     {/* Sidebar Column for Mini Calendar */}
-                    <aside className="hidden md:block w-[30rem] flex-shrink-0 ml-6">
+                    <aside className="hidden md:block w-full md:w-[25rem] flex-shrink-0 mt-6 md:mt-0">
                         <div className="sticky top-24">
                             <MiniWeeklyCalendar classes={classes} />
                         </div>
                     </aside>
                 </div>
-
-                {/* FAB Button */}
-                <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 md:right-[32rem] bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
-                    <IconPlus width="24" height="24" />
-                </button>
             </div>
+
+
+            {/* FAB Button */}
+            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
+                <IconPlus width="24" height="24" />
+            </button>
 
 
             {/* Custom Dialogs and Menus */}
