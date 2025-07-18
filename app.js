@@ -1093,7 +1093,7 @@ const AcademicTaskManager = ({ user }) => {
             {/* Header */}
             <div className="sticky top-0 z-30">
                 <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4">
-                    <div className="max-w-5xl mx-auto px-3 sm:px-6">
+                    <div className="max-w-7xl mx-auto px-3 sm:px-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                                 <div className="text-white"><IconBook width="26" height="26" /></div>
@@ -1161,7 +1161,7 @@ const AcademicTaskManager = ({ user }) => {
             </div>
 
             {/* Main Content Layout */}
-            <div className="w-full flex justify-center px-3 sm:px-6">
+            <div className="w-full flex justify-end px-3 sm:px-6">
                 <div className="flex w-full max-w-7xl">
                     {/* Main Content Column */}
                     <main className="w-full md:flex-1">
@@ -1205,7 +1205,7 @@ const AcademicTaskManager = ({ user }) => {
 
 
             {/* FAB Button */}
-            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
+            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 md:right-[32rem] bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
                 <IconPlus width="24" height="24" />
             </button>
 
