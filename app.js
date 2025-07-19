@@ -315,9 +315,10 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
     );
 };
 
-const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, getTaskCardStyle, chileanHolidays, createLocalDate, onBackToList, onDayDoubleClick }) => {
+const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, getTaskCardStyle, chileanHolidays, createLocalDate, onBackToList, onDayDoubleClick, selectedTask, onCloseTaskDetails, formatDate }) => {
     return (
         <div className="bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700" id="calendarSection">
+            <HighlightedTaskDetail task={selectedTask} onClose={onCloseTaskDetails} formatDate={formatDate} />
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Calendario Mensual</h2>
                 <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
@@ -379,6 +380,26 @@ const HistoryView = ({ history, permanentDeleteFromHistory, formatTimestamp, onB
                     </div>
                 );
             })}
+        </div>
+    );
+};
+
+const HighlightedTaskDetail = ({ task, onClose, formatDate }) => {
+    if (!task) return null;
+
+    return (
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-11/12 max-w-md bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-2xl shadow-2xl p-4 z-20 border border-gray-300 dark:border-gray-600 animate-slide-down">
+            <div className="flex justify-between items-center mb-3">
+                <h4 className="font-bold text-lg text-blue-600 dark:text-blue-400">Detalle de Tarea</h4>
+                <button onClick={onClose} className="text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 p-1 rounded-full transition-colors">
+                    <IconClose className="w-5 h-5" />
+                </button>
+            </div>
+            <div className="space-y-1 text-left">
+                <p className="text-gray-800 dark:text-gray-200"><span className="font-semibold">Asignatura:</span> {task.subject}</p>
+                <p className="text-gray-800 dark:text-gray-200"><span className="font-semibold">Título:</span> {task.title}</p>
+                <p className="text-gray-800 dark:text-gray-200"><span className="font-semibold">Fecha:</span> {formatDate(task.dueDate)} {task.dueTime || ''}</p>
+            </div>
         </div>
     );
 };
@@ -804,6 +825,7 @@ const AcademicTaskManager = ({ user }) => {
     const [editingTask, setEditingTask] = useState(null);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [selectedDateForNewTask, setSelectedDateForNewTask] = useState('');
+    const [selectedTaskDetails, setSelectedTaskDetails] = useState(null);
 
     // NEW: State for class modal
     const [editingClass, setEditingClass] = useState(null);
@@ -812,7 +834,12 @@ const AcademicTaskManager = ({ user }) => {
     const [selectedTimeForNewClass, setSelectedTimeForNewClass] = useState('');
 
     const { view, emailNotifications } = settings;
-    const setView = (newView) => setSettings(prev => ({...prev, view: newView}));
+    const setView = (newView) => {
+        if (settings.view !== newView) {
+            setSelectedTaskDetails(null);
+        }
+        setSettings(prev => ({...prev, view: newView}));
+    };
     const setEmailNotifications = (enabled) => setSettings(prev => ({...prev, emailNotifications: enabled}));
 
     const [notifications, setNotifications] = useState([]);
@@ -1025,6 +1052,7 @@ const AcademicTaskManager = ({ user }) => {
     const handleTaskCardClick = (task) => {
         setView('calendar');
         setCurrentCalendarViewDate(createLocalDate(task.dueDate));
+        setSelectedTaskDetails(task);
 
         setTimeout(() => {
             const calendarSection = document.getElementById('calendarSection');
@@ -1075,7 +1103,7 @@ const AcademicTaskManager = ({ user }) => {
             case 'daily':
                 return <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} getDaysUntilDue={getDaysUntilDue} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} onBackToList={() => setView('list')} />;
             case 'calendar':
-                return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={handleDayDoubleClick} />;
+                return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={handleDayDoubleClick} selectedTask={selectedTaskDetails} onCloseTaskDetails={() => setSelectedTaskDetails(null)} formatDate={formatDate} />;
             case 'weeklyCalendar': // NEW: Weekly calendar view
                 return <WeeklyCalendarView classes={classes} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onAddClass={handleAddClass} onEditClass={handleEditClass} onDeleteClass={handleDeleteClass} />;
             case 'history':
