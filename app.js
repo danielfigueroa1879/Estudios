@@ -261,7 +261,7 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
                     return (
                         <div key={currentDayFormatted} style={dynamicStyle} onDoubleClick={() => onDayDoubleClick(currentDayFormatted)} className={dayClasses}>
                             <div className={`text-xs sm:text-sm font-medium ${isToday ? 'text-blue-700 dark:text-blue-300' : (isHoliday ? 'text-red-600 dark:text-red-400' : 'text-gray-800 dark:text-gray-300')}`}>{day}</div>
-                            <div className="absolute top-6 left-0.5 right-0.5 bottom-1 space-y-0.5 overflow-y-auto pr-1">
+                            <div className="absolute top-5 left-0.5 right-0.5 bottom-1 space-y-0.5 overflow-y-auto">
                                 {dayTasks.slice(0, 2).map(task => {
                                     const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
                                     const cardStyle = getTaskCardStyle(status, task.completed);
