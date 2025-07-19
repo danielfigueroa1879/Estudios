@@ -198,7 +198,7 @@ const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle
     );
 };
 
-const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate, onDayDoubleClick, getTaskCardStyle }) => {
+const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, chileanHolidays, createLocalDate, onDayDoubleClick, getTaskCardStyle, persistentHighlight, onClearPersistentHighlight }) => {
     const year = currentViewDate.getFullYear();
     const month = currentViewDate.getMonth();
     const firstDay = new Date(year, month, 1);
@@ -241,6 +241,7 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
                     const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                     const isHoliday = chileanHolidays.includes(currentDayFormatted);
                     const highlightEntry = highlightedDate && highlightedDate.date === currentDayFormatted ? highlightedDate : null;
+                    const isPersistentlyHighlighted = persistentHighlight && persistentHighlight.dueDate === currentDayFormatted;
 
                     let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 dark:border-gray-600 ${isToday ? 'bg-blue-100 dark:bg-blue-800/80' : 'bg-white dark:bg-gray-700/90 hover:bg-gray-50 dark:hover:bg-gray-600/90'}`;
 
@@ -307,6 +308,21 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
                                     );
                                 })}
                             </div>
+                             {isPersistentlyHighlighted && (
+                                <div className="absolute bottom-1 left-1 right-1 p-1 bg-blue-100 dark:bg-blue-900/70 rounded-md text-xs shadow-lg z-20 animate-fade-in">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onClearPersistentHighlight();
+                                        }}
+                                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs hover:bg-red-600"
+                                    >
+                                        &times;
+                                    </button>
+                                    <p className="font-bold text-blue-800 dark:text-blue-200 truncate">{persistentHighlight.subject}</p>
+                                    <p className="text-blue-700 dark:text-blue-300 truncate">{persistentHighlight.title}</p>
+                                </div>
+                            )}
                         </div>
                     );
                 })}
@@ -315,20 +331,14 @@ const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentVi
     );
 };
 
-const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, getTaskCardStyle, chileanHolidays, createLocalDate, onBackToList, onDayDoubleClick, selectedTask, taskCardPosition, onCloseTaskDetails, formatDate }) => {
+const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, getTaskCardStyle, chileanHolidays, createLocalDate, onBackToList, onDayDoubleClick, persistentHighlight, onClearPersistentHighlight }) => {
     return (
         <div className="bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700" id="calendarSection">
-            <HighlightedTaskDetail
-                task={selectedTask}
-                onClose={onCloseTaskDetails}
-                formatDate={formatDate}
-                taskCardPosition={taskCardPosition}
-            />
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Calendario Mensual</h2>
                 <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
             </div>
-            <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={onDayDoubleClick} />
+            <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={onDayDoubleClick} persistentHighlight={persistentHighlight} onClearPersistentHighlight={onClearPersistentHighlight} />
         </div>
     );
 };
@@ -878,6 +888,7 @@ const AcademicTaskManager = ({ user }) => {
     const [selectedDateForNewTask, setSelectedDateForNewTask] = useState('');
     const [selectedTaskDetails, setSelectedTaskDetails] = useState(null);
     const [taskCardPosition, setTaskCardPosition] = useState(null);
+    const [persistentHighlight, setPersistentHighlight] = useState(null);
 
     // NEW: State for class modal
     const [editingClass, setEditingClass] = useState(null);
@@ -890,6 +901,7 @@ const AcademicTaskManager = ({ user }) => {
         if (view !== newView) {
             setSelectedTaskDetails(null);
             setTaskCardPosition(null);
+            setPersistentHighlight(null);
         }
         setSettings(prev => ({...prev, view: newView}));
     };
@@ -1111,6 +1123,7 @@ const AcademicTaskManager = ({ user }) => {
             height: rect.height,
         });
         setSelectedTaskDetails(task);
+        setPersistentHighlight(task); // Keep this highlighted
         setView('calendar');
         setCurrentCalendarViewDate(createLocalDate(task.dueDate));
 
@@ -1163,7 +1176,7 @@ const AcademicTaskManager = ({ user }) => {
             case 'daily':
                 return <DailyTasksCardView tasks={tasks} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} getDaysUntilDue={getDaysUntilDue} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} onBackToList={() => setView('list')} />;
             case 'calendar':
-                return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={handleDayDoubleClick} />;
+                return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={handleDayDoubleClick} persistentHighlight={persistentHighlight} onClearPersistentHighlight={() => setPersistentHighlight(null)} />;
             case 'weeklyCalendar': // NEW: Weekly calendar view
                 return <WeeklyCalendarView classes={classes} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onAddClass={handleAddClass} onEditClass={handleEditClass} onDeleteClass={handleDeleteClass} />;
             case 'history':
