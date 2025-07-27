@@ -135,12 +135,6 @@ const LoginScreen = ({ showAlert }) => {
                     <IconBook width="48" height="48" className="mx-auto text-blue-600" />
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mt-4">Gestor Académico</h1>
                     <p className="text-gray-500 dark:text-gray-400">{isRegister ? 'Crea una nueva cuenta' : 'Bienvenido de vuelta'}</p>
-                    {/* El cuadro de depuración se mantiene igual, ya que es útil */}
-                    <div className="mt-4 text-xs text-gray-400 bg-gray-100 dark:bg-gray-700 p-2 rounded-md">
-                        <p className="font-semibold">Dominio actual (para depuración):</p>
-                        <p className="font-mono break-all">{window.location.hostname}</p>
-                        <p className="mt-1">Si el inicio de sesión falla, agrega este dominio a Firebase.</p>
-                    </div>
                 </div>
 
                 {!isRegister && (
