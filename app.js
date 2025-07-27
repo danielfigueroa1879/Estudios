@@ -4,7 +4,7 @@ const { useState, useEffect, useRef } = React;
 // 1. Ve a https://firebase.google.com/ y crea un nuevo proyecto.
 // 2. En tu proyecto de Firebase, crea una aplicación web.
 // 3. Copia el objeto de configuración de Firebase y pégalo aquí abajo.
-// 4. En Firebase, ve a "Authentication" -> "Sign-in method" y habilita "Email/Password".
+// 4. En Firebase, ve a "Authentication" -> "Sign-in method" y habilita "Email/Password" Y "Google".
 // 5. Ve a "Firestore Database" -> "Create database" y créala en modo de prueba (test mode) por ahora.
 const firebaseConfig = {
   apiKey: "AIzaSyDxrNur1ijuqHzkKK0vuvJ2jaW5DnhkgcQ",
@@ -45,6 +45,8 @@ const IconClose = ({ className }) => ( <svg className={className} xmlns="http://
 const IconEye = ({ width = "20", height = "20" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path> <circle cx="12" cy="12" r="3"></circle> </svg> );
 const IconEyeOff = ({ width = "20", height = "20" }) => ( <svg width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path> <line x1="1" y1="1" x2="23" y2="23"></line> </svg> );
 const IconHistory = ({ width = "20", height = "20", className }) => ( <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M1 4v6h6" /> <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /> </svg> );
+// NUEVO: Icono de Google
+const IconGoogle = ({ className }) => ( <svg className={className} viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"> <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/> <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/> <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.223,0-9.655-3.356-11.303-8H6.306C9.656,39.663,16.318,44,24,44z"/> <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C39.99,35.508,44,30.028,44,24C44,22.659,43.862,21.35,43.611,20.083z"/> </svg> );
 
 
 // --- Custom Dialogs ---
@@ -99,6 +101,30 @@ const LoginScreen = ({ showAlert }) => {
             })
             .finally(() => setLoading(false));
     };
+    
+    // NUEVO: Manejador para el inicio de sesión con Google
+    const handleGoogleLogin = () => {
+        setLoading(true);
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+            .then((result) => {
+                // El usuario ha iniciado sesión correctamente.
+                // No es necesario hacer nada más aquí, el onAuthStateChanged se encargará del resto.
+            })
+            .catch((error) => {
+                // Manejar errores aquí.
+                let message = "Ocurrió un error al iniciar sesión con Google.";
+                if (error.code === 'auth/account-exists-with-different-credential') {
+                    message = 'Ya existe una cuenta con este correo electrónico pero con un método de inicio de sesión diferente.';
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    message = 'La ventana de inicio de sesión fue cerrada antes de completar el proceso.';
+                }
+                showAlert(message);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    };
 
     const handlePasswordReset = () => {
         if (!email) { showAlert("Por favor, ingresa tu correo electrónico para restablecer la contraseña."); return; }
@@ -123,6 +149,23 @@ const LoginScreen = ({ showAlert }) => {
                     <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mt-4">Gestor Académico</h1>
                     <p className="text-gray-500 dark:text-gray-400">{isRegister ? 'Crea una nueva cuenta' : 'Bienvenido de vuelta'}</p>
                 </div>
+
+                {!isRegister && (
+                    <>
+                        <div className="mb-6">
+                            <button onClick={handleGoogleLogin} disabled={loading} className="w-full bg-white border border-gray-300 text-gray-700 rounded-xl py-3 text-lg font-medium hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center disabled:bg-gray-200">
+                                {loading ? <IconSpinner /> : <IconGoogle className="w-6 h-6 mr-3" />}
+                                Iniciar Sesión con Google
+                            </button>
+                        </div>
+                        <div className="flex items-center my-6">
+                            <hr className="flex-grow border-t border-gray-300 dark:border-gray-600" />
+                            <span className="mx-4 text-gray-500 dark:text-gray-400">o</span>
+                            <hr className="flex-grow border-t border-gray-300 dark:border-gray-600" />
+                        </div>
+                    </>
+                )}
+
                 <div className="space-y-6">
                     <div className="relative"><span className="absolute left-4 top-3.5 text-gray-400"><IconMail /></span><input type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" /></div>
                     <div className="relative">
@@ -1266,8 +1309,20 @@ const App = () => {
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(currentUser => {
-            if (currentUser && currentUser.emailVerified) {
-                setUser(currentUser);
+            // Para el inicio de sesión con Google, no es necesario verificar el correo.
+            // Firebase lo considera verificado por defecto.
+            if (currentUser) {
+                 // Si el proveedor es 'password', nos aseguramos de que el email esté verificado.
+                if (currentUser.providerData.some(provider => provider.providerId === 'password')) {
+                    if (currentUser.emailVerified) {
+                        setUser(currentUser);
+                    } else {
+                        setUser(null); // Si es con contraseña y no está verificado, no lo logueamos.
+                    }
+                } else {
+                    // Si es otro proveedor (como Google), lo logueamos directamente.
+                    setUser(currentUser);
+                }
             } else {
                 setUser(null);
             }
