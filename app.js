@@ -101,7 +101,6 @@ const LoginScreen = ({ showAlert }) => {
             .finally(() => setLoading(false));
     };
     
-    // CAMBIADO: Se usa signInWithRedirect para compatibilidad móvil
     const handleGoogleLogin = () => {
         setLoading(true);
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -123,23 +122,31 @@ const LoginScreen = ({ showAlert }) => {
 
     return (
         <div className="min-h-screen bg-blue-600 flex flex-col justify-center items-center p-4">
-            <div className="max-w-md w-full mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 border-t-4 border-blue-600">
+            {/* Contenedor principal del cuadro de logueo con padding ajustado */}
+            <div className="max-w-md w-full mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 border-t-4 border-blue-600">
                 {registerSuccessMessage && (
                     <div className="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 mb-6 rounded-r-lg" role="alert">
                         <p className="font-bold">¡Éxito!</p>
                         <p>{registerSuccessMessage}</p>
                     </div>
                 )}
-                <div className="text-center mb-8">
+                {/* Margen inferior y tamaño de texto ajustados para móvil */}
+                <div className="text-center mb-6 sm:mb-8">
                     <IconBook width="48" height="48" className="mx-auto text-blue-600" />
-                    <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mt-4">Gestor Académico</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mt-4">Gestor Académico</h1>
                     <p className="text-gray-500 dark:text-gray-400">{isRegister ? 'Crea una nueva cuenta' : 'Bienvenido de vuelta'}</p>
+                    {/* El cuadro de depuración se mantiene igual, ya que es útil */}
+                    <div className="mt-4 text-xs text-gray-400 bg-gray-100 dark:bg-gray-700 p-2 rounded-md">
+                        <p className="font-semibold">Dominio actual (para depuración):</p>
+                        <p className="font-mono break-all">{window.location.hostname}</p>
+                        <p className="mt-1">Si el inicio de sesión falla, agrega este dominio a Firebase.</p>
+                    </div>
                 </div>
 
                 {!isRegister && (
                     <>
                         <div className="mb-6">
-                            <button onClick={handleGoogleLogin} disabled={loading} className="w-full bg-white border border-gray-300 text-gray-700 rounded-xl py-3 text-lg font-medium hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center disabled:bg-gray-200">
+                            <button onClick={handleGoogleLogin} disabled={loading} className="w-full bg-white border border-gray-300 text-gray-700 rounded-xl py-3 text-base sm:text-lg font-medium hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center disabled:bg-gray-200">
                                 {loading ? <IconSpinner /> : <IconGoogle className="w-6 h-6 mr-3" />}
                                 Iniciar Sesión con Google
                             </button>
@@ -152,16 +159,21 @@ const LoginScreen = ({ showAlert }) => {
                     </>
                 )}
 
-                <div className="space-y-6">
-                    <div className="relative"><span className="absolute left-4 top-3.5 text-gray-400"><IconMail /></span><input type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" /></div>
+                {/* Espacio entre elementos reducido para móvil */}
+                <div className="space-y-4 sm:space-y-6">
                     <div className="relative">
-                        <span className="absolute left-4 top-3.5 text-gray-400"><IconLock /></span>
+                        {/* Icono centrado verticalmente */}
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><IconMail /></span>
+                        <input type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl pl-12 pr-4 py-2.5 text-base sm:py-3 sm:text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" />
+                    </div>
+                    <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><IconLock /></span>
                         <input
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Contraseña"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                            className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl pl-12 pr-12 py-2.5 text-base sm:py-3 sm:text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                         />
                         <button
                             type="button"
@@ -172,8 +184,10 @@ const LoginScreen = ({ showAlert }) => {
                         </button>
                     </div>
                 </div>
-                <div className="mt-8"><button onClick={isRegister ? handleRegister : handleLogin} disabled={loading} className="w-full bg-blue-600 text-white rounded-xl py-3.5 text-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl flex items-center justify-center disabled:bg-blue-400">{loading && <IconSpinner />}{isRegister ? 'Registrarse' : 'Iniciar Sesión'}</button></div>
-                <div className="text-center mt-6 flex justify-between items-center">
+                {/* Padding y tamaño de texto del botón principal ajustados */}
+                <div className="mt-6 sm:mt-8"><button onClick={isRegister ? handleRegister : handleLogin} disabled={loading} className="w-full bg-blue-600 text-white rounded-xl py-3 text-base sm:py-3.5 sm:text-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl flex items-center justify-center disabled:bg-blue-400">{loading && <IconSpinner />}{isRegister ? 'Registrarse' : 'Iniciar Sesión'}</button></div>
+                {/* Layout de los links inferiores ajustado para apilarse en móvil */}
+                <div className="text-center mt-6 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:justify-between items-center">
                     <button onClick={() => setIsRegister(!isRegister)} className="text-blue-600 dark:text-blue-400 hover:underline">{isRegister ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}</button>
                     {!isRegister && (<button onClick={handlePasswordReset} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">¿Olvidaste la contraseña?</button>)}
                 </div>
