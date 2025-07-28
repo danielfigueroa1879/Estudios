@@ -146,8 +146,8 @@ const LoginScreen = ({ showAlert }) => {
                 )}
                 <div className="text-center mb-4 sm:mb-8">
                     <IconBook width="40" height="40" className="mx-auto text-blue-600 sm:w-12 sm:h-12" />
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mt-2 sm:mt-4">Gestor Académico</h1>
-                    <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">{isRegister ? 'Crea una nueva cuenta' : 'Bienvenido de vuelta'}</p>
+                    <h1 className="text-3xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mt-2 sm:mt-4">Gestor Académico</h1>
+                    <p className="text-lg sm:text-base text-gray-500 dark:text-gray-400">{isRegister ? 'Crea una nueva cuenta' : 'Bienvenido de vuelta'}</p>
                 </div>
 
                 {!isRegister && (
@@ -158,7 +158,7 @@ const LoginScreen = ({ showAlert }) => {
                                 <span className="text-lg sm:text-base">Iniciar Sesión con Google</span>
                             </button>
                         </div>
-                        <div className="flex items-center my-4 sm:my-6">
+                        <div className="flex items-center my-3 sm:my-6">
                             <hr className="flex-grow border-t border-gray-300 dark:border-gray-600" />
                             <span className="mx-3 sm:mx-4 text-sm sm:text-base text-gray-500 dark:text-gray-400">o</span>
                             <hr className="flex-grow border-t border-gray-300 dark:border-gray-600" />
