@@ -134,8 +134,8 @@ const LoginScreen = ({ showAlert }) => {
             .catch(() => showAlert("No se pudo enviar el correo de restablecimiento. Verifica que el correo sea correcto."))
             .finally(() => setLoading(false));
     };
-
-return (
+  
+    return (
         <div className="min-h-screen bg-blue-600 flex flex-col justify-center items-center p-4">
             <div className="max-w-md w-full mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 sm:p-8 border-t-4 border-blue-600">
                 {registerSuccessMessage && (
