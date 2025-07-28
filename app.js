@@ -1277,7 +1277,7 @@ const InstallBanner = ({ onInstall, onClose }) => {
 // --- Main App Component (Actualizado con lógica de instalación) ---
 const App = () => {
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); // Se mantiene para el estado inicial
     const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
     const [alertDialogMessage, setAlertDialogMessage] = useState("");
     const [installPromptEvent, setInstallPromptEvent] = useState(null);
@@ -1287,32 +1287,52 @@ const App = () => {
         setAlertDialogMessage(message);
         setIsAlertDialogOpen(true);
     };
-
-    // AGREGADO: Manejar el resultado de la redirección al cargar la página
+    
+    // Lógica de autenticación centralizada y corregida
     useEffect(() => {
-        // Muestra un indicador de carga mientras se procesa la redirección
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('redirecting')) {
-            setLoading(true);
-        }
-
+        // Primero, intenta obtener el resultado de una redirección.
         auth.getRedirectResult()
-            .then((result) => {
+            .then(result => {
                 if (result.user) {
-                    // El usuario ha iniciado sesión correctamente.
-                    // El listener onAuthStateChanged se encargará de actualizar el estado.
-                    console.log("Usuario autenticado a través de redirección:", result.user);
+                    // Si hay un resultado, el onAuthStateChanged se encargará del resto.
+                    // No es necesario hacer nada aquí, pero sí es importante esperar a que esta promesa se resuelva.
                 }
             })
-            .catch((error) => {
+            .catch(error => {
+                // Manejar errores de la redirección
                 console.error("Error al obtener el resultado de la redirección:", error);
                 let message = "Ocurrió un error durante el inicio de sesión con Google.";
                 if (error.code === 'auth/account-exists-with-different-credential') {
                     message = 'Ya existe una cuenta con este correo, pero con un método de inicio de sesión diferente.';
                 }
                 showAlert(message);
-            }).finally(() => {
-                 // Ocultar el indicador de carga general en el listener onAuthStateChanged
+            })
+            .finally(() => {
+                // Una vez que getRedirectResult ha terminado (con éxito o error),
+                // nos suscribimos a onAuthStateChanged. Este es el único lugar
+                // que determinará el estado final de la autenticación.
+                const unsubscribe = auth.onAuthStateChanged(currentUser => {
+                    if (currentUser) {
+                        // Lógica para manejar diferentes proveedores
+                        if (currentUser.providerData.some(provider => provider.providerId === 'password')) {
+                            if (currentUser.emailVerified) {
+                                setUser(currentUser);
+                            } else {
+                                setUser(null);
+                            }
+                        } else {
+                            setUser(currentUser);
+                        }
+                    } else {
+                        setUser(null);
+                    }
+                    // Solo cuando onAuthStateChanged da la primera respuesta,
+                    // consideramos que la autenticación está lista.
+                    setLoading(false);
+                });
+
+                // Devolvemos la función de limpieza para el listener
+                return () => unsubscribe();
             });
     }, []);
 
@@ -1333,26 +1353,6 @@ const App = () => {
 
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
         return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    }, []);
-
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(currentUser => {
-            if (currentUser) {
-                if (currentUser.providerData.some(provider => provider.providerId === 'password')) {
-                    if (currentUser.emailVerified) {
-                        setUser(currentUser);
-                    } else {
-                        setUser(null);
-                    }
-                } else {
-                    setUser(currentUser);
-                }
-            } else {
-                setUser(null);
-            }
-            setLoading(false);
-        });
-        return () => unsubscribe();
     }, []);
 
     const handleAlertDialogClose = () => {
