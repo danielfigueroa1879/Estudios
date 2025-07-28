@@ -135,7 +135,7 @@ const LoginScreen = ({ showAlert }) => {
             .finally(() => setLoading(false));
     };
 
-    return (
+  return (
         <div className="min-h-screen bg-blue-600 flex flex-col justify-center items-center p-4">
             <div className="max-w-md w-full mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 sm:p-8 border-t-4 border-blue-600">
                 {registerSuccessMessage && (
@@ -153,9 +153,9 @@ const LoginScreen = ({ showAlert }) => {
                 {!isRegister && (
                     <>
                         <div className="mb-4 sm:mb-6">
-                            <button onClick={handleGoogleLogin} disabled={loading} className="w-full bg-white border border-gray-300 text-gray-700 rounded-xl py-4 sm:py-3 text-lg sm:text-lg font-medium hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center disabled:bg-gray-200">
+                            <button onClick={handleGoogleLogin} disabled={loading} className="w-full bg-white border border-gray-300 text-gray-700 rounded-xl py-4 sm:py-3 text-base sm:text-lg font-medium hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center disabled:bg-gray-200">
                                 {loading ? <IconSpinner /> : <IconGoogle className="w-6 h-6 sm:w-6 sm:h-6 mr-3 sm:mr-3" />}
-                                <span className="text-lg sm:text-base">Iniciar Sesión con Google</span>
+                                <span className="text-base sm:text-base">Iniciar Sesión con Google</span>
                             </button>
                         </div>
                         <div className="flex items-center my-3 sm:my-6">
@@ -167,7 +167,7 @@ const LoginScreen = ({ showAlert }) => {
                 )}
 
                 <div className="space-y-4 sm:space-y-6">
-                    <div className="relative"><span className="absolute left-4 top-4 sm:top-3.5 text-gray-400"><IconMail /></span><input type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-4 sm:py-3 text-lg sm:text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" /></div>
+                    <div className="relative"><span className="absolute left-4 top-4 sm:top-3.5 text-gray-400"><IconMail /></span><input type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-4 sm:py-3 text-base sm:text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" /></div>
                     <div className="relative">
                         <span className="absolute left-4 top-4 sm:top-3.5 text-gray-400"><IconLock /></span>
                         <input
@@ -175,7 +175,7 @@ const LoginScreen = ({ showAlert }) => {
                             placeholder="Contraseña"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-4 sm:py-3 text-lg sm:text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                            className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-4 sm:py-3 text-base sm:text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                         />
                         <button
                             type="button"
@@ -194,6 +194,8 @@ const LoginScreen = ({ showAlert }) => {
             </div>
         </div>
     );
+
+
 };
 
 // --- Componentes de Vista (Refactorizados) ---
