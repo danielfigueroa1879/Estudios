@@ -153,9 +153,9 @@ const LoginScreen = ({ showAlert }) => {
                 {!isRegister && (
                     <>
                         <div className="mb-4 sm:mb-6">
-                            <button onClick={handleGoogleLogin} disabled={loading} className="w-full bg-white border border-gray-300 text-gray-700 rounded-xl py-2.5 sm:py-3 text-base sm:text-lg font-medium hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center disabled:bg-gray-200">
-                                {loading ? <IconSpinner /> : <IconGoogle className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />}
-                                <span className="text-sm sm:text-base">Iniciar Sesión con Google</span>
+                            <button onClick={handleGoogleLogin} disabled={loading} className="w-full bg-white border border-gray-300 text-gray-700 rounded-xl py-4 sm:py-3 text-lg sm:text-lg font-medium hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center disabled:bg-gray-200">
+                                {loading ? <IconSpinner /> : <IconGoogle className="w-6 h-6 sm:w-6 sm:h-6 mr-3 sm:mr-3" />}
+                                <span className="text-lg sm:text-base">Iniciar Sesión con Google</span>
                             </button>
                         </div>
                         <div className="flex items-center my-4 sm:my-6">
@@ -167,15 +167,15 @@ const LoginScreen = ({ showAlert }) => {
                 )}
 
                 <div className="space-y-4 sm:space-y-6">
-                    <div className="relative"><span className="absolute left-4 top-3 sm:top-3.5 text-gray-400"><IconMail /></span><input type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-2.5 sm:py-3 text-base sm:text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" /></div>
+                    <div className="relative"><span className="absolute left-4 top-4 sm:top-3.5 text-gray-400"><IconMail /></span><input type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-4 sm:py-3 text-lg sm:text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" /></div>
                     <div className="relative">
-                        <span className="absolute left-4 top-3 sm:top-3.5 text-gray-400"><IconLock /></span>
+                        <span className="absolute left-4 top-4 sm:top-3.5 text-gray-400"><IconLock /></span>
                         <input
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Contraseña"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-2.5 sm:py-3 text-base sm:text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                            className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-xl px-12 py-4 sm:py-3 text-lg sm:text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                         />
                         <button
                             type="button"
@@ -186,10 +186,10 @@ const LoginScreen = ({ showAlert }) => {
                         </button>
                     </div>
                 </div>
-                <div className="mt-6 sm:mt-8"><button onClick={isRegister ? handleRegister : handleLogin} disabled={loading} className="w-full bg-blue-600 text-white rounded-xl py-3 sm:py-3.5 text-base sm:text-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl flex items-center justify-center disabled:bg-blue-400">{loading && <IconSpinner />}{isRegister ? 'Registrarse' : 'Iniciar Sesión'}</button></div>
+                <div className="mt-6 sm:mt-8"><button onClick={isRegister ? handleRegister : handleLogin} disabled={loading} className="w-full bg-blue-600 text-white rounded-xl py-4 sm:py-3.5 text-lg sm:text-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl flex items-center justify-center disabled:bg-blue-400">{loading && <IconSpinner />}{isRegister ? 'Registrarse' : 'Iniciar Sesión'}</button></div>
                 <div className="text-center mt-4 sm:mt-6 flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
-                    <button onClick={() => setIsRegister(!isRegister)} className="text-sm sm:text-base text-blue-600 dark:text-blue-400 hover:underline">{isRegister ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}</button>
-                    {!isRegister && (<button onClick={handlePasswordReset} className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 hover:underline">¿Olvidaste la contraseña?</button>)}
+                    <button onClick={() => setIsRegister(!isRegister)} className="text-base sm:text-base text-blue-600 dark:text-blue-400 hover:underline">{isRegister ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}</button>
+                    {!isRegister && (<button onClick={handlePasswordReset} className="text-sm sm:text-sm text-gray-500 dark:text-gray-400 hover:underline">¿Olvidaste la contraseña?</button>)}
                 </div>
             </div>
         </div>
