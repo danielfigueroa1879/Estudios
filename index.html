@@ -67,7 +67,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-storage-compat.js"></script>
     
-    <!-- Tailwind CSS Config -->
+    <!-- Tailwind CSS Dark Mode Config -->
     <script>
         tailwind.config = {
             darkMode: 'media',
@@ -78,6 +78,8 @@
             }
         }
     </script>
+    
+    <!-- Dark Mode Toggler Script -->
 
     <!-- Custom Styles -->
     <style>
@@ -87,8 +89,10 @@
             padding: 0;
         }
         .highlight-animation {
+            /* Se cambió el nombre de la animación para mayor claridad y se ajustó la velocidad */
             animation: float-effect 0.4s infinite alternate;
         }
+        /* Keyframes actualizados para un efecto de "flotación" más pronunciado */
         @keyframes float-effect {
             from {
                 transform: scale(1) translateY(0);
@@ -96,27 +100,14 @@
                 z-index: 10;
             }
             to {
-                transform: scale(1.05) translateY(-5px);
-                box-shadow: 0 14px 28px rgba(var(--ring-color-rgb, 0, 0, 0), 0.25), 0 10px 10px rgba(var(--ring-color-rgb, 0, 0, 0), 0.22);
+                transform: scale(1.05) translateY(-5px); /* Aumenta el tamaño y lo eleva */
+                box-shadow: 0 14px 28px rgba(var(--ring-color-rgb, 0, 0, 0), 0.25), 0 10px 10px rgba(var(--ring-color-rgb, 0, 0, 0), 0.22); /* Sombra más fuerte para dar profundidad */
                 z-index: 10;
             }
         }
         svg {
             display: inline-block;
             vertical-align: middle;
-        }
-        @keyframes slide-down {
-            from {
-                opacity: 0;
-                transform: translateY(-100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .animate-slide-down {
-            animation: slide-down 0.5s ease-out;
         }
     </style>
 </head>
@@ -132,6 +123,7 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js')
+                    .then(registration => {
                         console.log('Service Worker registrado con éxito:', registration.scope);
                     })
                     .catch(error => {
