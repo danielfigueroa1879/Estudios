@@ -1,12 +1,14 @@
-const CACHE_NAME = 'academic-task-manager-cache-v6';
-const urlsToCache = [
+const CACHE_NAME = 'academic-task-manager-cache-v7';
+const CORE_CACHE = [
     './',
     './index.html',
     './app.js',
-    './manifest.json',
+    './manifest.json'
+];
+
+const EXTENDED_CACHE = [
     'https://unpkg.com/react@18/umd/react.production.min.js',
     'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
-    // Removido Tailwind CDN del cache porque puede causar problemas CORS
     'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap',
     'https://www.gstatic.com/firebasejs/9.19.1/firebase-app-compat.js',
     'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth-compat.js',
@@ -18,32 +20,31 @@ const urlsToCache = [
     './icons/web-app-manifest-512x512.png'
 ];
 
-// Instalar el Service Worker y guardar los archivos en caché
+// Instalar el Service Worker - Solo cache archivos esenciales primero
 self.addEventListener('install', event => {
     console.log('[SW] Instalando Service Worker...');
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('[SW] Cache abierto, guardando archivos...');
-                // Cachear archivos uno por uno para mejor manejo de errores
-                return Promise.allSettled(
-                    urlsToCache.map(url => {
-                        return cache.add(url).catch(error => {
-                            console.warn(`[SW] No se pudo cachear ${url}:`, error);
-                            return null;
-                        });
-                    })
-                );
+                console.log('[SW] Cacheando archivos esenciales...');
+                // Primero cachear solo los archivos esenciales
+                return cache.addAll(CORE_CACHE);
             })
-            .then(results => {
-                const failed = results.filter(result => result.status === 'rejected');
-                if (failed.length > 0) {
-                    console.warn(`[SW] ${failed.length} archivos no se pudieron cachear`);
-                }
-                console.log('[SW] Cache inicial completado');
+            .then(() => {
+                console.log('[SW] Archivos esenciales cacheados');
+                // Cachear archivos adicionales en background
+                return caches.open(CACHE_NAME).then(cache => {
+                    return Promise.allSettled(
+                        EXTENDED_CACHE.map(url => {
+                            return cache.add(url).catch(error => {
+                                console.warn(`[SW] No se pudo cachear ${url}:`, error);
+                            });
+                        })
+                    );
+                });
             })
             .catch(error => {
-                console.error('[SW] Fallo al abrir cache durante la instalación:', error);
+                console.error('[SW] Error durante instalación:', error);
             })
     );
     self.skipWaiting();
