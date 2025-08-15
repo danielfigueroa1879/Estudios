@@ -1,4 +1,4 @@
-const { useState, useEffect, useRef } = React;
+const { useState, useEffect, useRef, Suspense, lazy } = React;
 
 // --- INSTRUCCIONES IMPORTANTES DE FIREBASE ---
 // 1. Ve a https://firebase.google.com/ y crea un nuevo proyecto.
@@ -1060,7 +1060,7 @@ const AcademicTaskManager = ({ user }) => {
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
-                <IconSpinner /> <span className="text-xl ml-4 text-gray-600 dark:text-gray-300">Cargando tareas...</span>
+                <IconSpinner /> <span className="text-xl ml-4 text-gray-600 dark:text-gray-300">Cargando datos del usuario...</span>
             </div>
         );
     }
