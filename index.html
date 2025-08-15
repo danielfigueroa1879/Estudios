@@ -15,11 +15,11 @@
     <meta property="og:title" content="Gestor Académico - Sistema de Gestión Estudiantil" />
     <meta property="og:description" content="Sistema completo de gestión académica para estudiantes, profesores y administradores. Organiza tareas, calificaciones, asistencia y horarios de manera eficiente." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://gestudios.netlify.app/icons/web-app-manifest-512x512.png" />
+    <meta property="og:image" content="https://danielfigueroa1879.github.io/Estudios/icons/web-app-manifest-512x512.png" />
     <meta property="og:image:width" content="512" />
     <meta property="og:image:height" content="512" />
     <meta property="og:image:alt" content="Logo del Gestor Académico" />
-    <meta property="og:url" content="https://gestudios.netlify.app/" />
+    <meta property="og:url" content="https://danielfigueroa1879.github.io/Estudios/" />
     <meta property="og:site_name" content="Gestor Académico" />
     <meta property="og:locale" content="es_ES" />
     
@@ -27,16 +27,17 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Gestor Académico - Sistema de Gestión Estudiantil" />
     <meta name="twitter:description" content="Sistema completo de gestión académica para estudiantes, profesores y administradores." />
-    <meta name="twitter:image" content="https://gestudios.netlify.app/icons/web-app-manifest-512x512.png" />
+    <meta name="twitter:image" content="https://danielfigueroa1879.github.io/Estudios/icons/web-app-manifest-512x512.png" />
     <meta name="twitter:image:alt" content="Logo del Gestor Académico" />
     
     <!-- Meta etiquetas adicionales para WhatsApp -->
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:secure_url" content="https://gestudios.netlify.app/icons/web-app-manifest-512x512.png" />
+    <meta property="og:image:secure_url" content="https://danielfigueroa1879.github.io/Estudios/icons/web-app-manifest-512x512.png" />
     
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#3b82f6"/>
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Gestor Académico">
@@ -50,12 +51,27 @@
     <link rel="icon" type="image/png" sizes="512x512" href="icons/web-app-manifest-512x512.png">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://gestudios.netlify.app/" />
+    <link rel="canonical" href="https://danielfigueroa1879.github.io/Estudios/" />
 
     <!-- Google Fonts - Optimizado con display=swap -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS - Usando Play CDN para desarrollo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'media',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 
     <!-- Custom Styles -->
     <style>
@@ -65,10 +81,8 @@
             padding: 0;
         }
         .highlight-animation {
-            /* Se cambió el nombre de la animación para mayor claridad y se ajustó la velocidad */
             animation: float-effect 0.4s infinite alternate;
         }
-        /* Keyframes actualizados para un efecto de "flotación" más pronunciado */
         @keyframes float-effect {
             from {
                 transform: scale(1) translateY(0);
@@ -76,8 +90,8 @@
                 z-index: 10;
             }
             to {
-                transform: scale(1.05) translateY(-5px); /* Aumenta el tamaño y lo eleva */
-                box-shadow: 0 14px 28px rgba(var(--ring-color-rgb, 0, 0, 0), 0.25), 0 10px 10px rgba(var(--ring-color-rgb, 0, 0, 0), 0.22); /* Sombra más fuerte para dar profundidad */
+                transform: scale(1.05) translateY(-5px);
+                box-shadow: 0 14px 28px rgba(var(--ring-color-rgb, 0, 0, 0), 0.25), 0 10px 10px rgba(var(--ring-color-rgb, 0, 0, 0), 0.22);
                 z-index: 10;
             }
         }
@@ -140,43 +154,25 @@
     <!-- The React application will be rendered here -->
     <div id="root"></div>
 
-    <!-- External Libraries - Moved to bottom and optimized -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js" defer></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" defer></script>
-    <script src="https://cdn.tailwindcss.com/3.4.0" defer></script>
+    <!-- External Libraries -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
-    <!-- Firebase SDK - Optimized loading -->
-    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-app-compat.js" defer></script>
-    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-auth-compat.js" defer></script>
-    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore-compat.js" defer></script>
-    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-storage-compat.js" defer></script>
-    
-    <!-- Tailwind CSS Dark Mode Config -->
-    <script defer>
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof tailwind !== 'undefined') {
-                tailwind.config = {
-                    darkMode: 'media',
-                    theme: {
-                        extend: {
-                            // Puedes extender el tema aquí si es necesario
-                        }
-                    }
-                }
-            }
-        });
-    </script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-storage-compat.js"></script>
 
-    <!-- Main Application Script - Optimized -->
-    <script defer>
+    <!-- Main Application Script -->
+    <script>
         // Wait for all dependencies to load
         function waitForDependencies() {
             return new Promise((resolve) => {
                 const checkDependencies = () => {
                     if (typeof React !== 'undefined' && 
                         typeof ReactDOM !== 'undefined' && 
-                        typeof firebase !== 'undefined' &&
-                        typeof tailwind !== 'undefined') {
+                        typeof firebase !== 'undefined') {
                         resolve();
                     } else {
                         setTimeout(checkDependencies, 50);
@@ -193,7 +189,7 @@
                 
                 // Load the main application script
                 const script = document.createElement('script');
-                script.src = 'app.js';
+                script.src = './app.js';
                 script.onload = function() {
                     // Hide loading screen once app is loaded
                     const loadingScreen = document.getElementById('loading-screen');
@@ -205,12 +201,12 @@
                         }, 500);
                     }
                 };
-                script.onerror = function() {
-                    console.error('Error loading main application script');
+                script.onerror = function(error) {
+                    console.error('Error loading main application script:', error);
                     // Hide loading screen even on error
                     const loadingScreen = document.getElementById('loading-screen');
                     if (loadingScreen) {
-                        loadingScreen.style.display = 'none';
+                        loadingScreen.innerHTML = '<div class="loading-text">Error cargando la aplicación</div><div class="loading-subtext">Por favor, recarga la página</div>';
                     }
                 };
                 document.head.appendChild(script);
@@ -219,17 +215,21 @@
                 // Hide loading screen on error
                 const loadingScreen = document.getElementById('loading-screen');
                 if (loadingScreen) {
-                    loadingScreen.style.display = 'none';
+                    loadingScreen.innerHTML = '<div class="loading-text">Error cargando dependencias</div><div class="loading-subtext">Por favor, recarga la página</div>';
                 }
             }
         }
 
-        // Start loading the app
-        loadApp();
+        // Start loading the app when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadApp);
+        } else {
+            loadApp();
+        }
     </script>
 
     <!-- Service Worker Registration -->
-    <script defer>
+    <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js')
