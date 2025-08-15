@@ -51,7 +51,7 @@ const IconGoogle = ({ className }) => ( <svg className={className} viewBox="0 0 
 
 // --- Custom Dialogs ---
 const CustomAlertDialog = ({ message, isOpen, onClose }) => { if (!isOpen) return null; return ( <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4"> <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-blue-500"> <IconAlert width="40" height="40" className="text-blue-500 mx-auto mb-4" /> <p className="text-lg text-gray-800 dark:text-gray-200 mb-6">{message}</p> <button onClick={onClose} className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors text-lg font-medium" > Aceptar </button> </div> </div> ); };
-const CustomConfirmDialog = ({ message, isOpen, onConfirm, onCancel }) => { if (!isOpen) return null; return ( <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4"> <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-red-500"> <IconTrash width="40" height="40" className="text-red-500 mx-auto mb-4" /> <p className="text-lg text-gray-800 dark:text-gray-200 mb-6">{message}</p> <div className="flex space-x-4"> <button onClick={onCancel} className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors text-lg font-medium" > Cancelar </button> <button onClick={onConfirm} className="flex-1 bg-red-500 text-white py-3 rounded-lg hover:bg-red-600 transition-colors text-lg font-medium" > Confirmar </button> </div> </div> </div> ); };
+const CustomConfirmDialog = ({ message, isOpen, onConfirm, onCancel }) => { if (!isOpen) return null; return ( <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4"> <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border-t-4 border-red-500"> <IconTrash width="40" height="40" className="text-red-500 mx-auto mb-4" /> <p className="text-lg text-gray-800 dark:text-gray-200 mb-6">{message}</p> <div className={`flex ${settings.view === 'weeklyCalendar' ? 'justify-center' : 'justify-between'} w-full`} space-x-4"> <button onClick={onCancel} className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors text-lg font-medium" > Cancelar </button> <button onClick={onConfirm} className="flex-1 bg-red-500 text-white py-3 rounded-lg hover:bg-red-600 transition-colors text-lg font-medium" > Confirmar </button> </div> </div> </div> ); };
 
 // --- Login Screen Component ---
 const LoginScreen = ({ showAlert }) => {
@@ -736,7 +736,7 @@ const MiniWeeklyCalendar = ({ classes }) => {
                                         >
                                             <div className="flex flex-col space-y-0.5">
                                                 {classesInSlot.map(cls => (
-                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 whitespace-normal break-words min-w-[80px]" title={`${cls.subject} (${cls.description})`}>
+                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 truncate sm:whitespace-normal sm:break-words" title={`${cls.subject} (${cls.description})`}>
                                                         {cls.subject}
                                                         <span className="text-[0.5rem] text-blue-700 dark:text-blue-300 block">
                                                             {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
@@ -1218,10 +1218,10 @@ const AcademicTaskManager = ({ user }) => {
                     <aside className="hidden md:block w-[30rem] flex-shrink-0 ml-6">
                         <div className="sticky top-24">
                             {settings.view !== 'weeklyCalendar' && (
-  <div className="p-2 overflow-x-auto max-w-xs w-full">
-    <MiniWeeklyCalendar classes={classes} />
-  </div>
-)}
+    <div className="p-2 overflow-x-auto max-w-xs w-full">
+      <MiniWeeklyCalendar classes={classes} />
+    </div>
+  )}
                         </div>
                     </aside>
                 </div>
