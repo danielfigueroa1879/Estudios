@@ -3,36 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor Académico - Sistema de Gestión Estudiantil</title>
-    
-    <!-- Meta etiquetas básicas -->
-    <meta name="description" content="Sistema completo de gestión académica para estudiantes, profesores y administradores. Organiza tareas, calificaciones, asistencia y horarios de manera eficiente."/>
-    <meta name="keywords" content="gestor académico, sistema estudiantil, educación, calificaciones, asistencia, tareas, horarios">
-    <meta name="author" content="GE Studios">
-    <meta name="robots" content="index, follow">
-    
-    <!-- Open Graph Meta Tags COMPLETAS (para WhatsApp, Facebook, etc.) -->
-    <meta property="og:title" content="Gestor Académico - Sistema de Gestión Estudiantil" />
-    <meta property="og:description" content="Sistema completo de gestión académica para estudiantes, profesores y administradores. Organiza tareas, calificaciones, asistencia y horarios de manera eficiente." />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://danielfigueroa1879.github.io/Estudios/icons/web-app-manifest-512x512.png" />
-    <meta property="og:image:width" content="512" />
-    <meta property="og:image:height" content="512" />
-    <meta property="og:image:alt" content="Logo del Gestor Académico" />
-    <meta property="og:url" content="https://danielfigueroa1879.github.io/Estudios/" />
-    <meta property="og:site_name" content="Gestor Académico" />
-    <meta property="og:locale" content="es_ES" />
-    
-    <!-- Meta etiquetas específicas para Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Gestor Académico - Sistema de Gestión Estudiantil" />
-    <meta name="twitter:description" content="Sistema completo de gestión académica para estudiantes, profesores y administradores." />
-    <meta name="twitter:image" content="https://danielfigueroa1879.github.io/Estudios/icons/web-app-manifest-512x512.png" />
-    <meta name="twitter:image:alt" content="Logo del Gestor Académico" />
-    
-    <!-- Meta etiquetas adicionales para WhatsApp -->
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:secure_url" content="https://danielfigueroa1879.github.io/Estudios/icons/web-app-manifest-512x512.png" />
+    <title>Gestor Académico</title>
     
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
@@ -42,189 +13,47 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Gestor Académico">
     
-    <!-- Favicons and Touch Icons -->
-    <link rel="icon" type="image/x-icon" href="icons/favicon.ico">
-    <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
-    <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96x96.png">
-    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="icons/web-app-manifest-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="icons/web-app-manifest-512x512.png">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://danielfigueroa1879.github.io/Estudios/" />
-
-    <!-- Google Fonts - Optimizado con display=swap -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Tailwind CSS - Usando Play CDN para desarrollo -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        // Suprimir warning de producción de Tailwind
         tailwind.config = {
             darkMode: 'media',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'poppins': ['Poppins', 'sans-serif'],
-                    }
-                }
+            corePlugins: {
+                preflight: true,
             }
         }
     </script>
-
-    <!-- Custom Styles -->
+    
+    <!-- Minimal styles -->
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .highlight-animation {
-            animation: float-effect 0.4s infinite alternate;
-        }
+        body { margin: 0; padding: 0; }
+        .highlight-animation { animation: float-effect 0.4s infinite alternate; }
         @keyframes float-effect {
-            from {
-                transform: scale(1) translateY(0);
-                box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-                z-index: 10;
-            }
-            to {
-                transform: scale(1.05) translateY(-5px);
-                box-shadow: 0 14px 28px rgba(var(--ring-color-rgb, 0, 0, 0), 0.25), 0 10px 10px rgba(var(--ring-color-rgb, 0, 0, 0), 0.22);
-                z-index: 10;
-            }
-        }
-        svg {
-            display: inline-block;
-            vertical-align: middle;
-        }
-        
-        /* Loading screen styles */
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            color: white;
-        }
-        
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .loading-text {
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-        
-        .loading-subtext {
-            font-size: 14px;
-            opacity: 0.8;
+            from { transform: scale(1) translateY(0); }
+            to { transform: scale(1.05) translateY(-5px); }
         }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900">
-    <!-- Loading Screen -->
-    <div id="loading-screen">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Cargando Gestor Académico</div>
-        <div class="loading-subtext">Preparando tu experiencia...</div>
+    <div id="root">
+        <div class="min-h-screen bg-blue-600 flex items-center justify-center">
+            <div class="text-white text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                <p class="text-lg">Cargando...</p>
+            </div>
+        </div>
     </div>
 
-    <!-- The React application will be rendered here -->
-    <div id="root"></div>
-
-    <!-- External Libraries -->
+    <!-- Load scripts in order -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-storage-compat.js"></script>
-
-    <!-- Main Application Script -->
-    <script>
-        // Hide loading screen function
-        function hideLoadingScreen() {
-            const loadingScreen = document.getElementById('loading-screen');
-            if (loadingScreen) {
-                loadingScreen.style.opacity = '0';
-                loadingScreen.style.transition = 'opacity 0.3s ease-out';
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                }, 300);
-            }
-        }
-
-        // Load app immediately
-        function loadApp() {
-            // Set a maximum timeout for loading screen
-            const maxLoadingTime = setTimeout(() => {
-                console.log('Force hiding loading screen after timeout');
-                hideLoadingScreen();
-            }, 3000); // 3 seconds max
-
-            // Load the main application script
-            const script = document.createElement('script');
-            script.src = './app.js';
-            
-            script.onload = function() {
-                clearTimeout(maxLoadingTime);
-                console.log('App loaded successfully');
-                hideLoadingScreen();
-            };
-            
-            script.onerror = function(error) {
-                clearTimeout(maxLoadingTime);
-                console.error('Error loading main application script:', error);
-                const loadingScreen = document.getElementById('loading-screen');
-                if (loadingScreen) {
-                    loadingScreen.innerHTML = '<div class="loading-text">Error cargando la aplicación</div><div class="loading-subtext">Por favor, recarga la página</div>';
-                }
-            };
-            
-            document.head.appendChild(script);
-        }
-
-        // Start loading immediately
-        loadApp();
-    </script>
-
-    <!-- Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js')
-                    .then(registration => {
-                        console.log('Service Worker registrado con éxito:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('Fallo el registro del Service Worker:', error);
-                    });
-            });
-        }
-    </script>
+    
+    <!-- Load main app -->
+    <script type="text/babel" src="./app.js"></script>
 </body>
 </html>
