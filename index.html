@@ -17,6 +17,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         // Suprimir warning de producción de Tailwind
+        window.process = { env: { NODE_ENV: 'production' } };
         tailwind.config = {
             darkMode: 'media',
             corePlugins: {
@@ -54,6 +55,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-storage-compat.js"></script>
     
     <!-- Load main app -->
-    <script type="text/babel" src="./app.js"></script>
+    <script src="./app.js"></script>
 </body>
 </html>
