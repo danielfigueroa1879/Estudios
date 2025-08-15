@@ -61,8 +61,8 @@ const WEEKLY_CALENDAR_TIME_SLOTS = [
 
 // Lazily load LoginScreen and AcademicTaskManager components
 // Esto asegura que el código de estos componentes solo se cargue cuando sean necesarios.
-const LoginScreen = lazy(() => Promise.resolve(
-    ({ showAlert }) => {
+const LoginScreen = lazy(() => Promise.resolve({
+    default: ({ showAlert }) => {
         const [isRegister, setIsRegister] = useState(false);
         const [email, setEmail] = useState('');
         const [password, setPassword] = useState('');
@@ -75,7 +75,7 @@ const LoginScreen = lazy(() => Promise.resolve(
             setLoading(true);
             auth.createUserWithEmailAndPassword(email, password)
                 .then(userCredential => userCredential.user.sendEmailVerification().then(() => {
-                    setRegisterSuccessMessage('¡Registro exitoso! Se ha enviado un correo de verificación. Revisa tu bandeja de entrada (o carpeta de spam) para activar tu cuenta.');
+                    setRegisterSuccessMessage('¡Registro exitoso! Se ha enviado un un correo de verificación. Revisa tu bandeja de entrada (o carpeta de spam) para activar tu cuenta.');
                     setIsRegister(false); setEmail(''); setPassword('');
                     setTimeout(() => setRegisterSuccessMessage(''), 30000); // Ocultar después de 30 segundos
                 }))
@@ -202,12 +202,12 @@ const LoginScreen = lazy(() => Promise.resolve(
             </div>
         );
     }
-));
+}));
 
 // Lazily load AcademicTaskManager component
-// Esto asegura que el código de este componente solo se cargue cuando sea necesario.
-const AcademicTaskManager = lazy(() => Promise.resolve(
-    ({ user }) => {
+// Esto asegura que el código de estos componentes solo se cargue cuando sea necesario.
+const AcademicTaskManager = lazy(() => Promise.resolve({
+    default: ({ user }) => {
         const [tasks, setTasks] = useState([]);
         const [classes, setClasses] = useState([]);
         const [history, setHistory] = useState([]);
@@ -909,7 +909,7 @@ const AcademicTaskManager = lazy(() => Promise.resolve(
                                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     {timeSlots.map(time => (
                                         <tr key={time}>
-                                            <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700">{time} horas</td>
+                                            <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">{time} horas</td>
                                             {daysOfWeek.map((day, dayIndex) => {
                                                 const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
                                                 const formattedDate = getFormattedDateForDay(dayIndex);
