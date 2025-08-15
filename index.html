@@ -166,66 +166,50 @@
 
     <!-- Main Application Script -->
     <script>
-        // Wait for all dependencies to load
-        function waitForDependencies() {
-            return new Promise((resolve) => {
-                const checkDependencies = () => {
-                    if (typeof React !== 'undefined' && 
-                        typeof ReactDOM !== 'undefined' && 
-                        typeof firebase !== 'undefined') {
-                        resolve();
-                    } else {
-                        setTimeout(checkDependencies, 50);
-                    }
-                };
-                checkDependencies();
-            });
-        }
-
-        // Load and execute the main app
-        async function loadApp() {
-            try {
-                await waitForDependencies();
-                
-                // Load the main application script
-                const script = document.createElement('script');
-                script.src = './app.js';
-                script.onload = function() {
-                    // Hide loading screen once app is loaded
-                    const loadingScreen = document.getElementById('loading-screen');
-                    if (loadingScreen) {
-                        loadingScreen.style.opacity = '0';
-                        loadingScreen.style.transition = 'opacity 0.5s ease-out';
-                        setTimeout(() => {
-                            loadingScreen.style.display = 'none';
-                        }, 500);
-                    }
-                };
-                script.onerror = function(error) {
-                    console.error('Error loading main application script:', error);
-                    // Hide loading screen even on error
-                    const loadingScreen = document.getElementById('loading-screen');
-                    if (loadingScreen) {
-                        loadingScreen.innerHTML = '<div class="loading-text">Error cargando la aplicación</div><div class="loading-subtext">Por favor, recarga la página</div>';
-                    }
-                };
-                document.head.appendChild(script);
-            } catch (error) {
-                console.error('Error loading dependencies:', error);
-                // Hide loading screen on error
-                const loadingScreen = document.getElementById('loading-screen');
-                if (loadingScreen) {
-                    loadingScreen.innerHTML = '<div class="loading-text">Error cargando dependencias</div><div class="loading-subtext">Por favor, recarga la página</div>';
-                }
+        // Hide loading screen function
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.style.opacity = '0';
+                loadingScreen.style.transition = 'opacity 0.3s ease-out';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 300);
             }
         }
 
-        // Start loading the app when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', loadApp);
-        } else {
-            loadApp();
+        // Load app immediately
+        function loadApp() {
+            // Set a maximum timeout for loading screen
+            const maxLoadingTime = setTimeout(() => {
+                console.log('Force hiding loading screen after timeout');
+                hideLoadingScreen();
+            }, 3000); // 3 seconds max
+
+            // Load the main application script
+            const script = document.createElement('script');
+            script.src = './app.js';
+            
+            script.onload = function() {
+                clearTimeout(maxLoadingTime);
+                console.log('App loaded successfully');
+                hideLoadingScreen();
+            };
+            
+            script.onerror = function(error) {
+                clearTimeout(maxLoadingTime);
+                console.error('Error loading main application script:', error);
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen) {
+                    loadingScreen.innerHTML = '<div class="loading-text">Error cargando la aplicación</div><div class="loading-subtext">Por favor, recarga la página</div>';
+                }
+            };
+            
+            document.head.appendChild(script);
         }
+
+        // Start loading immediately
+        loadApp();
     </script>
 
     <!-- Service Worker Registration -->
