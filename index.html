@@ -52,34 +52,10 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://gestudios.netlify.app/" />
 
-    <!-- External Libraries -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com/3.4.0"></script>
-    
-    <!-- Google Fonts -->
+    <!-- Google Fonts - Optimizado con display=swap -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-storage-compat.js"></script>
-    
-    <!-- Tailwind CSS Dark Mode Config -->
-    <script>
-        tailwind.config = {
-            darkMode: 'media',
-            theme: {
-                extend: {
-                    // Puedes extender el tema aquí si es necesario
-                }
-            }
-        }
-    </script>
-    
-    <!-- Dark Mode Toggler Script -->
 
     <!-- Custom Styles -->
     <style>
@@ -109,17 +85,151 @@
             display: inline-block;
             vertical-align: middle;
         }
+        
+        /* Loading screen styles */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .loading-subtext {
+            font-size: 14px;
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900">
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Cargando Gestor Académico</div>
+        <div class="loading-subtext">Preparando tu experiencia...</div>
+    </div>
+
     <!-- The React application will be rendered here -->
     <div id="root"></div>
 
-    <!-- Main Application Script -->
-    <script type="text/babel" src="app.js"></script>
+    <!-- External Libraries - Moved to bottom and optimized -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js" defer></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com/3.4.0" defer></script>
+    
+    <!-- Firebase SDK - Optimized loading -->
+    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-auth-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-storage-compat.js" defer></script>
+    
+    <!-- Tailwind CSS Dark Mode Config -->
+    <script defer>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof tailwind !== 'undefined') {
+                tailwind.config = {
+                    darkMode: 'media',
+                    theme: {
+                        extend: {
+                            // Puedes extender el tema aquí si es necesario
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- Main Application Script - Optimized -->
+    <script defer>
+        // Wait for all dependencies to load
+        function waitForDependencies() {
+            return new Promise((resolve) => {
+                const checkDependencies = () => {
+                    if (typeof React !== 'undefined' && 
+                        typeof ReactDOM !== 'undefined' && 
+                        typeof firebase !== 'undefined' &&
+                        typeof tailwind !== 'undefined') {
+                        resolve();
+                    } else {
+                        setTimeout(checkDependencies, 50);
+                    }
+                };
+                checkDependencies();
+            });
+        }
+
+        // Load and execute the main app
+        async function loadApp() {
+            try {
+                await waitForDependencies();
+                
+                // Load the main application script
+                const script = document.createElement('script');
+                script.src = 'app_optimized.js';
+                script.onload = function() {
+                    // Hide loading screen once app is loaded
+                    const loadingScreen = document.getElementById('loading-screen');
+                    if (loadingScreen) {
+                        loadingScreen.style.opacity = '0';
+                        loadingScreen.style.transition = 'opacity 0.5s ease-out';
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                        }, 500);
+                    }
+                };
+                script.onerror = function() {
+                    console.error('Error loading main application script');
+                    // Hide loading screen even on error
+                    const loadingScreen = document.getElementById('loading-screen');
+                    if (loadingScreen) {
+                        loadingScreen.style.display = 'none';
+                    }
+                };
+                document.head.appendChild(script);
+            } catch (error) {
+                console.error('Error loading dependencies:', error);
+                // Hide loading screen on error
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'none';
+                }
+            }
+        }
+
+        // Start loading the app
+        loadApp();
+    </script>
 
     <!-- Service Worker Registration -->
-    <script>
+    <script defer>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js')
@@ -134,4 +244,3 @@
     </script>
 </body>
 </html>
-
