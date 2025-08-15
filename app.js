@@ -736,7 +736,7 @@ const MiniWeeklyCalendar = ({ classes }) => {
                                         >
                                             <div className="flex flex-col space-y-0.5">
                                                 {classesInSlot.map(cls => (
-                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 truncate" title={`${cls.subject} (${cls.description})`}>
+                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 whitespace-normal break-words min-w-[80px]" title={`${cls.subject} (${cls.description})`}>
                                                         {cls.subject}
                                                         <span className="text-[0.5rem] text-blue-700 dark:text-blue-300 block">
                                                             {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
@@ -1217,7 +1217,11 @@ const AcademicTaskManager = ({ user }) => {
                     {/* Sidebar Column for Mini Calendar */}
                     <aside className="hidden md:block w-[30rem] flex-shrink-0 ml-6">
                         <div className="sticky top-24">
-                            <MiniWeeklyCalendar classes={classes} />
+                            {settings.view !== 'weeklyCalendar' && (
+  <div className="p-2 overflow-x-auto max-w-xs w-full">
+    <MiniWeeklyCalendar classes={classes} />
+  </div>
+)}
                         </div>
                     </aside>
                 </div>
