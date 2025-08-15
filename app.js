@@ -59,8 +59,651 @@ const WEEKLY_CALENDAR_TIME_SLOTS = [
     '16:00', '19:00', '20:00', '22:00' // 9 rows
 ];
 
-// Lazily load LoginScreen and AcademicTaskManager components
-// Esto asegura que el código de estos componentes solo se cargue cuando sean necesarios.
+// --- Helper Functions ---
+const createLocalDate = (dateString) => {
+    const parts = dateString.split('-').map(Number);
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+};
+
+const getTaskStatus = (dueDate, dueTime, completed) => {
+    if (completed) return 'completed';
+    const now = new Date();
+    const todayMidnight = new Date(now);
+    todayMidnight.setHours(0, 0, 0, 0);
+    const dueMidnight = createLocalDate(dueDate);
+    let dueDateTime = dueMidnight;
+    if (dueTime) {
+        const [hours, minutes] = dueTime.split(':').map(Number);
+        dueDateTime = new Date(dueMidnight);
+        dueDateTime.setHours(hours, minutes, 0, 0);
+    } else {
+        dueDateTime = new Date(dueMidnight);
+        dueDateTime.setHours(23, 59, 59, 999);
+    }
+    if (dueDateTime < now) return 'overdue';
+    const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) return 'due-today';
+    if (diffDays === 1) return 'due-tomorrow';
+    if (diffDays <= 3) return 'due-soon';
+    return 'on-time';
+};
+
+const getTaskCardStyle = (status, completed) => {
+    let baseStyles = {}, highlightClass = '', borderColorRgb = '0,0,0', hoverClasses = '', highlightBg = '';
+    if (completed) {
+        baseStyles = { bg: 'bg-gray-50 dark:bg-gray-700/50', border: 'border-gray-300 dark:border-gray-600', text: 'text-gray-600 dark:text-gray-400' };
+        highlightClass = 'border-gray-500 ring-2 ring-gray-500 shadow-md';
+        borderColorRgb = '107,114,128';
+        hoverClasses = 'hover:border-gray-400 dark:hover:border-gray-500 hover:ring-2 hover:ring-gray-400/50 dark:hover:ring-gray-500/50 hover:shadow-xl hover:shadow-gray-300/50 dark:hover:shadow-gray-900/50';
+        highlightBg = 'bg-gray-200 dark:bg-gray-600';
+    } else {
+        switch (status) {
+            case 'overdue':
+                baseStyles = { bg: 'bg-gray-100 dark:bg-gray-800/80', border: 'border-gray-500 dark:border-gray-600', text: 'text-gray-800 dark:text-gray-300' };
+                highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md';
+                borderColorRgb = '75,85,99';
+                hoverClasses = 'hover:border-gray-600 dark:hover:border-gray-400 hover:ring-2 hover:ring-gray-600/50 dark:hover:ring-gray-400/50 hover:shadow-xl hover:shadow-gray-400/50 dark:hover:shadow-black/50';
+                highlightBg = 'bg-gray-200 dark:bg-gray-600';
+                break;
+            case 'due-today':
+                baseStyles = { bg: 'bg-red-50 dark:bg-red-800/70', border: 'border-red-500 dark:border-red-600', text: 'text-red-800 dark:text-red-200' };
+                highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
+                borderColorRgb = '239,68,68';
+                hoverClasses = 'hover:border-red-600 dark:hover:border-red-500 hover:ring-2 hover:ring-red-600/50 dark:hover:ring-red-500/50 hover:shadow-xl hover:shadow-red-300/50 dark:hover:shadow-red-900/50';
+                highlightBg = 'bg-red-200 dark:bg-red-800/70';
+                break;
+            case 'due-tomorrow':
+                baseStyles = { bg: 'bg-orange-50 dark:bg-orange-800/70', border: 'border-orange-400 dark:border-orange-500', text: 'text-orange-800 dark:text-orange-200' };
+                highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
+                borderColorRgb = '249,115,22';
+                hoverClasses = 'hover:border-orange-500 dark:hover:border-orange-500 hover:ring-2 hover:ring-orange-500/50 dark:hover:ring-orange-500/50 hover:shadow-xl hover:shadow-orange-300/50 dark:hover:shadow-orange-900/50';
+                highlightBg = 'bg-orange-200 dark:bg-orange-800/70';
+                break;
+            case 'due-soon':
+                baseStyles = { bg: 'bg-yellow-50 dark:bg-yellow-800/70', border: 'border-yellow-400 dark:border-yellow-500', text: 'text-yellow-800 dark:text-yellow-200' };
+                highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
+                borderColorRgb = '245,158,11';
+                hoverClasses = 'hover:border-yellow-500 dark:hover:border-yellow-500 hover:ring-2 hover:ring-yellow-500/50 dark:hover:ring-yellow-500/50 hover:shadow-xl hover:shadow-yellow-300/50 dark:hover:shadow-yellow-900/50';
+                highlightBg = 'bg-yellow-200 dark:bg-yellow-800/70';
+                break;
+            default: // 'on-time'
+                baseStyles = { bg: 'bg-green-50 dark:bg-green-800/70', border: 'border-green-400 dark:border-green-500', text: 'text-green-800 dark:text-green-200' };
+                highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
+                borderColorRgb = '34,197,94';
+                hoverClasses = 'hover:border-green-500 dark:hover:border-green-500 hover:ring-2 hover:ring-green-500/50 dark:hover:ring-green-500/50 hover:shadow-xl hover:shadow-green-300/50 dark:hover:shadow-green-900/50';
+                highlightBg = 'bg-green-200 dark:bg-green-800/70';
+                break;
+        }
+    }
+    return { ...baseStyles, highlightClass, borderColorRgb, hoverClasses, highlightBg };
+};
+
+const formatDate = (dateString) => createLocalDate(dateString).toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+const formatTimestamp = (dateObj) => {
+    if (!dateObj) return '';
+    return dateObj.toLocaleString('es-ES', {
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+};
+const getDaysUntilDue = (dueDate) => {
+    const todayMidnight = new Date();
+    todayMidnight.setHours(0, 0, 0, 0);
+    const dueMidnight = createLocalDate(dueDate);
+    const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return `${Math.abs(diffDays)} días atrasado`;
+    if (diffDays === 0) return 'Vence hoy';
+    if (diffDays === 1) return 'Vence mañana';
+    return `${diffDays} días restantes`;
+};
+
+// --- Sub-Components ---
+const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, getDaysUntilDue, toggleTask, startEditing, deleteTask, handleTaskCardClick, onBackToList }) => {
+    const groupedTasks = tasks.reduce((acc, task) => {
+        const date = task.dueDate;
+        if (!acc[date]) acc[date] = [];
+        acc[date].push(task);
+        return acc;
+    }, {});
+
+    return (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative">
+            <div className="flex items-center justify-between mb-6">
+                 <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Tareas por día</h2>
+                 <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
+                    <div key={date} className="bg-white dark:bg-gray-700/50 rounded-xl shadow-lg p-2.5 sm:p-5 transition-all duration-300">
+                        <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 dark:text-gray-200 mb-2 sm:mb-3">{formatDate(date)}</h3>
+                        <div className="space-y-1">
+                            {dayTasks.sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')).map(task => {
+                                const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                                const cardStyle = getTaskCardStyle(status, task.completed);
+                                return (
+                                    <div key={task.id} onClick={(e) => handleTaskCardClick(task, e)} className={`p-1.5 sm:p-3 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300 cursor-pointer ${cardStyle.hoverClasses}`}>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center space-x-1"><IconClock width="18" height="18" className="text-gray-600 dark:text-gray-300" /><span className={`text-xs sm:text-sm px-2 py-0.5 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>{task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate)}</span></div>
+                                            <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id, task.completed); }} className={`w-5 h-5 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center ${task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-400 dark:border-gray-500'}`}>{task.completed && <IconCheck width="14" height="14" />}</button>
+                                        </div>
+                                        <div><p className="font-medium text-sm sm:text-lg text-gray-800 dark:text-gray-100">{task.subject}</p><p className="text-xs sm:text-base text-gray-600 dark:text-gray-300 mt-0.5">{task.title}</p><p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{task.type}</p></div>
+                                        <div className="flex justify-end mt-3 space-x-1">
+                                            <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/50 p-1 rounded-xl transition-colors" title="Editar tarea"><IconEdit width="16" height="16" /></button>
+                                            <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 p-1 rounded-xl transition-colors" title="Eliminar tarea"><IconTrash width="16" height="16" /></button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, getTaskCardStyle, chileanHolidays, createLocalDate, onDayDoubleClick }) => {
+    const year = currentViewDate.getFullYear();
+    const month = currentViewDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    const daysArray = [];
+    const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1; // Adjust to start Monday as 0
+    for (let i = 0; i < adjustedStartingDay; i++) { daysArray.push(null); }
+    for (let day = 1; day <= daysInMonth; day++) { daysArray.push(day); }
+    const tasksByDate = tasks.reduce((acc, task) => {
+        const taskDate = createLocalDate(task.dueDate);
+        if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
+            const day = taskDate.getDate();
+            if (!acc[day]) acc[day] = [];
+            acc[day].push(task);
+        }
+        return acc;
+    }, {});
+    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+    const goToPreviousMonth = () => setCurrentViewDate(new Date(year, month - 1, 1));
+    const goToNextMonth = () => setCurrentViewDate(new Date(year, month + 1, 1));
+    const goToToday = () => setCurrentViewDate(todayGlobal);
+
+    return (
+        <div className="relative">
+            <h2 className="text-2xl sm:text-3xl font-bold text-red-600 dark:text-red-400 text-center mb-1 sm:mb-0 uppercase">{monthNames[month]} {year}</h2>
+            <div className="flex justify-center space-x-1 sm:space-x-2 w-full mt-1 sm:mt-2 mb-4">
+                <button onClick={goToPreviousMonth} className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm">←</button>
+                <button onClick={goToToday} className="px-3 py-1.5 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm">Hoy</button>
+                <button onClick={goToNextMonth} className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm">→</button>
+            </div>
+            <div className="grid grid-cols-7 bg-blue-600 dark:bg-gray-700 text-white rounded-t-lg">{dayNames.map((day, index) => <div key={index} className="text-center font-semibold py-2 text-sm">{day}</div>)}</div>
+            <div className="grid grid-cols-7 border-l border-t border-gray-200 dark:border-gray-700">
+                {daysArray.map((day, index) => {
+                    if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28 bg-gray-50 dark:bg-gray-800/50 border-r border-b border-gray-200 dark:border-gray-600"></div>;
+                    const dayObj = new Date(year, month, day);
+                    const isToday = todayGlobal.getDate() === dayObj.getDate() && todayGlobal.getMonth() === dayObj.getMonth() && todayGlobal.getFullYear() === dayObj.getFullYear();
+                    const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                    const isHoliday = chileanHolidays.includes(currentDayFormatted);
+                    const highlightEntry = highlightedDate && highlightedDate.date === currentDayFormatted ? highlightedDate : null;
+
+                    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 dark:border-gray-600 ${isToday ? 'bg-blue-100 dark:bg-blue-800/80' : 'bg-white dark:bg-gray-700/90 hover:bg-gray-50 dark:hover:bg-gray-600/90'}`;
+
+                    if (highlightEntry) {
+                        dayClasses += ` ${highlightEntry.highlightBg} z-10`;
+                        if (highlightEntry.isAnimating) {
+                             dayClasses += ` highlight-animation`;
+                        }
+                    }
+
+                    let dynamicStyle = {};
+                    if (highlightEntry && highlightEntry.isAnimating) {
+                        dynamicStyle = { '--ring-color-rgb': highlightEntry.borderColorRgb };
+                    }
+
+                    const dayTasks = tasksByDate[day] || [];
+                    
+                    return (
+                        <div key={currentDayFormatted} style={dynamicStyle} onDoubleClick={() => onDayDoubleClick(currentDayFormatted)} className={dayClasses}>
+                            <div className={`text-xs sm:text-sm font-medium ${isToday ? 'text-blue-700 dark:text-blue-300' : (isHoliday ? 'text-red-600 dark:text-red-400' : 'text-gray-800 dark:text-gray-300')}`}>{day}</div>
+                            <div className="absolute top-5 left-0.5 right-0.5 bottom-1 space-y-0.5 overflow-y-auto">
+                                {dayTasks.slice(0, 2).map(task => {
+                                    const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                                    const cardStyle = getTaskCardStyle(status, task.completed);
+                                    let bgColorClass = status === 'completed' ? 'bg-gray-200 dark:bg-gray-600' : cardStyle.bg;
+                                    let textColorClass = status === 'completed' ? 'text-gray-500 dark:text-gray-400' : cardStyle.text;
+
+                                    return (
+                                        <div key={task.id} className={`${bgColorClass} rounded-sm px-1 py-0.5`} title={`${task.subject}: ${task.title}`}>
+                                            <p className={`text-[9px] font-bold ${textColorClass} truncate`}>{task.subject}</p>
+                                            <p className={`text-[8px] ${textColorClass} truncate`}>{task.title}</p>
+                                        </div>
+                                    );
+                                })}
+                                {dayTasks.length > 2 && (
+                                    <div className="text-center text-[9px] text-gray-500 dark:text-gray-400 mt-1">
+                                        +{dayTasks.length - 2} más
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
+
+const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, getTaskCardStyle, chileanHolidays, createLocalDate, onBackToList, onDayDoubleClick }) => {
+    return (
+        <div className="bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700" id="calendarSection">
+            <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Calendario Mensual</h2>
+                <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
+            </div>
+            <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={onBackToList} onDayDoubleClick={onDayDoubleClick} />
+        </div>
+    );
+};
+
+const HistoryView = ({ history, permanentDeleteFromHistory, formatTimestamp, onBackToList }) => {
+    if (!history || history.length === 0) {
+        return (
+            <div id="historySection" className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 mt-6 text-center relative">
+                 <IconBackArrowhead onClick={onBackToList} className="absolute top-6 right-6 text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
+                <IconHistory width="48" height="48" className="mx-auto text-gray-400 dark:text-gray-500 mb-4 mt-8" />
+                <h2 className="text-2xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Historial de Tareas</h2>
+                <p className="text-gray-500 dark:text-gray-400">Aún no hay tareas completadas o eliminadas.</p>
+            </div>
+        );
+    }
+
+    return (
+        <div id="historySection" className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4 relative">
+            <div className="flex items-center justify-between mb-3 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Historial de Tareas</h2>
+                 <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
+            </div>
+            {history.map(task => {
+                const isCompleted = task.status === 'completed';
+                const cardStyle = isCompleted ? 'bg-green-50 dark:bg-green-800/20 border-green-200 dark:border-green-800/50' : 'bg-red-50 dark:bg-red-800/20 border-red-200 dark:border-red-800/50';
+                const textStyle = isCompleted ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-400';
+                const icon = isCompleted ? <IconCheck width="16" height="16" /> : <IconTrash width="16" height="16" />;
+
+                return (
+                    <div key={task.id} className={`rounded-xl border-l-8 p-4 transition-all duration-300 ${cardStyle}`}>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between">
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center mb-2">
+                                    <span className={`font-bold text-sm px-3 py-1 rounded-full flex items-center space-x-2 ${textStyle} ${isCompleted ? 'bg-green-100 dark:bg-green-500/20' : 'bg-red-100 dark:bg-red-500/20'}`}>
+                                        {icon}
+                                        <span>{isCompleted ? 'Completada' : 'Eliminada'}</span>
+                                    </span>
+                                </div>
+                                <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-200 truncate">{task.subject}: {task.title}</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    Archivado: {task.archivedAt ? formatTimestamp(task.archivedAt.toDate()) : 'Fecha no disponible'}
+                                </p>
+                            </div>
+                            <div className="mt-3 sm:mt-0">
+                                <button
+                                    onClick={() => permanentDeleteFromHistory(task.id)}
+                                    className="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 p-2 rounded-full transition-colors"
+                                    title="Eliminar permanentemente"
+                                >
+                                    <IconTrash width="20" height="20" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    );
+};
+
+const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDate }) => {
+    const [taskData, setTaskData] = useState({});
+    const isEditMode = !!taskToEdit;
+
+    useEffect(() => {
+        const initialData = {
+            subject: '', title: '', description: '',
+            dueDate: selectedDate || new Date().toISOString().split('T')[0],
+            dueTime: '', type: 'Tarea'
+        };
+        setTaskData(isEditMode ? { ...taskToEdit } : initialData);
+    }, [isOpen, taskToEdit, selectedDate]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setTaskData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = () => {
+        if (taskData.subject && taskData.title && taskData.dueDate) {
+            onSave(taskData);
+            onClose();
+        } else {
+            showAlert('Por favor, completa los campos de Asignatura, Título y Fecha de Vencimiento.');
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2">
+            <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="font-semibold text-white text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
+                    <button onClick={onClose} className="text-gray-200 hover:text-white p-1 rounded-full">
+                        <IconClose className="w-6 h-6" />
+                    </button>
+                </div>
+                <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <input type="text" name="subject" placeholder="Asignatura" value={taskData.subject || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="text" name="title" placeholder="Título de la tarea" value={taskData.title || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    </div>
+                    <select name="type" value={taskData.type || 'Tarea'} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="Tarea">Tarea</option>
+                        <option value="Examen">Examen</option>
+                        <option value="Recuperación de Clases">Recuperación de Clases</option>
+                        <option value="Proyecto">Proyecto</option>
+                        <option value="Monografía">Monografía</option>
+                        <option value="Informe">Informe</option>
+                    </select>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <input type="date" name="dueDate" value={taskData.dueDate || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="time" name="dueTime" placeholder="Hora (opcional)" value={taskData.dueTime || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    </div>
+                    <textarea name="description" placeholder="Descripción (opcional)" value={taskData.description || ''} onChange={handleChange} rows="3" className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea>
+                    <div className="flex justify-center w-full space-x-4 pt-2">
+                        <button onClick={onClose} className="bg-gray-500/50 text-white rounded-xl px-5 py-2.5 hover:bg-gray-500/70 text-base font-medium">Cancelar</button>
+                        <button onClick={handleSubmit} className="bg-blue-600 text-white rounded-xl px-5 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-2 text-base font-medium">
+                            {isEditMode ? <IconCheck width="18" height="18" /> : <IconPlus width="18" height="18" />}
+                            <span>{isEditMode ? 'Actualizar' : 'Agregar'}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const ClassModal = ({ isOpen, onClose, onSave, showAlert, classToEdit, selectedDay, selectedTime }) => {
+    const [classData, setClassData] = useState({});
+    const isEditMode = !!classToEdit;
+
+    useEffect(() => {
+        const initialData = {
+            subject: '',
+            dayOfWeek: selectedDay || 'Lunes',
+            startTime: selectedTime || '',
+            endTime: '',
+            description: ''
+        };
+        setClassData(isEditMode ? { ...classToEdit } : initialData);
+    }, [isOpen, classToEdit, selectedDay, selectedTime]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setClassData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = () => {
+        if (classData.subject && classData.dayOfWeek && classData.startTime) {
+            onSave(classData);
+            onClose();
+        } else {
+            showAlert('Por favor, completa los campos de Asignatura, Día y Hora de inicio.');
+        }
+    };
+
+    if (!isOpen) return null;
+
+    const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+    return (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2">
+            <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="font-semibold text-white text-xl sm:text-2xl">{isEditMode ? 'Editar Clase' : 'Agregar Nueva Clase'}</h3>
+                    <button onClick={onClose} className="text-gray-200 hover:text-white p-1 rounded-full">
+                        <IconClose className="w-6 h-6" />
+                    </button>
+                </div>
+                <div className="space-y-4">
+                    <input type="text" name="subject" placeholder="Asignatura" value={classData.subject || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <select name="dayOfWeek" value={classData.dayOfWeek || 'Lunes'} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            {daysOfWeek.map(day => <option key={day} value={day}>{day}</option>)}
+                        </select>
+                        <input type="time" name="startTime" placeholder="Hora de inicio" value={classData.startTime || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    </div>
+                    <input type="time" name="endTime" placeholder="Hora de fin (opcional)" value={classData.endTime || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    <textarea name="description" placeholder="Descripción (opcional)" value={classData.description || ''} onChange={handleChange} rows="3" className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea>
+                    <div className="flex justify-center w-full space-x-4 pt-2">
+                        <button onClick={onClose} className="bg-gray-500/50 text-white rounded-xl px-5 py-2.5 hover:bg-gray-500/70 text-base font-medium">Cancelar</button>
+                        <button onClick={handleSubmit} className="bg-blue-600 text-white rounded-xl px-5 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-2 text-base font-medium">
+                            {isEditMode ? <IconCheck width="18" height="18" /> : <IconPlus width="18" height="18" />}
+                            <span>{isEditMode ? 'Actualizar' : 'Agregar'}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const WeeklyCalendarView = ({ classes, onBackToList, onAddClass, onEditClass, onDeleteClass }) => {
+    const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS;
+
+    const today = new Date();
+    const currentDayOfWeek = today.getDay();
+    const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
+    const mondayOfCurrentWeek = new Date(new Date().setDate(today.getDate() - diff));
+    mondayOfCurrentWeek.setHours(0, 0, 0, 0);
+
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(mondayOfCurrentWeek);
+        date.setDate(mondayOfCurrentWeek.getDate() + i);
+        weekDates.push(date);
+    }
+
+    const classesByDayAndTime = classes.reduce((acc, cls) => {
+        const classHour = parseInt(cls.startTime.split(':')[0]);
+        let closestSlot = timeSlots[0];
+        let minDiff = Math.abs(classHour - parseInt(closestSlot.split(':')[0]));
+
+        for (let i = 1; i < timeSlots.length; i++) {
+            const slotHour = parseInt(timeSlots[i].split(':')[0]);
+            const diff = Math.abs(classHour - slotHour);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestSlot = timeSlots[i];
+            }
+        }
+
+        if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
+        if (!acc[cls.dayOfWeek][closestSlot]) acc[cls.dayOfWeek][closestSlot] = [];
+        acc[cls.dayOfWeek][closestSlot].push(cls);
+        return acc;
+    }, {});
+
+    const getFormattedDateForDay = (dayIndex) => {
+        const date = weekDates[dayIndex];
+        return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    };
+
+    return (
+        <div className="bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700" id="weeklyCalendarSection">
+            <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Calendario Semanal</h2>
+                <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
+            </div>
+            <div className="overflow-x-auto">
+                <table className="w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg">
+                    <thead className="bg-blue-600 dark:bg-gray-700 text-white">
+                        <tr>
+                            <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg">Hora</th>
+                            {daysOfWeek.map((day, index) => {
+                                const formattedDate = getFormattedDateForDay(index);
+                                const isToday = formattedDate === new Date().toISOString().split('T')[0];
+                                return (
+                                    <th key={day} className={`px-2 py-3 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-800' : ''} ${index === 6 ? 'rounded-tr-lg' : ''}`}>
+                                        {day} <br /> <span className="font-normal text-xs">{formattedDate.substring(5)}</span>
+                                    </th>
+                                );
+                            })}
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        {timeSlots.map(time => (
+                            <tr key={time}>
+                                <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">{time} horas</td>
+                                {daysOfWeek.map((day, dayIndex) => {
+                                    const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
+                                    const formattedDate = getFormattedDateForDay(dayIndex);
+                                    const isToday = formattedDate === new Date().toISOString().split('T')[0];
+
+                                    return (
+                                        <td key={`${day}-${time}`}
+                                            className={`relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
+                                            onDoubleClick={() => onAddClass(day, time)}
+                                        >
+                                            <div className="flex flex-col space-y-1">
+                                                {classesInSlot.map(cls => (
+                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-1 py-0.5 truncate flex items-center justify-between group">
+                                                        <span title={`${cls.subject} (${cls.description})`}>{cls.subject}</span>
+                                                        <span className="text-[0.6rem] text-blue-700 dark:text-blue-300">
+                                                            {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
+                                                        </span>
+                                                        <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <button onClick={() => onEditClass(cls)} className="text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100" title="Editar clase"><IconEdit width="12" height="12" /></button>
+                                                            <button onClick={() => onDeleteClass(cls.id)} className="text-red-600 dark:text-red-300 hover:text-red-800 dark:hover:text-red-100" title="Eliminar clase"><IconTrash width="12" height="12" /></button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </td>
+                                    );
+                                })}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
+const MiniWeeklyCalendar = ({ classes }) => {
+    const daysOfWeek = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+    const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS.map(time => time.substring(0, 2));
+
+    const today = new Date();
+    const currentDayOfWeek = today.getDay();
+    const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
+    const mondayOfCurrentWeek = new Date(new Date().setDate(today.getDate() - diff));
+    mondayOfCurrentWeek.setHours(0, 0, 0, 0);
+
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(mondayOfCurrentWeek);
+        date.setDate(mondayOfCurrentWeek.getDate() + i);
+        weekDates.push(date);
+    }
+
+    const classesByDayAndFullTimeSlot = classes.reduce((acc, cls) => {
+        const classHour = parseInt(cls.startTime.split(':')[0]);
+        let closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[0];
+        let minDiff = Math.abs(classHour - parseInt(closestFullSlot.split(':')[0]));
+
+        for (let i = 1; i < WEEKLY_CALENDAR_TIME_SLOTS.length; i++) {
+            const slotHour = parseInt(timeSlots[i].split(':')[0]); // Should be WEEKLY_CALENDAR_TIME_SLOTS[i] here
+            const diff = Math.abs(classHour - parseInt(slotHour.split(':')[0]));
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[i];
+            }
+        }
+
+        if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
+        if (!acc[cls.dayOfWeek][closestFullSlot]) acc[cls.dayOfWeek][closestFullSlot] = [];
+        acc[cls.dayOfWeek][closestFullSlot].push(cls);
+        return acc;
+    }, {});
+
+    const getFormattedDateForDay = (dayIndex) => {
+        const date = weekDates[dayIndex];
+        return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    };
+
+    return (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-full">
+            <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
+                Semana Actual
+            </div>
+            <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-blue-500 dark:bg-gray-600 text-white">
+                        <tr>
+                            <th className="px-1 py-1 text-left text-xs font-medium uppercase tracking-wider">Hr</th>
+                            {daysOfWeek.map((day, index) => {
+                                const formattedDate = getFormattedDateForDay(index);
+                                const isToday = formattedDate === new Date().toISOString().split('T')[0];
+                                return (
+                                    <th key={day} className={`px-1 py-1 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''}`}>
+                                        {day}
+                                    </th>
+                                );
+                            })}
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        {WEEKLY_CALENDAR_TIME_SLOTS.map(fullTimeSlot => (
+                            <tr key={fullTimeSlot}>
+                                <td className="px-1 py-1 whitespace-nowrap text-xs font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">
+                                    {fullTimeSlot.substring(0, 2)}
+                                </td>
+                                {daysOfWeek.map((day, dayIndex) => {
+                                    const dayName = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex];
+                                    const classesInSlot = (classesByDayAndFullTimeSlot[dayName] && classesByDayAndFullTimeSlot[dayName][fullTimeSlot]) || [];
+                                    const formattedDate = getFormattedDateForDay(dayIndex);
+                                    const isToday = formattedDate === new Date().toISOString().split('T')[0];
+
+                                    return (
+                                        <td key={`${day}-${fullTimeSlot}`}
+                                            className={`px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
+                                        >
+                                            <div className="flex flex-col space-y-0.5">
+                                                {classesInSlot.map(cls => (
+                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 whitespace-normal break-words" title={`${cls.subject} (${cls.description})`}>
+                                                        {cls.subject}
+                                                        <span className="text-[0.5rem] text-blue-700 dark:text-blue-300 block">
+                                                            {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </td>
+                                    );
+                                })}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
+
+// --- Lazy-Loaded Main Components ---
 const LoginScreen = lazy(() => Promise.resolve({
     default: ({ showAlert }) => {
         const [isRegister, setIsRegister] = useState(false);
@@ -204,8 +847,6 @@ const LoginScreen = lazy(() => Promise.resolve({
     }
 }));
 
-// Lazily load AcademicTaskManager component
-// Esto asegura que el código de estos componentes solo se cargue cuando sea necesario.
 const AcademicTaskManager = lazy(() => Promise.resolve({
     default: ({ user }) => {
         const [tasks, setTasks] = useState([]);
@@ -308,59 +949,6 @@ const AcademicTaskManager = lazy(() => Promise.resolve({
         }, []);
 
         useEffect(() => { const interval = setInterval(() => setCurrentTime(new Date()), 60000); return () => clearInterval(interval); }, []);
-
-        const createLocalDate = (dateString) => { const parts = dateString.split('-').map(Number); return new Date(parts[0], parts[1] - 1, parts[2]); };
-        const getTaskStatus = (dueDate, dueTime, completed) => { if (completed) return 'completed'; const now = new Date(); const todayMidnight = new Date(now); todayMidnight.setHours(0, 0, 0, 0); const dueMidnight = createLocalDate(dueDate); let dueDateTime = dueMidnight; if (dueTime) { const [hours, minutes] = dueTime.split(':').map(Number); dueDateTime = new Date(dueMidnight); dueDateTime.setHours(hours, minutes, 0, 0); } else { dueDateTime = new Date(dueMidnight); dueDateTime.setHours(23, 59, 59, 999); } if (dueDateTime < now) return 'overdue'; const diffTime = dueMidnight.getTime() - todayMidnight.getTime(); const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); if (diffDays === 0) return 'due-today'; if (diffDays === 1) return 'due-tomorrow'; if (diffDays <= 3) return 'due-soon'; return 'on-time'; };
-
-        const getTaskCardStyle = (status, completed) => {
-            let baseStyles = {}, highlightClass = '', borderColorRgb = '0,0,0', hoverClasses = '', highlightBg = '';
-            if (completed) {
-                baseStyles = { bg: 'bg-gray-50 dark:bg-gray-700/50', border: 'border-gray-300 dark:border-gray-600', text: 'text-gray-600 dark:text-gray-400' };
-                highlightClass = 'border-gray-500 ring-2 ring-gray-500 shadow-md';
-                borderColorRgb = '107,114,128';
-                hoverClasses = 'hover:border-gray-400 dark:hover:border-gray-500 hover:ring-2 hover:ring-gray-400/50 dark:hover:ring-gray-500/50 hover:shadow-xl hover:shadow-gray-300/50 dark:hover:shadow-gray-900/50';
-                highlightBg = 'bg-gray-200 dark:bg-gray-600';
-            } else {
-                switch (status) {
-                    case 'overdue':
-                        baseStyles = { bg: 'bg-gray-100 dark:bg-gray-800/80', border: 'border-gray-500 dark:border-gray-600', text: 'text-gray-800 dark:text-gray-300' };
-                        highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md';
-                        borderColorRgb = '75,85,99';
-                        hoverClasses = 'hover:border-gray-600 dark:hover:border-gray-400 hover:ring-2 hover:ring-gray-600/50 dark:hover:ring-gray-400/50 hover:shadow-xl hover:shadow-gray-400/50 dark:hover:shadow-black/50';
-                        highlightBg = 'bg-gray-200 dark:bg-gray-600';
-                        break;
-                    case 'due-today':
-                        baseStyles = { bg: 'bg-red-50 dark:bg-red-800/70', border: 'border-red-500 dark:border-red-600', text: 'text-red-800 dark:text-red-200' };
-                        highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
-                        borderColorRgb = '239,68,68';
-                        hoverClasses = 'hover:border-red-600 dark:hover:border-red-500 hover:ring-2 hover:ring-red-600/50 dark:hover:ring-red-500/50 hover:shadow-xl hover:shadow-red-300/50 dark:hover:shadow-red-900/50';
-                        highlightBg = 'bg-red-200 dark:bg-red-800/70';
-                        break;
-                    case 'due-tomorrow':
-                        baseStyles = { bg: 'bg-orange-50 dark:bg-orange-800/70', border: 'border-orange-400 dark:border-orange-500', text: 'text-orange-800 dark:text-orange-200' };
-                        highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
-                        borderColorRgb = '249,115,22';
-                        hoverClasses = 'hover:border-orange-500 dark:hover:border-orange-500 hover:ring-2 hover:ring-orange-500/50 dark:hover:ring-orange-500/50 hover:shadow-xl hover:shadow-orange-300/50 dark:hover:shadow-orange-900/50';
-                        highlightBg = 'bg-orange-200 dark:bg-orange-800/70';
-                        break;
-                    case 'due-soon':
-                        baseStyles = { bg: 'bg-yellow-50 dark:bg-yellow-800/70', border: 'border-yellow-400 dark:border-yellow-500', text: 'text-yellow-800 dark:text-yellow-200' };
-                        highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
-                        borderColorRgb = '245,158,11';
-                        hoverClasses = 'hover:border-yellow-500 dark:hover:border-yellow-500 hover:ring-2 hover:ring-yellow-500/50 dark:hover:ring-yellow-500/50 hover:shadow-xl hover:shadow-yellow-300/50 dark:hover:shadow-yellow-900/50';
-                        highlightBg = 'bg-yellow-200 dark:bg-yellow-800/70';
-                        break;
-                    default: // 'on-time'
-                        baseStyles = { bg: 'bg-green-50 dark:bg-green-800/70', border: 'border-green-400 dark:border-green-500', text: 'text-green-800 dark:text-green-200' };
-                        highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
-                        borderColorRgb = '34,197,94';
-                        hoverClasses = 'hover:border-green-500 dark:hover:border-green-500 hover:ring-2 hover:ring-green-500/50 dark:hover:ring-green-500/50 hover:shadow-xl hover:shadow-green-300/50 dark:hover:shadow-green-900/50';
-                        highlightBg = 'bg-green-200 dark:bg-green-800/70';
-                        break;
-                }
-            }
-            return { ...baseStyles, highlightClass, borderColorRgb, hoverClasses, highlightBg };
-        };
 
         useEffect(() => { const checkNotifications = () => { const newNotifications = []; tasks.forEach(task => { if (!task.completed) { const status = getTaskStatus(task.dueDate, task.dueTime, task.completed); if (['due-today', 'due-tomorrow', 'overdue'].includes(status)) { let label = ''; switch (status) { case 'overdue': label = 'Vencido'; break; case 'due-today': label = 'Vence hoy'; break; case 'due-tomorrow': label = 'Vence mañana'; break; } newNotifications.push({ id: task.id, message: `${task.subject}: ${task.title} - ${label}`, type: status, dueDate: task.dueDate, timestamp: new Date() }); } } }); setNotifications(newNotifications); }; checkNotifications(); const interval = setInterval(() => setCurrentTime(new Date()), 60000); return () => clearInterval(interval); }, [tasks, currentTime]);
         useEffect(() => { if (showAlerts && notifications.length > 0) { if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = setTimeout(() => { setShowAlerts(false); alertHideTimeoutRef.current = null; }, 25000); } else if (!showAlerts && alertHideTimeoutRef.current) { clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; } return () => { if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); }; }, [showAlerts, notifications.length]);
@@ -468,15 +1056,6 @@ const AcademicTaskManager = lazy(() => Promise.resolve({
             });
         };
 
-        const formatDate = (dateString) => createLocalDate(dateString).toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-        const formatTimestamp = (dateObj) => {
-            if (!dateObj) return '';
-            return dateObj.toLocaleString('es-ES', {
-                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-            });
-        };
-        const getDaysUntilDue = (dueDate) => { const todayMidnight = new Date(); todayMidnight.setHours(0, 0, 0, 0); const dueMidnight = createLocalDate(dueDate); const diffTime = dueMidnight.getTime() - todayMidnight.getTime(); const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); if (diffDays < 0) return `${Math.abs(diffDays)} días atrasado`; if (diffDays === 0) return 'Vence hoy'; if (diffDays === 1) return 'Vence mañana'; return `${diffDays} días restantes`; };
-
         const highlightCalendarDate = (dateString, highlightBg, borderColorRgb) => {
             if (highlightTimeoutRef.current) {
                 clearTimeout(highlightTimeoutRef.current);
@@ -504,618 +1083,134 @@ const AcademicTaskManager = lazy(() => Promise.resolve({
         };
 
         const renderCurrentView = () => {
-            const DailyTasksCardView = ({ tasks, formatDate, getTaskStatus, getTaskCardStyle, getDaysUntilDue, toggleTask, startEditing, deleteTask, handleTaskCardClick, onBackToList }) => {
-                const groupedTasks = tasks.reduce((acc, task) => {
-                    const date = task.dueDate;
-                    if (!acc[date]) acc[date] = [];
-                    acc[date].push(task);
-                    return acc;
-                }, {});
-
-                return (
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative">
-                        <div className="flex items-center justify-between mb-6">
-                             <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Tareas por día</h2>
-                             <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                            {Object.entries(groupedTasks).sort().map(([date, dayTasks]) => (
-                                <div key={date} className="bg-white dark:bg-gray-700/50 rounded-xl shadow-lg p-2.5 sm:p-5 transition-all duration-300">
-                                    <h3 className="font-semibold text-xl sm:text-2xl text-gray-800 dark:text-gray-200 mb-2 sm:mb-3">{formatDate(date)}</h3>
-                                    <div className="space-y-1">
-                                        {dayTasks.sort((a, b) => (a.dueTime || '00:00').localeCompare(b.dueTime || '00:00')).map(task => {
-                                            const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-                                            const cardStyle = getTaskCardStyle(status, task.completed);
-                                            return (
-                                                <div key={task.id} onClick={(e) => handleTaskCardClick(task, e)} className={`p-1.5 sm:p-3 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300 cursor-pointer ${cardStyle.hoverClasses}`}>
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <div className="flex items-center space-x-1"><IconClock width="18" height="18" className="text-gray-600 dark:text-gray-300" /><span className={`text-xs sm:text-sm px-2 py-0.5 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>{task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate)}</span></div>
-                                                        <button onClick={(e) => { e.stopPropagation(); toggleTask(task.id, task.completed); }} className={`w-5 h-5 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center ${task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-400 dark:border-gray-500'}`}>{task.completed && <IconCheck width="14" height="14" />}</button>
-                                                    </div>
-                                                    <div><p className="font-medium text-sm sm:text-lg text-gray-800 dark:text-gray-100">{task.subject}</p><p className="text-xs sm:text-base text-gray-600 dark:text-gray-300 mt-0.5">{task.title}</p><p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{task.type}</p></div>
-                                                    <div className="flex justify-end mt-3 space-x-1">
-                                                        <button onClick={(e) => { e.stopPropagation(); startEditing(task); }} className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/50 p-1 rounded-xl transition-colors" title="Editar tarea"><IconEdit width="16" height="16" /></button>
-                                                        <button onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }} className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 p-1 rounded-xl transition-colors" title="Eliminar tarea"><IconTrash width="16" height="16" /></button>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                );
-            };
-
-            const MonthlyCalendar = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, getTaskCardStyle, chileanHolidays, createLocalDate, onDayDoubleClick }) => {
-                const year = currentViewDate.getFullYear();
-                const month = currentViewDate.getMonth();
-                const firstDay = new Date(year, month, 1);
-                const lastDay = new Date(year, month + 1, 0);
-                const daysInMonth = lastDay.getDate();
-                const startingDayOfWeek = firstDay.getDay();
-                const daysArray = [];
-                const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1; // Adjust to start Monday as 0
-                for (let i = 0; i < adjustedStartingDay; i++) { daysArray.push(null); }
-                for (let day = 1; day <= daysInMonth; day++) { daysArray.push(day); }
-                const tasksByDate = tasks.reduce((acc, task) => {
-                    const taskDate = createLocalDate(task.dueDate);
-                    if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
-                        const day = taskDate.getDate();
-                        if (!acc[day]) acc[day] = [];
-                        acc[day].push(task);
-                    }
-                    return acc;
-                }, {});
-                const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-                const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-                const goToPreviousMonth = () => setCurrentViewDate(new Date(year, month - 1, 1));
-                const goToNextMonth = () => setCurrentViewDate(new Date(year, month + 1, 1));
-                const goToToday = () => setCurrentViewDate(todayGlobal);
-
-                return (
-                    <div className="relative">
-                        <h2 className="text-2xl sm:text-3xl font-bold text-red-600 dark:text-red-400 text-center mb-1 sm:mb-0 uppercase">{monthNames[month]} {year}</h2>
-                        <div className="flex justify-center space-x-1 sm:space-x-2 w-full mt-1 sm:mt-2 mb-4">
-                            <button onClick={goToPreviousMonth} className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm">←</button>
-                            <button onClick={goToToday} className="px-3 py-1.5 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm">Hoy</button>
-                            <button onClick={goToNextMonth} className="px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm">→</button>
-                        </div>
-                        <div className="grid grid-cols-7 bg-blue-600 dark:bg-gray-700 text-white rounded-t-lg">{dayNames.map((day, index) => <div key={index} className="text-center font-semibold py-2 text-sm">{day}</div>)}</div>
-                        <div className="grid grid-cols-7 border-l border-t border-gray-200 dark:border-gray-700">
-                            {daysArray.map((day, index) => {
-                                if (!day) return <div key={index} className="h-14 sm:h-20 lg:h-28 bg-gray-50 dark:bg-gray-800/50 border-r border-b border-gray-200 dark:border-gray-600"></div>;
-                                const dayObj = new Date(year, month, day);
-                                const isToday = todayGlobal.getDate() === dayObj.getDate() && todayGlobal.getMonth() === dayObj.getMonth() && todayGlobal.getFullYear() === dayObj.getFullYear();
-                                const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-                                const isHoliday = chileanHolidays.includes(currentDayFormatted);
-                                const highlightEntry = highlightedDate && highlightedDate.date === currentDayFormatted ? highlightedDate : null;
-
-                                let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 dark:border-gray-600 ${isToday ? 'bg-blue-100 dark:bg-blue-800/80' : 'bg-white dark:bg-gray-700/90 hover:bg-gray-50 dark:hover:bg-gray-600/90'}`;
-
-                                if (highlightEntry) {
-                                    dayClasses += ` ${highlightEntry.highlightBg} z-10`;
-                                    if (highlightEntry.isAnimating) {
-                                         dayClasses += ` highlight-animation`;
-                                    }
-                                }
-
-                                let dynamicStyle = {};
-                                if (highlightEntry && highlightEntry.isAnimating) {
-                                    dynamicStyle = { '--ring-color-rgb': highlightEntry.borderColorRgb };
-                                }
-
-                                const dayTasks = tasksByDate[day] || [];
-                                
-                                return (
-                                    <div key={currentDayFormatted} style={dynamicStyle} onDoubleClick={() => onDayDoubleClick(currentDayFormatted)} className={dayClasses}>
-                                        <div className={`text-xs sm:text-sm font-medium ${isToday ? 'text-blue-700 dark:text-blue-300' : (isHoliday ? 'text-red-600 dark:text-red-400' : 'text-gray-800 dark:text-gray-300')}`}>{day}</div>
-                                        <div className="absolute top-5 left-0.5 right-0.5 bottom-1 space-y-0.5 overflow-y-auto">
-                                            {dayTasks.slice(0, 2).map(task => {
-                                                const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-                                                const cardStyle = getTaskCardStyle(status, task.completed);
-                                                let bgColorClass = status === 'completed' ? 'bg-gray-200 dark:bg-gray-600' : cardStyle.bg;
-                                                let textColorClass = status === 'completed' ? 'text-gray-500 dark:text-gray-400' : cardStyle.text;
-
-                                                return (
-                                                    <div key={task.id} className={`${bgColorClass} rounded-sm px-1 py-0.5`} title={`${task.subject}: ${task.title}`}>
-                                                        <p className={`text-[9px] font-bold ${textColorClass} truncate`}>{task.subject}</p>
-                                                        <p className={`text-[8px] ${textColorClass} truncate`}>{task.title}</p>
-                                                    </div>
-                                                );
-                                            })}
-                                            {dayTasks.length > 2 && (
-                                                <div className="text-center text-[9px] text-gray-500 dark:text-gray-400 mt-1">
-                                                    +{dayTasks.length - 2} más
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                );
-            };
-
-            const CalendarView = ({ tasks, highlightedDate, currentViewDate, setCurrentViewDate, todayGlobal, getTaskStatus, getTaskCardStyle, chileanHolidays, createLocalDate, onBackToList, onDayDoubleClick }) => {
-                return (
-                    <div className="bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700" id="calendarSection">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Calendario Mensual</h2>
-                            <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
-                        </div>
-                        <MonthlyCalendar tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentViewDate} setCurrentViewDate={setCurrentViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={onDayDoubleClick} />
-                    </div>
-                );
-            };
-
-            const HistoryView = ({ history, permanentDeleteFromHistory, formatTimestamp, onBackToList }) => {
-                if (!history || history.length === 0) {
+            switch (view) {
+                case 'list':
+                    const uncompletedTasks = tasks.filter(task => !task.completed).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
                     return (
-                        <div id="historySection" className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 mt-6 text-center relative">
-                             <IconBackArrowhead onClick={onBackToList} className="absolute top-6 right-6 text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
-                            <IconHistory width="48" height="48" className="mx-auto text-gray-400 dark:text-gray-500 mb-4 mt-8" />
-                            <h2 className="text-2xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Historial de Tareas</h2>
-                            <p className="text-gray-500 dark:text-gray-400">Aún no hay tareas completadas o eliminadas.</p>
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6">
+                            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 mb-4 sm:mb-6 text-left">Tareas Pendientes ({uncompletedTasks.length})</h2>
+                            {uncompletedTasks.length === 0 ? (
+                                <p className="text-center text-gray-500 dark:text-gray-400 py-8">¡No hay tareas pendientes! 🎉</p>
+                            ) : (
+                                <div className="space-y-3 sm:space-y-4">
+                                    {uncompletedTasks.map(task => {
+                                        const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+                                        const cardStyle = getTaskCardStyle(status, task.completed);
+                                        return (
+                                            <div key={task.id} className={`p-3 sm:p-4 rounded-xl border-l-8 ${cardStyle.bg} ${cardStyle.border} transition-all duration-300 transform hover:scale-[1.01] hover:${cardStyle.hoverClasses} float-effect`}>
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div className="flex items-center space-x-2">
+                                                        <IconClock width="18" height="18" className="text-gray-600 dark:text-gray-300" />
+                                                        <span className={`text-xs sm:text-sm px-3 py-1 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`}>
+                                                            {task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate)}
+                                                        </span>
+                                                    </div>
+                                                    <button onClick={() => toggleTask(task.id, task.completed)} className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-400 dark:border-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600'}`}>
+                                                        {task.completed && <IconCheck width="16" height="16" />}
+                                                    </button>
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-semibold text-base sm:text-xl text-gray-800 dark:text-gray-100">{task.subject}</h3>
+                                                    <p className="text-sm sm:text-lg text-gray-600 dark:text-gray-300 mt-0.5">{task.title}</p>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{task.type}</p>
+                                                    {task.description && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">{task.description}</p>}
+                                                </div>
+                                                <div className="flex justify-end mt-3 space-x-2">
+                                                    <button onClick={() => startEditing(task)} className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/50 p-2 rounded-xl transition-colors" title="Editar tarea">
+                                                        <IconEdit width="18" height="18" />
+                                                    </button>
+                                                    <button onClick={() => deleteTask(task.id)} className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 p-2 rounded-xl transition-colors" title="Eliminar tarea">
+                                                        <IconTrash width="18" height="18" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </div>
                     );
-                }
+                case 'daily':
+                    return <DailyTasksCardView tasks={tasks.filter(t => !t.completed)} formatDate={formatDate} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} getDaysUntilDue={getDaysUntilDue} toggleTask={toggleTask} startEditing={startEditing} deleteTask={deleteTask} handleTaskCardClick={handleTaskCardClick} onBackToList={() => setView('list')} />;
+                case 'calendar':
+                    return <CalendarView tasks={tasks} highlightedDate={highlightedDate} currentViewDate={currentCalendarViewDate} setCurrentViewDate={setCurrentCalendarViewDate} todayGlobal={todayGlobal} getTaskStatus={getTaskStatus} getTaskCardStyle={getTaskCardStyle} chileanHolidays={chileanHolidays} createLocalDate={createLocalDate} onBackToList={() => setView('list')} onDayDoubleClick={handleDayDoubleClick} />;
+                case 'weeklyCalendar':
+                    return <WeeklyCalendarView classes={classes} onBackToList={() => setView('list')} onAddClass={handleAddClass} onEditClass={handleEditClass} onDeleteClass={handleDeleteClass} />;
+                case 'history':
+                    return <HistoryView history={history} permanentDeleteFromHistory={permanentDeleteFromHistory} formatTimestamp={formatTimestamp} onBackToList={() => setView('list')} />;
+                default:
+                    return null;
+            }
+        };
 
-                return (
-                    <div id="historySection" className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4 relative">
-                        <div className="flex items-center justify-between mb-3 sm:mb-6">
-                            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Historial de Tareas</h2>
-                             <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
-                        </div>
-                        {history.map(task => {
-                            const isCompleted = task.status === 'completed';
-                            const cardStyle = isCompleted ? 'bg-green-50 dark:bg-green-800/20 border-green-200 dark:border-green-800/50' : 'bg-red-50 dark:bg-red-800/20 border-red-200 dark:border-red-800/50';
-                            const textStyle = isCompleted ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-400';
-                            const icon = isCompleted ? <IconCheck width="16" height="16" /> : <IconTrash width="16" height="16" />;
+        const unselectedButtonClasses = "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-700 dark:hover:text-white";
+        const selectedButtonClasses = "bg-blue-600 text-white shadow-lg shadow-blue-300 dark:shadow-blue-800/50 ring-2 ring-blue-400 dark:ring-blue-500";
 
-                            return (
-                                <div key={task.id} className={`rounded-xl border-l-8 p-4 transition-all duration-300 ${cardStyle}`}>
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between">
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center mb-2">
-                                                <span className={`font-bold text-sm px-3 py-1 rounded-full flex items-center space-x-2 ${textStyle} ${isCompleted ? 'bg-green-100 dark:bg-green-500/20' : 'bg-red-100 dark:bg-red-500/20'}`}>
-                                                    {icon}
-                                                    <span>{isCompleted ? 'Completada' : 'Eliminada'}</span>
-                                                </span>
-                                            </div>
-                                            <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-200 truncate">{task.subject}: {task.title}</h3>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                                Archivado: {task.archivedAt ? formatTimestamp(task.archivedAt.toDate()) : 'Fecha no disponible'}
-                                            </p>
-                                        </div>
-                                        <div className="mt-3 sm:mt-0">
-                                            <button
-                                                onClick={() => permanentDeleteFromHistory(task.id)}
-                                                className="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 p-2 rounded-full transition-colors"
-                                                title="Eliminar permanentemente"
-                                            >
-                                                <IconTrash width="20" height="20" />
-                                            </button>
-                                        </div>
+        return (
+            <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+                {/* Header */}
+                <div className="sticky top-0 z-30">
+                    <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4">
+                        <div className="max-w-7xl mx-auto px-3 sm:px-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <div className="text-white"><IconBook width="26" height="26" /></div>
+                                    <div>
+                                        <h1 className="text-sm sm:text-3xl font-bold text-white leading-tight">GESTOR ACADÉMICO</h1>
+                                        <p className="text-[08px] sm:text-sm text-blue-200 mt-1"><span className="font-semibold text-white">{user.email}</span></p>
                                     </div>
                                 </div>
-                            );
-                        })}
-                    </div>
-                );
-            };
-
-            const TaskModal = ({ isOpen, onClose, onSave, showAlert, taskToEdit, selectedDate }) => {
-                const [taskData, setTaskData] = useState({});
-                const isEditMode = !!taskToEdit;
-
-                useEffect(() => {
-                    const initialData = {
-                        subject: '', title: '', description: '',
-                        dueDate: selectedDate || new Date().toISOString().split('T')[0],
-                        dueTime: '', type: 'Tarea'
-                    };
-                    setTaskData(isEditMode ? { ...taskToEdit } : initialData);
-                }, [isOpen, taskToEdit, selectedDate]);
-
-                const handleChange = (e) => {
-                    const { name, value } = e.target;
-                    setTaskData(prev => ({ ...prev, [name]: value }));
-                };
-
-                const handleSubmit = () => {
-                    if (taskData.subject && taskData.title && taskData.dueDate) {
-                        onSave(taskData);
-                        onClose();
-                    } else {
-                        showAlert('Por favor, completa los campos de Asignatura, Título y Fecha de Vencimiento.');
-                    }
-                };
-
-                if (!isOpen) return null;
-
-                return (
-                    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2">
-                        <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="font-semibold text-white text-xl sm:text-2xl">{isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'}</h3>
-                                <button onClick={onClose} className="text-gray-200 hover:text-white p-1 rounded-full">
-                                    <IconClose className="w-6 h-6" />
-                                </button>
-                            </div>
-                            <div className="space-y-4">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <input type="text" name="subject" placeholder="Asignatura" value={taskData.subject || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                                    <input type="text" name="title" placeholder="Título de la tarea" value={taskData.title || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                                </div>
-                                <select name="type" value={taskData.type || 'Tarea'} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    <option value="Tarea">Tarea</option>
-                                    <option value="Examen">Examen</option>
-                                    <option value="Recuperación de Clases">Recuperación de Clases</option>
-                                    <option value="Proyecto">Proyecto</option>
-                                    <option value="Monografía">Monografía</option>
-                                    <option value="Informe">Informe</option>
-                                </select>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <input type="date" name="dueDate" value={taskData.dueDate || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                                    <input type="time" name="dueTime" placeholder="Hora (opcional)" value={taskData.dueTime || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                                </div>
-                                <textarea name="description" placeholder="Descripción (opcional)" value={taskData.description || ''} onChange={handleChange} rows="3" className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea>
-                                <div className="flex justify-center w-full space-x-4 pt-2">
-                                    <button onClick={onClose} className="bg-gray-500/50 text-white rounded-xl px-5 py-2.5 hover:bg-gray-500/70 text-base font-medium">Cancelar</button>
-                                    <button onClick={handleSubmit} className="bg-blue-600 text-white rounded-xl px-5 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-2 text-base font-medium">
-                                        {isEditMode ? <IconCheck width="18" height="18" /> : <IconPlus width="18" height="18" />}
-                                        <span>{isEditMode ? 'Actualizar' : 'Agregar'}</span>
+                                <div className="flex-shrink-0 flex items-center space-x-1 sm:space-x-2">
+                                    {notifications.length > 0 && (
+                                        <button onClick={() => setShowAlerts(!showAlerts)} className="relative text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title={showAlerts ? "Ocultar alertas" : "Mostrar alertas"}>
+                                            <IconBell width="16" height="16" className="sm:w-8 sm:h-8" />
+                                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{notifications.length}</span>
+                                        </button>
+                                    )}
+                                    <div className="hidden sm:flex items-center space-x-2 p-1 rounded-full hover:bg-blue-600 dark:hover:bg-gray-700 transition-colors">
+                                        <IconMail width="16" height="16" className="text-white sm:w-4 sm:h-4" />
+                                        <button onClick={() => setEmailNotifications(!emailNotifications)} className={`w-10 h-5 rounded-full transition-colors flex items-center p-0.5 ${emailNotifications ? 'bg-blue-400' : 'bg-gray-500'}`}>
+                                            <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${emailNotifications ? 'translate-x-5' : 'translate-x-0'}`} />
+                                        </button>
+                                    </div>
+                                    <button onClick={() => auth.signOut()} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Cerrar sesión">
+                                        <IconLogOut width="16" height="16" className="sm:w-8 sm:h-8" />
+                                    </button>
+                                    <button onClick={() => setShowQuickAccess(!showQuickAccess)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors md:hidden" title="Acceso Rápido">
+                                        {showQuickAccess ? <IconClose className="w-6 h-6"/> : <IconHamburger width="26" height="26" />}
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                );
-            };
-
-            const ClassModal = ({ isOpen, onClose, onSave, showAlert, classToEdit, selectedDay, selectedTime }) => {
-                const [classData, setClassData] = useState({});
-                const isEditMode = !!classToEdit;
-
-                useEffect(() => {
-                    const initialData = {
-                        subject: '',
-                        dayOfWeek: selectedDay || 'Lunes',
-                        startTime: selectedTime || '',
-                        endTime: '',
-                        description: ''
-                    };
-                    setClassData(isEditMode ? { ...classToEdit } : initialData);
-                }, [isOpen, classToEdit, selectedDay, selectedTime]);
-
-                const handleChange = (e) => {
-                    const { name, value } = e.target;
-                    setClassData(prev => ({ ...prev, [name]: value }));
-                };
-
-                const handleSubmit = () => {
-                    if (classData.subject && classData.dayOfWeek && classData.startTime) {
-                        onSave(classData);
-                        onClose();
-                    } else {
-                        showAlert('Por favor, completa los campos de Asignatura, Día y Hora de inicio.');
-                    }
-                };
-
-                if (!isOpen) return null;
-
-                const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-
-                return (
-                    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2">
-                        <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="font-semibold text-white text-xl sm:text-2xl">{isEditMode ? 'Editar Clase' : 'Agregar Nueva Clase'}</h3>
-                                <button onClick={onClose} className="text-gray-200 hover:text-white p-1 rounded-full">
-                                    <IconClose className="w-6 h-6" />
-                                </button>
-                            </div>
-                            <div className="space-y-4">
-                                <input type="text" name="subject" placeholder="Asignatura" value={classData.subject || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <select name="dayOfWeek" value={classData.dayOfWeek || 'Lunes'} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        {daysOfWeek.map(day => <option key={day} value={day}>{day}</option>)}
-                                    </select>
-                                    <input type="time" name="startTime" placeholder="Hora de inicio" value={classData.startTime || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                                </div>
-                                <input type="time" name="endTime" placeholder="Hora de fin (opcional)" value={classData.endTime || ''} onChange={handleChange} className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                                <textarea name="description" placeholder="Descripción (opcional)" value={classData.description || ''} onChange={handleChange} rows="3" className="w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"></textarea>
-                                <div className="flex justify-center w-full space-x-4 pt-2">
-                                    <button onClick={onClose} className="bg-gray-500/50 text-white rounded-xl px-5 py-2.5 hover:bg-gray-500/70 text-base font-medium">Cancelar</button>
-                                    <button onClick={handleSubmit} className="bg-blue-600 text-white rounded-xl px-5 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-2 text-base font-medium">
-                                        {isEditMode ? <IconCheck width="18" height="18" /> : <IconPlus width="18" height="18" />}
-                                        <span>{isEditMode ? 'Actualizar' : 'Agregar'}</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            };
-
-            const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackToList, onAddClass, onEditClass, onDeleteClass }) => {
-                const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-                const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS;
-
-                const today = new Date();
-                const currentDayOfWeek = today.getDay();
-                const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
-                const mondayOfCurrentWeek = new Date(new Date().setDate(today.getDate() - diff));
-                mondayOfCurrentWeek.setHours(0, 0, 0, 0);
-
-                const weekDates = [];
-                for (let i = 0; i < 7; i++) {
-                    const date = new Date(mondayOfCurrentWeek);
-                    date.setDate(mondayOfCurrentWeek.getDate() + i);
-                    weekDates.push(date);
-                }
-
-                const classesByDayAndTime = classes.reduce((acc, cls) => {
-                    const classHour = parseInt(cls.startTime.split(':')[0]);
-                    let closestSlot = timeSlots[0];
-                    let minDiff = Math.abs(classHour - parseInt(closestSlot.split(':')[0]));
-
-                    for (let i = 1; i < timeSlots.length; i++) {
-                        const slotHour = parseInt(timeSlots[i].split(':')[0]);
-                        const diff = Math.abs(classHour - slotHour);
-                        if (diff < minDiff) {
-                            minDiff = diff;
-                            closestSlot = timeSlots[i];
-                        }
-                    }
-
-                    if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
-                    if (!acc[cls.dayOfWeek][closestSlot]) acc[cls.dayOfWeek][closestSlot] = [];
-                    acc[cls.dayOfWeek][closestSlot].push(cls);
-                    return acc;
-                }, {});
-
-                const getFormattedDateForDay = (dayIndex) => {
-                    const date = weekDates[dayIndex];
-                    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-                };
-
-                return (
-                    <div className="bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700" id="weeklyCalendarSection">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">Calendario Semanal</h2>
-                            <IconBackArrowhead onClick={onBackToList} className="text-red-500 cursor-pointer hover:text-red-700 transition-colors" title="Volver a la lista" />
-                        </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg">
-                                <thead className="bg-blue-600 dark:bg-gray-700 text-white">
-                                    <tr>
-                                        <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg">Hora</th>
-                                        {daysOfWeek.map((day, index) => {
-                                            const formattedDate = getFormattedDateForDay(index);
-                                            const isToday = formattedDate === new Date().toISOString().split('T')[0];
-                                            return (
-                                                <th key={day} className={`px-2 py-3 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-800' : ''} ${index === 6 ? 'rounded-tr-lg' : ''}`}>
-                                                    {day} <br /> <span className="font-normal text-xs">{formattedDate.substring(5)}</span>
-                                                </th>
-                                            );
-                                        })}
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    {timeSlots.map(time => (
-                                        <tr key={time}>
-                                            <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">{time} horas</td>
-                                            {daysOfWeek.map((day, dayIndex) => {
-                                                const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
-                                                const formattedDate = getFormattedDateForDay(dayIndex);
-                                                const isToday = formattedDate === new Date().toISOString().split('T')[0];
-
-                                                return (
-                                                    <td key={`${day}-${time}`}
-                                                        className={`relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
-                                                        onDoubleClick={() => onAddClass(day, time)}
-                                                    >
-                                                        <div className="flex flex-col space-y-1">
-                                                            {classesInSlot.map(cls => (
-                                                                <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-1 py-0.5 truncate flex items-center justify-between group">
-                                                                    <span title={`${cls.subject} (${cls.description})`}>{cls.subject}</span>
-                                                                    <span className="text-[0.6rem] text-blue-700 dark:text-blue-300">
-                                                                        {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
-                                                                    </span>
-                                                                    <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                        <button onClick={() => onEditClass(cls)} className="text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100" title="Editar clase"><IconEdit width="12" height="12" /></button>
-                                                                        <button onClick={() => onDeleteClass(cls.id)} className="text-red-600 dark:text-red-300 hover:text-red-800 dark:hover:text-red-100" title="Eliminar clase"><IconTrash width="12" height="12" /></button>
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </td>
-                                                );
-                                            })}
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                );
-            };
-
-            const MiniWeeklyCalendar = ({ classes }) => {
-                const daysOfWeek = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-                const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS.map(time => time.substring(0, 2));
-
-                const today = new Date();
-                const currentDayOfWeek = today.getDay();
-                const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
-                const mondayOfCurrentWeek = new Date(new Date().setDate(today.getDate() - diff));
-                mondayOfCurrentWeek.setHours(0, 0, 0, 0);
-
-                const weekDates = [];
-                for (let i = 0; i < 7; i++) {
-                    const date = new Date(mondayOfCurrentWeek);
-                    date.setDate(mondayOfCurrentWeek.getDate() + i);
-                    weekDates.push(date);
-                }
-
-                const classesByDayAndFullTimeSlot = classes.reduce((acc, cls) => {
-                    const classHour = parseInt(cls.startTime.split(':')[0]);
-                    let closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[0];
-                    let minDiff = Math.abs(classHour - parseInt(closestFullSlot.split(':')[0]));
-
-                    for (let i = 1; i < WEEKLY_CALENDAR_TIME_SLOTS.length; i++) {
-                        const slotHour = parseInt(WEEKLY_CALENDAR_TIME_SLOTS[i].split(':')[0]);
-                        const diff = Math.abs(classHour - slotHour);
-                        if (diff < minDiff) {
-                            minDiff = diff;
-                            closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[i];
-                        }
-                    }
-
-                    if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
-                    if (!acc[cls.dayOfWeek][closestFullSlot]) acc[cls.dayOfWeek][closestFullSlot] = [];
-                    acc[cls.dayOfWeek][closestFullSlot].push(cls);
-                    return acc;
-                }, {});
-
-                const getFormattedDateForDay = (dayIndex) => {
-                    const date = weekDates[dayIndex];
-                    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-                };
-
-                return (
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-full">
-                        <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
-                            Semana Actual
-                        </div>
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead className="bg-blue-500 dark:bg-gray-600 text-white">
-                                    <tr>
-                                        <th className="px-1 py-1 text-left text-xs font-medium uppercase tracking-wider">Hr</th>
-                                        {daysOfWeek.map((day, index) => {
-                                            const formattedDate = getFormattedDateForDay(index);
-                                            const isToday = formattedDate === new Date().toISOString().split('T')[0];
-                                            return (
-                                                <th key={day} className={`px-1 py-1 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''}`}>
-                                                    {day}
-                                                </th>
-                                            );
-                                        })}
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    {WEEKLY_CALENDAR_TIME_SLOTS.map(fullTimeSlot => (
-                                        <tr key={fullTimeSlot}>
-                                            <td className="px-1 py-1 whitespace-nowrap text-xs font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">
-                                                {fullTimeSlot.substring(0, 2)}
-                                            </td>
-                                            {daysOfWeek.map((day, dayIndex) => {
-                                                const dayName = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex];
-                                                const classesInSlot = (classesByDayAndFullTimeSlot[dayName] && classesByDayAndFullTimeSlot[dayName][fullTimeSlot]) || [];
-                                                const formattedDate = getFormattedDateForDay(dayIndex);
-                                                const isToday = formattedDate === new Date().toISOString().split('T')[0];
-
-                                                return (
-                                                    <td key={`${day}-${fullTimeSlot}`}
-                                                        className={`px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
-                                                    >
-                                                        <div className="flex flex-col space-y-0.5">
-                                                            {classesInSlot.map(cls => (
-                                                                <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 whitespace-normal break-words" title={`${cls.subject} (${cls.description})`}>
-                                                                    {cls.subject}
-                                                                    <span className="text-[0.5rem] text-blue-700 dark:text-blue-300 block">
-                                                                        {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
-                                                                    </span>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </td>
-                                                );
-                                            })}
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                );
-            };
-
-            const unselectedButtonClasses = "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-700 dark:hover:text-white";
-            const selectedButtonClasses = "bg-blue-600 text-white shadow-lg shadow-blue-300 dark:shadow-blue-800/50 ring-2 ring-blue-400 dark:ring-blue-500";
-
-            return (
-                <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-                    {/* Header */}
-                    <div className="sticky top-0 z-30">
-                        <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4">
-                            <div className="max-w-7xl mx-auto px-3 sm:px-6">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-2">
-                                        <div className="text-white"><IconBook width="26" height="26" /></div>
-                                        <div>
-                                            <h1 className="text-sm sm:text-3xl font-bold text-white leading-tight">GESTOR ACADÉMICO</h1>
-                                            <p className="text-[08px] sm:text-sm text-blue-200 mt-1"><span className="font-semibold text-white">{user.email}</span></p>
-                                        </div>
-                                    </div>
-                                    <div className="flex-shrink-0 flex items-center space-x-1 sm:space-x-2">
-                                        {notifications.length > 0 && (
-                                            <button onClick={() => setShowAlerts(!showAlerts)} className="relative text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title={showAlerts ? "Ocultar alertas" : "Mostrar alertas"}>
-                                                <IconBell width="16" height="16" className="sm:w-8 sm:h-8" />
-                                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{notifications.length}</span>
-                                            </button>
-                                        )}
-                                        <div className="hidden sm:flex items-center space-x-2 p-1 rounded-full hover:bg-blue-600 dark:hover:bg-gray-700 transition-colors">
-                                            <IconMail width="16" height="16" className="text-white sm:w-4 sm:h-4" />
-                                            <button onClick={() => setEmailNotifications(!emailNotifications)} className={`w-10 h-5 rounded-full transition-colors flex items-center p-0.5 ${emailNotifications ? 'bg-blue-400' : 'bg-gray-500'}`}>
-                                                <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${emailNotifications ? 'translate-x-5' : 'translate-x-0'}`} />
-                                            </button>
-                                        </div>
-                                        <button onClick={() => auth.signOut()} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Cerrar sesión">
-                                            <IconLogOut width="16" height="16" className="sm:w-8 sm:h-8" />
+                    {showQuickAccess && (
+                        <div className="absolute top-full left-0 right-0 w-full md:hidden">
+                             <div className="p-4 bg-black/10 dark:bg-black/30 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-2xl">
+                                <div className="max-w-5xl md:max-w-xs mx-auto">
+                                    <div className="space-y-1">
+                                        <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                            <IconBook width="20" height="20" /> <span>Lista</span>
                                         </button>
-                                        <button onClick={() => setShowQuickAccess(!showQuickAccess)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors md:hidden" title="Acceso Rápido">
-                                            {showQuickAccess ? <IconClose className="w-6 h-6"/> : <IconHamburger width="26" height="26" />}
+                                        <hr className="border-white/10" />
+                                        <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                            <IconCalendar width="20" height="20" /> <span>Por Día</span>
                                         </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {showQuickAccess && (
-                            <div className="absolute top-full left-0 right-0 w-full md:hidden">
-                                 <div className="p-4 bg-black/10 dark:bg-black/30 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-2xl">
-                                    <div className="max-w-5xl md:max-w-xs mx-auto">
-                                        <div className="space-y-1">
-                                            <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                                <IconBook width="20" height="20" /> <span>Lista</span>
-                                            </button>
-                                            <hr className="border-white/10" />
-                                            <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                                <IconCalendar width="20" height="20" /> <span>Por Día</span>
-                                            </button>
-                                            <hr className="border-white/10" />
-                                            <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                                <IconCalendar width="20" height="20" /> <span>Calendario Mensual</span>
-                                            </button>
-                                            <hr className="border-white/10" />
-                                            <button onClick={() => { setView('weeklyCalendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                                <IconCalendar width="20" height="20" /> <span>Calendario Semanal</span>
-                                            </button>
-                                            <hr className="border-white/10" />
-                                            <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                                <IconHistory width="20" height="20" /> <span>Historial</span>
-                                            </button>
-                                            <hr className="border-white/10" />
-                                            <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                                <IconPlus width="20" height="20" /> <span>Agregar nueva tarea</span>
-                                            </button>
-                                        </div>
+                                        <hr className="border-white/10" />
+                                        <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                            <IconCalendar width="20" height="20" /> <span>Calendario Mensual</span>
+                                        </button>
+                                        <hr className="border-white/10" />
+                                        <button onClick={() => { setView('weeklyCalendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                            <IconCalendar width="20" height="20" /> <span>Calendario Semanal</span>
+                                        </button>
+                                        <hr className="border-white/10" />
+                                        <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                            <IconHistory width="20" height="20" /> <span>Historial</span>
+                                        </button>
+                                        <hr className="border-white/10" />
+                                        <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                            <IconPlus width="20" height="20" /> <span>Agregar nueva tarea</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -1128,7 +1223,7 @@ const AcademicTaskManager = lazy(() => Promise.resolve({
                             {/* Main Content Column */}
                             <main className="w-full md:flex-1">
                                 <div className="pb-24">
-                                    {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-100 dark:bg-orange-500/20 border border-orange-400 dark:border-orange-500/50 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 dark:text-orange-300 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600 dark:text-orange-400"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 dark:text-orange-300/90 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 dark:text-orange-400 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
+                                    {notifications.length > 0 && showAlerts && ( <div onClick={() => { /*handleAlertsClick();*/ if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-100 dark:bg-orange-500/20 border border-orange-400 dark:border-orange-500/50 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 dark:text-orange-300 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600 dark:text-orange-400"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 dark:text-orange-300/90 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 dark:text-orange-400 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
 
                                     <div className="relative bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-3 rounded-2xl">
                                         <div className="max-w-4xl mx-auto px-3 sm:px-6">
@@ -1142,9 +1237,9 @@ const AcademicTaskManager = lazy(() => Promise.resolve({
                                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                                                     <button onClick={() => setView('list')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'list' ? selectedButtonClasses : unselectedButtonClasses}`}><IconBook width="18" height="18" /><span className="font-medium text-center">Lista</span></button>
                                                     <button onClick={() => setView('daily')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'daily' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center">Por Día</span></button>
-                                                    <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Mensual</span></button>
-                                                    <button onClick={() => setView('weeklyCalendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'weeklyCalendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Semanal</span></button>
-                                                    <button onClick={() => setView('history')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'history' ? selectedButtonClasses : unselectedButtonClasses}`}><IconHistory width="20" height="20" /><span className="font-medium text-center">Historial</span></button>
+                                                    <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-110 ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Mensual</span></button>
+                                                    <button onClick={() => setView('weeklyCalendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-110 ${view === 'weeklyCalendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Semanal</span></button>
+                                                    <button onClick={() => setView('history')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-110 ${view === 'history' ? selectedButtonClasses : unselectedButtonClasses}`}><IconHistory width="20" height="20" /><span className="font-medium text-center">Historial</span></button>
                                                 </div>
                                             </div>
                                         </div>
