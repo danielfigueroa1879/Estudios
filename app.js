@@ -1218,7 +1218,6 @@ const AcademicTaskManager = lazy(() => Promise.resolve({
                         )}
                     </div>
 
-                    {/* Main Content Layout */}
                     <div className={`w-full flex ${settings.view === 'weeklyCalendar' ? 'justify-center' : 'justify-end'} px-3 sm:px-6`}>
                         <div className={`flex w-full max-w-7xl ${settings.view === 'weeklyCalendar' ? 'justify-center' : ''}`}>
                             {/* Main Content Column */}
