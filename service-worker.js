@@ -1,4 +1,4 @@
-const CACHE_NAME = 'academic-task-manager-cache-v5';
+const CACHE_NAME = 'academic-task-manager-cache-v6';
 const urlsToCache = [
     './',
     './index.html',
@@ -6,8 +6,7 @@ const urlsToCache = [
     './manifest.json',
     'https://unpkg.com/react@18/umd/react.production.min.js',
     'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
-    'https://unpkg.com/@babel/standalone/babel.min.js',
-    // 'https://cdn.tailwindcss.com/3.4.0', // REMOVED THIS LINE due to CORS issues
+    // Removido Tailwind CDN del cache porque puede causar problemas CORS
     'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap',
     'https://www.gstatic.com/firebasejs/9.19.1/firebase-app-compat.js',
     'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth-compat.js',
@@ -26,10 +25,25 @@ self.addEventListener('install', event => {
         caches.open(CACHE_NAME)
             .then(cache => {
                 console.log('[SW] Cache abierto, guardando archivos...');
-                return cache.addAll(urlsToCache);
+                // Cachear archivos uno por uno para mejor manejo de errores
+                return Promise.allSettled(
+                    urlsToCache.map(url => {
+                        return cache.add(url).catch(error => {
+                            console.warn(`[SW] No se pudo cachear ${url}:`, error);
+                            return null;
+                        });
+                    })
+                );
+            })
+            .then(results => {
+                const failed = results.filter(result => result.status === 'rejected');
+                if (failed.length > 0) {
+                    console.warn(`[SW] ${failed.length} archivos no se pudieron cachear`);
+                }
+                console.log('[SW] Cache inicial completado');
             })
             .catch(error => {
-                console.error('[SW] Fallo al guardar en caché durante la instalación:', error);
+                console.error('[SW] Fallo al abrir cache durante la instalación:', error);
             })
     );
     self.skipWaiting();
@@ -54,31 +68,67 @@ self.addEventListener('activate', event => {
     return self.clients.claim();
 });
 
-// Interceptar las peticiones de red (estrategia Cache First)
+// Interceptar las peticiones de red (estrategia Cache First con fallback)
 self.addEventListener('fetch', event => {
+    // Skip caching for non-GET requests
+    if (event.request.method !== 'GET') {
+        return;
+    }
+
+    // Skip caching for chrome-extension and other non-http requests
+    if (!event.request.url.startsWith('http')) {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then(response => {
                 // Si la respuesta está en caché, la retornamos
                 if (response) {
+                    console.log('[SW] Sirviendo desde caché:', event.request.url);
                     return response;
                 }
+                
                 // Si no, la buscamos en la red
+                console.log('[SW] Buscando en red:', event.request.url);
                 return fetch(event.request).then(
                     (networkResponse) => {
                         // Si la petición a la red falla, no hacemos nada
                         if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
                             return networkResponse;
                         }
-                        // Clonamos la respuesta para poder guardarla en caché y retornarla
-                        const responseToCache = networkResponse.clone();
-                        caches.open(CACHE_NAME)
-                            .then(cache => {
-                                cache.put(event.request, responseToCache);
-                            });
+                        
+                        // Solo cachear ciertos tipos de recursos
+                        const url = new URL(event.request.url);
+                        const shouldCache = 
+                            event.request.url.includes(self.location.origin) || // Archivos locales
+                            url.hostname === 'unpkg.com' || // React
+                            url.hostname === 'www.gstatic.com' || // Firebase
+                            url.hostname === 'fonts.googleapis.com' || // Google Fonts
+                            url.hostname === 'fonts.gstatic.com'; // Google Fonts CSS
+
+                        if (shouldCache) {
+                            // Clonamos la respuesta para poder guardarla en caché y retornarla
+                            const responseToCache = networkResponse.clone();
+                            caches.open(CACHE_NAME)
+                                .then(cache => {
+                                    cache.put(event.request, responseToCache);
+                                })
+                                .catch(error => {
+                                    console.warn('[SW] Error al guardar en caché:', error);
+                                });
+                        }
+                        
                         return networkResponse;
                     }
-                );
+                ).catch(error => {
+                    console.error('[SW] Error de red:', error);
+                    // Retornar una respuesta de fallback si es necesario
+                    if (event.request.destination === 'document') {
+                        return caches.match('./index.html');
+                    }
+                    throw error;
+                });
             })
     );
 });
