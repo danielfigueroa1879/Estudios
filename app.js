@@ -1147,151 +1147,193 @@ const AcademicTaskManager = lazy(() => Promise.resolve({
         const unselectedButtonClasses = "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-700 dark:hover:text-white";
         const selectedButtonClasses = "bg-blue-600 text-white shadow-lg shadow-blue-300 dark:shadow-blue-800/50 ring-2 ring-blue-400 dark:ring-blue-500";
 
-        return (
-            <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-                {/* Header */}
-                <div className="sticky top-0 z-30">
-                    <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4">
-                        <div className="max-w-7xl mx-auto px-3 sm:px-6">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-2">
-                                    <div className="text-white"><IconBook width="26" height="26" /></div>
-                                    <div>
-                                        <h1 className="text-sm sm:text-3xl font-bold text-white leading-tight">GESTOR ACADÉMICO</h1>
-                                        <p className="text-[08px] sm:text-sm text-blue-200 mt-1"><span className="font-semibold text-white">{user.email}</span></p>
-                                    </div>
-                                </div>
-                                <div className="flex-shrink-0 flex items-center space-x-1 sm:space-x-2">
-                                    {notifications.length > 0 && (
-                                        <button onClick={() => setShowAlerts(!showAlerts)} className="relative text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title={showAlerts ? "Ocultar alertas" : "Mostrar alertas"}>
-                                            <IconBell width="16" height="16" className="sm:w-8 sm:h-8" />
-                                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{notifications.length}</span>
-                                        </button>
-                                    )}
-                                    <div className="hidden sm:flex items-center space-x-2 p-1 rounded-full hover:bg-blue-600 dark:hover:bg-gray-700 transition-colors">
-                                        <IconMail width="16" height="16" className="text-white sm:w-4 sm:h-4" />
-                                        <button onClick={() => setEmailNotifications(!emailNotifications)} className={`w-10 h-5 rounded-full transition-colors flex items-center p-0.5 ${emailNotifications ? 'bg-blue-400' : 'bg-gray-500'}`}>
-                                            <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${emailNotifications ? 'translate-x-5' : 'translate-x-0'}`} />
-                                        </button>
-                                    </div>
-                                    <button onClick={() => auth.signOut()} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Cerrar sesión">
-                                        <IconLogOut width="16" height="16" className="sm:w-8 sm:h-8" />
-                                    </button>
-                                    <button onClick={() => setShowQuickAccess(!showQuickAccess)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors md:hidden" title="Acceso Rápido">
-                                        {showQuickAccess ? <IconClose className="w-6 h-6"/> : <IconHamburger width="26" height="26" />}
-                                    </button>
-                                </div>
+      // CÓDIGO CORREGIDO - Busca esta sección en tu archivo y reemplázala:
+
+return (
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+        {/* Header */}
+        <div className="sticky top-0 z-30">
+            <div className="bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4">
+                <div className="max-w-7xl mx-auto px-3 sm:px-6">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                            <div className="text-white"><IconBook width="26" height="26" /></div>
+                            <div>
+                                <h1 className="text-sm sm:text-3xl font-bold text-white leading-tight">GESTOR ACADÉMICO</h1>
+                                <p className="text-[08px] sm:text-sm text-blue-200 mt-1"><span className="font-semibold text-white">{user.email}</span></p>
+                            </div>
+                        </div>
+                        <div className="flex-shrink-0 flex items-center space-x-1 sm:space-x-2">
+                            {notifications.length > 0 && (
+                                <button onClick={() => setShowAlerts(!showAlerts)} className="relative text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title={showAlerts ? "Ocultar alertas" : "Mostrar alertas"}>
+                                    <IconBell width="16" height="16" className="sm:w-8 sm:h-8" />
+                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{notifications.length}</span>
+                                </button>
+                            )}
+                            <div className="hidden sm:flex items-center space-x-2 p-1 rounded-full hover:bg-blue-600 dark:hover:bg-gray-700 transition-colors">
+                                <IconMail width="16" height="16" className="text-white sm:w-4 sm:h-4" />
+                                <button onClick={() => setEmailNotifications(!emailNotifications)} className={`w-10 h-5 rounded-full transition-colors flex items-center p-0.5 ${emailNotifications ? 'bg-blue-400' : 'bg-gray-500'}`}>
+                                    <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${emailNotifications ? 'translate-x-5' : 'translate-x-0'}`} />
+                                </button>
+                            </div>
+                            <button onClick={() => auth.signOut()} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors" title="Cerrar sesión">
+                                <IconLogOut width="16" height="16" className="sm:w-8 sm:h-8" />
+                            </button>
+                            <button onClick={() => setShowQuickAccess(!showQuickAccess)} className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors md:hidden" title="Acceso Rápido">
+                                {showQuickAccess ? <IconClose className="w-6 h-6"/> : <IconHamburger width="26" height="26" />}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {showQuickAccess && (
+                <div className="absolute top-full left-0 right-0 w-full md:hidden">
+                    <div className="p-4 bg-black/10 dark:bg-black/30 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-2xl">
+                        <div className="max-w-5xl md:max-w-xs mx-auto">
+                            <div className="space-y-1">
+                                <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                    <IconBook width="20" height="20" /> <span>Lista</span>
+                                </button>
+                                <hr className="border-white/10" />
+                                <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                    <IconCalendar width="20" height="20" /> <span>Por Día</span>
+                                </button>
+                                <hr className="border-white/10" />
+                                <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                    <IconCalendar width="20" height="20" /> <span>Calendario Mensual</span>
+                                </button>
+                                <hr className="border-white/10" />
+                                <button onClick={() => { setView('weeklyCalendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                    <IconCalendar width="20" height="20" /> <span>Calendario Semanal</span>
+                                </button>
+                                <hr className="border-white/10" />
+                                <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                    <IconHistory width="20" height="20" /> <span>Historial</span>
+                                </button>
+                                <hr className="border-white/10" />
+                                <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
+                                    <IconPlus width="20" height="20" /> <span>Agregar nueva tarea</span>
+                                </button>
                             </div>
                         </div>
                     </div>
-                    {showQuickAccess && (
-                        <div className="absolute top-full left-0 right-0 w-full md:hidden">
-                             <div className="p-4 bg-black/10 dark:bg-black/30 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-2xl">
-                                <div className="max-w-5xl md:max-w-xs mx-auto">
-                                    <div className="space-y-1">
-                                        <button onClick={() => { setView('list'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                            <IconBook width="20" height="20" /> <span>Lista</span>
-                                        </button>
-                                        <hr className="border-white/10" />
-                                        <button onClick={() => { setView('daily'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                            <IconCalendar width="20" height="20" /> <span>Por Día</span>
-                                        </button>
-                                        <hr className="border-white/10" />
-                                        <button onClick={() => { setView('calendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                            <IconCalendar width="20" height="20" /> <span>Calendario Mensual</span>
-                                        </button>
-                                        <hr className="border-white/10" />
-                                        <button onClick={() => { setView('weeklyCalendar'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                            <IconCalendar width="20" height="20" /> <span>Calendario Semanal</span>
-                                        </button>
-                                        <hr className="border-white/10" />
-                                        <button onClick={() => { setView('history'); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                            <IconHistory width="20" height="20" /> <span>Historial</span>
-                                        </button>
-                                        <hr className="border-white/10" />
-                                        <button onClick={() => { handleOpenNewTaskModal(); setShowQuickAccess(false); }} className="w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3">
-                                            <IconPlus width="20" height="20" /> <span>Agregar nueva tarea</span>
-                                        </button>
-                                    </div>
+                </div>
+            )}
+        </div>
+
+        {/* Main Content Layout - COMENTARIO MOVIDO AQUÍ */}
+        <div className={`w-full flex ${settings.view === 'weeklyCalendar' ? 'justify-center' : 'justify-end'} px-3 sm:px-6`}>
+            <div className={`flex w-full max-w-7xl ${settings.view === 'weeklyCalendar' ? 'justify-center' : ''}`}>
+                {/* Main Content Column */}
+                <main className="w-full md:flex-1">
+                    <div className="pb-24">
+                        {notifications.length > 0 && showAlerts && (
+                            <div onClick={() => { 
+                                if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); 
+                                alertHideTimeoutRef.current = null; 
+                            }} className="bg-orange-100 dark:bg-orange-500/20 border border-orange-400 dark:border-orange-500/50 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}}>
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="font-semibold text-orange-800 dark:text-orange-300 text-lg sm:text-xl text-left">Alertas activas</h3>
+                                    <div className="text-orange-600 dark:text-orange-400"><IconAlert width="18" height="18" /></div>
+                                </div>
+                                <div className="flex flex-col gap-0.5">
+                                    {notifications.slice(0, 3).map((notif, index) => 
+                                        <p key={notif.id || index} className="text-sm text-orange-700 dark:text-orange-300/90 w-full text-left">• {notif.message}</p>
+                                    )}
+                                    {notifications.length > 3 && 
+                                        <p className="text-sm text-orange-600 dark:text-orange-400 w-full text-left">... y {notifications.length - 3} alertas más</p>
+                                    }
                                 </div>
                             </div>
                         )}
-                    </div>
 
-                    <div className={`w-full flex ${settings.view === 'weeklyCalendar' ? 'justify-center' : 'justify-end'} px-3 sm:px-6`}>
-                        <div className={`flex w-full max-w-7xl ${settings.view === 'weeklyCalendar' ? 'justify-center' : ''}`}>
-                            <main className="w-full md:flex-1">
-                                <div className="pb-24">
-                                    {notifications.length > 0 && showAlerts && ( <div onClick={() => { /*handleAlertsClick();*/ if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-100 dark:bg-orange-500/20 border border-orange-400 dark:border-orange-500/50 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 dark:text-orange-300 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600 dark:text-orange-400"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 dark:text-orange-300/90 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 dark:text-orange-400 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
-
-                                    <div className="relative bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-3 rounded-2xl">
-                                        <div className="max-w-4xl mx-auto px-3 sm:px-6">
-                                            <div className="flex justify-between items-center">
-                                                <h2 className="text-lg sm:text-xl font-semibold text-blue-600 dark:text-blue-400 text-left">Vistas</h2>
-                                                <button onClick={() => { setIsViewsCollapsed(!isViewsCollapsed); }} className="sm:hidden p-2">
-                                                    {isViewsCollapsed ? <IconChevronDown className="text-red-500" /> : <IconChevronUp className="text-red-500" />}
-                                                </button>
-                                            </div>
-                                            <div className={`sm:block mt-4 sm:mt-5 ${isViewsCollapsed ? 'hidden' : ''}`}>
-                                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-                                                    <button onClick={() => setView('list')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'list' ? selectedButtonClasses : unselectedButtonClasses}`}><IconBook width="18" height="18" /><span className="font-medium text-center">Lista</span></button>
-                                                    <button onClick={() => setView('daily')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'daily' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center">Por Día</span></button>
-                                                    <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-110 ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Mensual</span></button>
-                                                    <button onClick={() => setView('weeklyCalendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-110 ${view === 'weeklyCalendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Semanal</span></button>
-                                                    <button onClick={() => setView('history')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-110 ${view === 'history' ? selectedButtonClasses : unselectedButtonClasses}`}><IconHistory width="20" height="20" /><span className="font-medium text-center">Historial</span></button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="border-t-4 border-gray-100 dark:border-gray-800 mb-2 sm:my-3"></div>
-                                    {renderCurrentView()}
-                                    <div className="mt-7 sm:mt-9 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5"> <div className="text-center text-gray-600 dark:text-gray-400 space-y-1.5"> <div className="border-b border-gray-200 dark:border-gray-700 pb-1.5"> <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-0.5">© Derechos Reservados</p> <p className="text-xs text-gray-700 dark:text-gray-300">Creado por <span className="font-semibold text-blue-600 dark:text-blue-400">Daniel Figueroa Chacama</span></p> <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Ingeniero en Informática</p> </div> </div> </div>
+                        <div className="relative bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-3 rounded-2xl">
+                            <div className="max-w-4xl mx-auto px-3 sm:px-6">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-lg sm:text-xl font-semibold text-blue-600 dark:text-blue-400 text-left">Vistas</h2>
+                                    <button onClick={() => { setIsViewsCollapsed(!isViewsCollapsed); }} className="sm:hidden p-2">
+                                        {isViewsCollapsed ? <IconChevronDown className="text-red-500" /> : <IconChevronUp className="text-red-500" />}
+                                    </button>
                                 </div>
-                            </main>
-
-                            {/* Sidebar Column for Mini Calendar */}
-                            {settings.view !== 'weeklyCalendar' && (
-                                <aside className="hidden md:block w-[30rem] flex-shrink-0 ml-6">
-                                    <div className="sticky top-24 overflow-x-auto pr-2">
-                                        <MiniWeeklyCalendar classes={classes} />
+                                <div className={`sm:block mt-4 sm:mt-5 ${isViewsCollapsed ? 'hidden' : ''}`}>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                                        <button onClick={() => setView('list')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'list' ? selectedButtonClasses : unselectedButtonClasses}`}>
+                                            <IconBook width="18" height="18" />
+                                            <span className="font-medium text-center">Lista</span>
+                                        </button>
+                                        <button onClick={() => setView('daily')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'daily' ? selectedButtonClasses : unselectedButtonClasses}`}>
+                                            <IconCalendar width="18" height="18" />
+                                            <span className="font-medium text-center">Por Día</span>
+                                        </button>
+                                        <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-110 ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`}>
+                                            <IconCalendar width="20" height="20" />
+                                            <span className="font-medium text-center">Calendario Mensual</span>
+                                        </button>
+                                        <button onClick={() => setView('weeklyCalendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-110 ${view === 'weeklyCalendar' ? selectedButtonClasses : unselectedButtonClasses}`}>
+                                            <IconCalendar width="20" height="20" />
+                                            <span className="font-medium text-center">Calendario Semanal</span>
+                                        </button>
+                                        <button onClick={() => setView('history')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-110 ${view === 'history' ? selectedButtonClasses : unselectedButtonClasses}`}>
+                                            <IconHistory width="20" height="20" />
+                                            <span className="font-medium text-center">Historial</span>
+                                        </button>
                                     </div>
-                                </aside>
-                            )}
+                                </div>
+                            </div>
+                        </div>
 
+                        <div className="border-t-4 border-gray-100 dark:border-gray-800 mb-2 sm:my-3"></div>
+                        {renderCurrentView()}
+                        <div className="mt-7 sm:mt-9 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5">
+                            <div className="text-center text-gray-600 dark:text-gray-400 space-y-1.5">
+                                <div className="border-b border-gray-200 dark:border-gray-700 pb-1.5">
+                                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-0.5">© Derechos Reservados</p>
+                                    <p className="text-xs text-gray-700 dark:text-gray-300">Creado por <span className="font-semibold text-blue-600 dark:text-blue-400">Daniel Figueroa Chacama</span></p>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Ingeniero en Informática</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </main>
 
-                    {/* FAB Button */}
-                    <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 md:right-[32rem] bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
-                        <IconPlus width="24" height="24" />
-                    </button>
+                {/* Sidebar Column for Mini Calendar */}
+                {settings.view !== 'weeklyCalendar' && (
+                    <aside className="hidden md:block w-[30rem] flex-shrink-0 ml-6">
+                        <div className="sticky top-24 overflow-x-auto pr-2">
+                            <MiniWeeklyCalendar classes={classes} />
+                        </div>
+                    </aside>
+                )}
+            </div>
+        </div>
 
-                    {/* Custom Dialogs and Menus */}
-                    <CustomAlertDialog message={alertDialogMessage} isOpen={isAlertDialogOpen} onClose={handleAlertDialogClose} />
-                    <CustomConfirmDialog message={confirmDialogMessage} isOpen={isConfirmDialogOpen} onConfirm={handleConfirmDialogConfirm} onCancel={handleConfirmDialogCancel} />
-                    <TaskModal
-                        isOpen={isTaskModalOpen}
-                        onClose={() => setIsTaskModalOpen(false)}
-                        onSave={handleSaveTask}
-                        showAlert={showAlert}
-                        taskToEdit={editingTask}
-                        selectedDate={selectedDateForNewTask}
-                    />
-                    <ClassModal
-                        isOpen={isClassModalOpen}
-                        onClose={() => setIsClassModalOpen(false)}
-                        onSave={handleSaveClass}
-                        showAlert={showAlert}
-                        classToEdit={editingClass}
-                        selectedDay={selectedDayForNewClass}
-                        selectedTime={selectedTimeForNewClass}
-                    />
-                </div>
-            );
-        }
-    }
-));
+        {/* FAB Button */}
+        <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 md:right-[32rem] bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
+            <IconPlus width="24" height="24" />
+        </button>
+
+        {/* Custom Dialogs and Menus */}
+        <CustomAlertDialog message={alertDialogMessage} isOpen={isAlertDialogOpen} onClose={handleAlertDialogClose} />
+        <CustomConfirmDialog message={confirmDialogMessage} isOpen={isConfirmDialogOpen} onConfirm={handleConfirmDialogConfirm} onCancel={handleConfirmDialogCancel} />
+        <TaskModal
+            isOpen={isTaskModalOpen}
+            onClose={() => setIsTaskModalOpen(false)}
+            onSave={handleSaveTask}
+            showAlert={showAlert}
+            taskToEdit={editingTask}
+            selectedDate={selectedDateForNewTask}
+        />
+        <ClassModal
+            isOpen={isClassModalOpen}
+            onClose={() => setIsClassModalOpen(false)}
+            onSave={handleSaveClass}
+            showAlert={showAlert}
+            classToEdit={editingClass}
+            selectedDay={selectedDayForNewClass}
+            selectedTime={selectedTimeForNewClass}
+        />
+    </div>
+);
 
 // Banner de Instalación
 const InstallBanner = ({ onInstall, onClose }) => {
