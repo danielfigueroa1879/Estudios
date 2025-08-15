@@ -603,7 +603,8 @@ const WeeklyCalendarView = ({ classes, onBackToList, onAddClass, onEditClass, on
 
 const MiniWeeklyCalendar = ({ classes }) => {
     const daysOfWeek = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-    const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS.map(time => time.substring(0, 2));
+    // Changed this to use full time slots for consistency and correct parsing
+    const timeSlotsDisplay = WEEKLY_CALENDAR_TIME_SLOTS.map(time => time.substring(0, 2));
 
     const today = new Date();
     const currentDayOfWeek = today.getDay();
@@ -624,8 +625,8 @@ const MiniWeeklyCalendar = ({ classes }) => {
         let minDiff = Math.abs(classHour - parseInt(closestFullSlot.split(':')[0]));
 
         for (let i = 1; i < WEEKLY_CALENDAR_TIME_SLOTS.length; i++) {
-            const slotHour = parseInt(timeSlots[i].split(':')[0]); // Should be WEEKLY_CALENDAR_TIME_SLOTS[i] here
-            const diff = Math.abs(classHour - parseInt(slotHour.split(':')[0]));
+            const slotHour = parseInt(WEEKLY_CALENDAR_TIME_SLOTS[i].split(':')[0]); // Corrected: use WEEKLY_CALENDAR_TIME_SLOTS
+            const diff = Math.abs(classHour - slotHour);
             if (diff < minDiff) {
                 minDiff = diff;
                 closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[i];
