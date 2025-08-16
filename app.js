@@ -1377,7 +1377,7 @@ const WeeklyCalendarView = ({
   }, timeSlots.map(time => /*#__PURE__*/React.createElement("tr", {
     key: time
   }, /*#__PURE__*/React.createElement("td", {
-    className: "px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700"
+    className: "px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700"
   }, time, " horas"), daysOfWeek.map((day, dayIndex) => {
     const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
     const formattedDate = getFormattedDateForDay(dayIndex);
@@ -1438,7 +1438,7 @@ const MiniWeeklyCalendar = ({
     let closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[0];
     let minDiff = Math.abs(classHour - parseInt(closestFullSlot.split(':')[0]));
     for (let i = 1; i < WEEKLY_CALENDAR_TIME_SLOTS.length; i++) {
-      const slotHour = parseInt(WEEKLY_CALENDAR_TIME_SLOTS[i].split(':')[0]);
+      const slotHour = parseInt(timeSlots[i].split(':')[0]);
       const diff = Math.abs(classHour - slotHour);
       if (diff < minDiff) {
         minDiff = diff;
@@ -2114,7 +2114,7 @@ const AcademicTaskManager = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "max-w-screen-xl md:ml-auto md:mr-8 px-3 sm:px-6" // Contenido de la cabecera centrado y limitado
+    className: "max-w-screen-xl md:ml-auto md:mr-16 px-3 sm:px-6" // Contenido de la cabecera centrado y limitado
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex items-center justify-between"
   }, /*#__PURE__*/React.createElement("div", {
@@ -2244,7 +2244,7 @@ const AcademicTaskManager = ({
     height: "20"
   }), " ", /*#__PURE__*/React.createElement("span", null, "Agregar nueva tarea"))))))), /*#__PURE__*/React.createElement("div", {
     // Contenedor principal del contenido y la barra lateral en PC
-    className: "w-full max-w-screen-2xl md:ml-auto md:mr-8 flex-grow flex md:flex-row flex-col px-3 sm:px-6 py-4"
+    className: "w-full max-w-screen-xl md:ml-auto md:mr-16 flex-grow flex md:flex-row flex-col px-3 sm:px-6 py-4"
   }, /*#__PURE__*/React.createElement("main", {
     className: "w-full md:flex-grow md:pr-6" // El contenido principal crece para llenar el espacio, con un padding a la derecha
   }, /*#__PURE__*/React.createElement("div", {
@@ -2349,14 +2349,14 @@ const AcademicTaskManager = ({
   }, "Daniel Figueroa Chacama")), " ", /*#__PURE__*/React.createElement("p", {
     className: "text-xs text-gray-600 dark:text-gray-400 mt-0.5"
   }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), settings.view !== 'weeklyCalendar' && /*#__PURE__*/React.createElement("aside", {
-    className: "hidden md:block md:w-96 flex-shrink-0 md:ml-6" // Anchura ajustada para el calendario pequeño
+    className: "hidden md:block md:w-80 flex-shrink-0 md:ml-6" // Anchura ajustada para el calendario pequeño
   }, /*#__PURE__*/React.createElement("div", {
     className: "sticky top-24 overflow-x-auto pr-2"
   }, /*#__PURE__*/React.createElement(MiniWeeklyCalendar, {
     classes: classes
   })))), /*#__PURE__*/React.createElement("button", {
     onClick: handleOpenNewTaskModal,
-    className: "fixed bottom-6 right-6 md:right-[27rem] bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40" // Posición del botón ajustada
+    className: "fixed bottom-6 right-6 md:right-[29rem] bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40" // Posición del botón ajustada
   }, /*#__PURE__*/React.createElement(IconPlus, {
     width: "24",
     height: "24"
@@ -2500,8 +2500,9 @@ const App = () => {
   }), showInstallBanner && /*#__PURE__*/React.createElement(InstallBanner, {
     onInstall: handleInstallClick,
     onClose: () => setShowInstallBanner(false)
-  }));
+  }));// Assuming AcademicTaskManager, LoginScreen, CustomAlertDialog, and InstallBanner are defined elsewhere
 };
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 root.render(/*#__PURE__*/React.createElement(App, null));
+
