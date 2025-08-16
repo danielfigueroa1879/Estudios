@@ -1029,7 +1029,6 @@ const HistoryView = ({
       className: "flex flex-col sm:flex-row sm:items-center justify-between"
     }, /*#__PURE__*/React.createElement("div", {
       className: "flex-1 min-w-0"
-    Имеется в виду, что `handleAlertsClick()` не определен. Нам нужно удалить его, так как он не используется.
     }, /*#__PURE__*/React.createElement("div", {
       className: "flex items-center mb-2"
     }, /*#__PURE__*/React.createElement("span", {
@@ -2059,7 +2058,7 @@ const AcademicTaskManager = ({
           }, /*#__PURE__*/React.createElement(IconTrash, {
             width: "22",
             height: "22"
-          }))), " "), " ");
+          }))), " ");
         }), " ");
       case 'daily':
         return /*#__PURE__*/React.createElement(DailyTasksCardView, {
