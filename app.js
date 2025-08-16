@@ -2348,7 +2348,11 @@ const AcademicTaskManager = ({
     className: "font-semibold text-blue-600 dark:text-blue-400"
   }, "Daniel Figueroa Chacama")), " ", /*#__PURE__*/React.createElement("p", {
     className: "text-xs text-gray-600 dark:text-gray-400 mt-0.5"
-  }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), /*#__PURE__*/React.createElement("button", {
+  }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), /*#__PURE__*/React.createElement("div", {
+    className: "sticky top-24 overflow-x-auto pr-2"
+  }, /*#__PURE__*/React.createElement(MiniWeeklyCalendar, {
+    classes: classes
+  })))), /*#__PURE__*/React.createElement("button", {
     onClick: handleOpenNewTaskModal,
     className: "fixed bottom-6 right-6 md:right-[26rem] bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40" // Posición del botón ajustada
   }, /*#__PURE__*/React.createElement(IconPlus, {
@@ -2378,7 +2382,7 @@ const AcademicTaskManager = ({
     classToEdit: editingClass,
     selectedDay: selectedDayForNewClass,
     selectedTime: selectedTimeForNewClass
-  })]));
+  })]);
 };
 
 // --- NUEVO: Banner de Instalación ---
