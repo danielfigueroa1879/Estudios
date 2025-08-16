@@ -1029,6 +1029,7 @@ const HistoryView = ({
       className: "flex flex-col sm:flex-row sm:items-center justify-between"
     }, /*#__PURE__*/React.createElement("div", {
       className: "flex-1 min-w-0"
+    Имеется в виду, что `handleAlertsClick()` не определен. Нам нужно удалить его, так как он не используется.
     }, /*#__PURE__*/React.createElement("div", {
       className: "flex items-center mb-2"
     }, /*#__PURE__*/React.createElement("span", {
@@ -2308,41 +2309,31 @@ const AcademicTaskManager = ({
   }, /*#__PURE__*/React.createElement(IconBook, {
     width: "18",
     height: "18"
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "font-medium text-center"
-  }, "Lista")), /*#__PURE__*/React.createElement("button", {
+  }), /*#__PURE__*/React.createElement("span", null, "Lista")), /*#__PURE__*/React.createElement("button", {
     onClick: () => setView('daily'),
     className: `px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'daily' ? selectedButtonClasses : unselectedButtonClasses}`
   }, /*#__PURE__*/React.createElement(IconCalendar, {
     width: "18",
     height: "18"
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "font-medium text-center"
-  }, "Por D\xEDa")), /*#__PURE__*/React.createElement("button", {
+  }), /*#__PURE__*/React.createElement("span", null, "Por D\xEDa")), /*#__PURE__*/React.createElement("button", {
     onClick: () => setView('calendar'),
     className: `px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`
   }, /*#__PURE__*/React.createElement(IconCalendar, {
     width: "20",
     height: "20"
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "font-medium text-center"
-  }, "Calendario Mensual")), /*#__PURE__*/React.createElement("button", {
+  }), /*#__PURE__*/React.createElement("span", null, "Calendario Mensual")), /*#__PURE__*/React.createElement("button", {
     onClick: () => setView('weeklyCalendar'),
     className: `px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'weeklyCalendar' ? selectedButtonClasses : unselectedButtonClasses}`
   }, /*#__PURE__*/React.createElement(IconCalendar, {
     width: "20",
     height: "20"
-  }), " ", /*#__PURE__*/React.createElement("span", {
-    className: "font-medium text-center"
-  }, "Calendario Semanal")), /*#__PURE__*/React.createElement("button", {
+  }), " ", /*#__PURE__*/React.createElement("span", null, "Calendario Semanal")), /*#__PURE__*/React.createElement("button", {
     onClick: () => setView('history'),
     className: `px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'history' ? selectedButtonClasses : unselectedButtonClasses}`
   }, /*#__PURE__*/React.createElement(IconHistory, {
     width: "20",
     height: "20"
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "font-medium text-center"
-  }, "Historial")))))), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("span", null, "Historial")))))), /*#__PURE__*/React.createElement("div", {
     className: "border-t-4 border-gray-100 dark:border-gray-800 mb-2 sm:my-3"
   }), renderCurrentView(), /*#__PURE__*/React.createElement("div", {
     className: "mt-7 sm:mt-9 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5"
