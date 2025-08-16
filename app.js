@@ -375,23 +375,26 @@ const IconLogOut = ({
   x2: "9",
   y2: "12"
 }), " ");
+
+// Corrected and Cleaned IconSpinner
 const IconSpinner = () => /*#__PURE__*/React.createElement("svg", {
   className: "animate-spin -ml-1 mr-3 h-5 w-5 text-white",
   xmlns: "http://www.w3.org/2000/svg",
   fill: "none",
   viewBox: "0 0 24 24"
-}, " ", /*#__PURE__*/React.createElement("circle", {
+}, /*#__PURE__*/React.createElement("circle", {
   className: "opacity-25",
   cx: "12",
   cy: "12",
   r: "10",
   stroke: "currentColor",
   strokeWidth: "4"
-}), " ", /*#__PURE__*/React.createElement("path", {
+}), /*#__PURE__*/React.createElement("path", {
   className: "opacity-75",
   fill: "currentColor",
   d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-}), " ");
+}));
+
 const IconDownload = ({
   className
 }) => /*#__PURE__*/React.createElement("svg", {
@@ -1294,6 +1297,10 @@ const ClassModal = ({
     height: "18"
   }), /*#__PURE__*/React.createElement("span", null, isEditMode ? 'Actualizar' : 'Agregar'))))));
 };
+
+// Define time slots globally for easier modification
+const WEEKLY_CALENDAR_TIME_SLOTS = ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '19:00', '20:00', '22:00' // 9 rows
+];
 
 // --- NEW: Weekly Calendar View Component ---
 const WeeklyCalendarView = ({
