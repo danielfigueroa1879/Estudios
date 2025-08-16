@@ -1294,7 +1294,6 @@ const ClassModal = ({
     height: "18"
   }), /*#__PURE__*/React.createElement("span", null, isEditMode ? 'Actualizar' : 'Agregar'))))));
 };
-
 // --- NEW: Weekly Calendar View Component ---
 const WeeklyCalendarView = ({
   classes,
@@ -1322,11 +1321,13 @@ const WeeklyCalendarView = ({
     date.setDate(mondayOfCurrentWeek.getDate() + i);
     weekDates.push(date);
   }
+
   const classesByDayAndTime = classes.reduce((acc, cls) => {
     // Find the closest time slot for display
     const classHour = parseInt(cls.startTime.split(':')[0]);
     let closestSlot = timeSlots[0];
     let minDiff = Math.abs(classHour - parseInt(closestSlot.split(':')[0]));
+
     for (let i = 1; i < timeSlots.length; i++) {
       const slotHour = parseInt(timeSlots[i].split(':')[0]);
       const diff = Math.abs(classHour - slotHour);
@@ -1335,107 +1336,158 @@ const WeeklyCalendarView = ({
         closestSlot = timeSlots[i];
       }
     }
+
     if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
     if (!acc[cls.dayOfWeek][closestSlot]) acc[cls.dayOfWeek][closestSlot] = [];
     acc[cls.dayOfWeek][closestSlot].push(cls);
     return acc;
   }, {});
-  const getFormattedDateForDay = dayIndex => {
+
+  const getFormattedDateForDay = (dayIndex) => {
     const date = weekDates[dayIndex];
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
   };
-  return /*#__PURE__*/React.createElement("div", {
-    className: "bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700",
-    id: "weeklyCalendarSection"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center justify-between mb-6"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left"
-  }, "Calendario Semanal"), /*#__PURE__*/React.createElement(IconBackArrowhead, {
-    onClick: onBackToList,
-    className: "text-red-500 cursor-pointer hover:text-red-700 transition-colors",
-    title: "Volver a la lista"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "overflow-x-auto"
-  }, /*#__PURE__*/React.createElement("table", {
-    className: "w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg"
-  }, /*#__PURE__*/React.createElement("thead", {
-    className: "bg-blue-600 dark:bg-gray-700 text-white"
-  }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    className: "px-2 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg"
-  }, "Hora"), daysOfWeek.map((day, index) => {
-    const formattedDate = getFormattedDateForDay(index);
-    const isToday = formattedDate === new Date().toISOString().split('T')[0];
-    return /*#__PURE__*/React.createElement("th", {
-      key: day,
-      className: `px-2 py-3 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-800' : ''} ${index === 6 ? 'rounded-tr-lg' : ''}`
-    }, day, " ", /*#__PURE__*/React.createElement("br", null), " ", /*#__PURE__*/React.createElement("span", {
-      className: "font-normal text-xs"
-    }, formattedDate.substring(5)));
-  }))), /*#__PURE__*/React.createElement("tbody", {
-    className: "bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
-  }, timeSlots.map(time => /*#__PURE__*/React.createElement("tr", {
-    key: time
-  }, /*#__PURE__*/React.createElement("td", {
-    className: "px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700"
-  }, time, " horas"), daysOfWeek.map((day, dayIndex) => {
-    const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
-    const formattedDate = getFormattedDateForDay(dayIndex);
-    const isToday = formattedDate === new Date().toISOString().split('T')[0];
-    return /*#__PURE__*/React.createElement("td", {
-      key: `${day}-${time}`,
-      className: `relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`,
-      onDoubleClick: () => onAddClass(day, time)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "flex flex-col space-y-1"
-    }, classesInSlot.map(cls => /*#__PURE__*/React.createElement("div", {
-      key: cls.id,
-      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-1 py-0.5 truncate flex items-center justify-between group"
-    }, /*#__PURE__*/React.createElement("span", {
-      title: `${cls.subject} (${cls.description})`
-    }, cls.subject), /*#__PURE__*/React.createElement("span", {
-      className: "text-[0.6rem] text-blue-700 dark:text-blue-300"
-    }, cls.startTime, cls.endTime ? ` - ${cls.endTime}` : ''), /*#__PURE__*/React.createElement("div", {
-      className: "flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity"
-    }, /*#__PURE__*/React.createElement("button", {
-      onClick: () => onEditClass(cls),
-      className: "text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100",
-      title: "Editar clase"
-    }, /*#__PURE__*/React.createElement(IconEdit, {
-      width: "12",
-      height: "12"
-    })), /*#__PURE__*/React.createElement("button", {
-      onClick: () => onDeleteClass(cls.id),
-      className: "text-red-600 dark:text-red-300 hover:text-red-800 dark:hover:text-red-100",
-      title: "Eliminar clase"
-    }, /*#__PURE__*/React.createElement(IconTrash, {
-      width: "12",
-      height: "12"
-    })))))));
-  })))))));
+
+  return (
+    <div className="bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700" id="weeklyCalendarSection">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left">
+          Calendario Semanal
+        </h2>
+        <IconBackArrowhead
+          onClick={onBackToList}
+          className="text-red-500 cursor-pointer hover:text-red-700 transition-colors"
+          title="Volver a la lista"
+        />
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg">
+          <thead className="bg-blue-600 dark:bg-gray-700 text-white">
+            <tr>
+              <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg">
+                Hora
+              </th>
+              {daysOfWeek.map((day, index) => {
+                const formattedDate = getFormattedDateForDay(index);
+                const isToday = formattedDate === new Date().toISOString().split('T')[0];
+                return (
+                  <th
+                    key={day}
+                    className={`px-2 py-3 text-center text-xs font-medium uppercase tracking-wider ${
+                      isToday ? 'bg-blue-800' : ''
+                    } ${index === 6 ? 'rounded-tr-lg' : ''}`}
+                  >
+                    {day} <br /> 
+                    <span className="font-normal text-xs">{formattedDate.substring(5)}</span>
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            {timeSlots.map((time) => (
+              <tr key={time}>
+                <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700">
+                  {time} horas
+                </td>
+                {daysOfWeek.map((day, dayIndex) => {
+                  const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
+                  const formattedDate = getFormattedDateForDay(dayIndex);
+                  const isToday = formattedDate === new Date().toISOString().split('T')[0];
+
+                  return (
+                    <td
+                      key={`${day}-${time}`}
+                      className={`relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${
+                        isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'
+                      } min-h-[80px]`}
+                      onDoubleClick={() => onAddClass(day, time)}
+                    >
+                      <div className="flex flex-col space-y-1">
+                        {classesInSlot.map((cls) => (
+                          <div
+                            key={cls.id}
+                            className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-2 py-1 group relative min-h-[60px] flex flex-col justify-between"
+                          >
+                            {/* Asignatura arriba */}
+                            <div className="font-bold text-sm mb-1" title={`${cls.subject} (${cls.description || 'Sin descripción'})`}>
+                              {cls.subject}
+                            </div>
+                            
+                            {/* Horario abajo */}
+                            <div className="text-[10px] text-blue-700 dark:text-blue-300 mb-1">
+                              {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
+                            </div>
+
+                            {/* Descripción si existe */}
+                            {cls.description && (
+                              <div className="text-[9px] text-blue-600 dark:text-blue-400 italic truncate">
+                                {cls.description}
+                              </div>
+                            )}
+
+                            {/* Botones de acción */}
+                            <div className="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onEditClass(cls);
+                                }}
+                                className="text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100 bg-white dark:bg-gray-800 rounded-full p-1"
+                                title="Editar clase"
+                              >
+                                <IconEdit width="10" height="10" />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onDeleteClass(cls.id);
+                                }}
+                                className="text-red-600 dark:text-red-300 hover:text-red-800 dark:hover:text-red-100 bg-white dark:bg-gray-800 rounded-full p-1"
+                                title="Eliminar clase"
+                              >
+                                <IconTrash width="10" height="10" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 };
 
-// --- NEW: Mini Weekly Calendar Component ---
-const MiniWeeklyCalendar = ({
-  classes
-}) => {
+// --- NEW: Mini Weekly Calendar Component (también actualizado) ---
+const MiniWeeklyCalendar = ({ classes }) => {
   const daysOfWeek = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
   const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS.map(time => time.substring(0, 2));
+
   const today = new Date();
   const currentDayOfWeek = today.getDay();
   const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
   const mondayOfCurrentWeek = new Date(new Date().setDate(today.getDate() - diff));
   mondayOfCurrentWeek.setHours(0, 0, 0, 0);
+
   const weekDates = [];
   for (let i = 0; i < 7; i++) {
     const date = new Date(mondayOfCurrentWeek);
     date.setDate(mondayOfCurrentWeek.getDate() + i);
     weekDates.push(date);
   }
+
   const classesByDayAndFullTimeSlot = classes.reduce((acc, cls) => {
     const classHour = parseInt(cls.startTime.split(':')[0]);
     let closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[0];
     let minDiff = Math.abs(classHour - parseInt(closestFullSlot.split(':')[0]));
+
     for (let i = 1; i < WEEKLY_CALENDAR_TIME_SLOTS.length; i++) {
       const slotHour = parseInt(WEEKLY_CALENDAR_TIME_SLOTS[i].split(':')[0]);
       const diff = Math.abs(classHour - slotHour);
@@ -1444,60 +1496,92 @@ const MiniWeeklyCalendar = ({
         closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[i];
       }
     }
+
     if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
     if (!acc[cls.dayOfWeek][closestFullSlot]) acc[cls.dayOfWeek][closestFullSlot] = [];
     acc[cls.dayOfWeek][closestFullSlot].push(cls);
     return acc;
   }, {});
-  const getFormattedDateForDay = dayIndex => {
+
+  const getFormattedDateForDay = (dayIndex) => {
     const date = weekDates[dayIndex];
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
   };
-  return /*#__PURE__*/React.createElement("div", {
-    className: "bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-full"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg"
-  }, "Semana Actual"), /*#__PURE__*/React.createElement("div", {
-    className: "overflow-x-auto"
-  }, /*#__PURE__*/React.createElement("table", {
-    className: "min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-  }, /*#__PURE__*/React.createElement("thead", {
-    className: "bg-blue-500 dark:bg-gray-600 text-white"
-  }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    className: "px-1 py-1 text-left text-xs font-medium uppercase tracking-wider"
-  }, "Hr"), daysOfWeek.map((day, index) => {
-    const formattedDate = getFormattedDateForDay(index);
-    const isToday = formattedDate === new Date().toISOString().split('T')[0];
-    return /*#__PURE__*/React.createElement("th", {
-      key: day,
-      className: `px-1 py-1 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''}`
-    }, day);
-  }))), /*#__PURE__*/React.createElement("tbody", {
-    className: "bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
-  }, WEEKLY_CALENDAR_TIME_SLOTS.map(fullTimeSlot => /*#__PURE__*/React.createElement("tr", {
-    key: fullTimeSlot
-  }, /*#__PURE__*/React.createElement("td", {
-    className: "px-1 py-1 whitespace-nowrap text-xs font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700"
-  }, fullTimeSlot.substring(0, 2)), daysOfWeek.map((day, dayIndex) => {
-    const dayName = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex];
-    const classesInSlot = classesByDayAndFullTimeSlot[dayName] && classesByDayAndFullTimeSlot[dayName][fullTimeSlot] || [];
-    const formattedDate = getFormattedDateForDay(dayIndex);
-    const isToday = formattedDate === new Date().toISOString().split('T')[0];
-    return /*#__PURE__*/React.createElement("td", {
-      key: `${day}-${fullTimeSlot}`,
-      className: `px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "flex flex-col space-y-0.5"
-    }, classesInSlot.map(cls => /*#__PURE__*/React.createElement("div", {
-      key: cls.id,
-      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 whitespace-normal break-words",
-      title: `${cls.subject} (${cls.description})`
-    }, cls.subject, /*#__PURE__*/React.createElement("span", {
-      className: "text-[0.5rem] text-blue-700 dark:text-blue-300 block"
-    }, cls.startTime, cls.endTime ? ` - ${cls.endTime}` : '')))));
-  })))))));
-};
 
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-full">
+      <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
+        Semana Actual
+      </div>
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-blue-500 dark:bg-gray-600 text-white">
+            <tr>
+              <th className="px-1 py-1 text-left text-xs font-medium uppercase tracking-wider">Hr</th>
+              {daysOfWeek.map((day, index) => {
+                const formattedDate = getFormattedDateForDay(index);
+                const isToday = formattedDate === new Date().toISOString().split('T')[0];
+                return (
+                  <th
+                    key={day}
+                    className={`px-1 py-1 text-center text-xs font-medium uppercase tracking-wider ${
+                      isToday ? 'bg-blue-700' : ''
+                    }`}
+                  >
+                    {day}
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            {WEEKLY_CALENDAR_TIME_SLOTS.map((fullTimeSlot) => (
+              <tr key={fullTimeSlot}>
+                <td className="px-1 py-1 whitespace-nowrap text-xs font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">
+                  {fullTimeSlot.substring(0, 2)}
+                </td>
+                {daysOfWeek.map((day, dayIndex) => {
+                  const dayName = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex];
+                  const classesInSlot = classesByDayAndFullTimeSlot[dayName] && classesByDayAndFullTimeSlot[dayName][fullTimeSlot] || [];
+                  const formattedDate = getFormattedDateForDay(dayIndex);
+                  const isToday = formattedDate === new Date().toISOString().split('T')[0];
+
+                  return (
+                    <td
+                      key={`${day}-${fullTimeSlot}`}
+                      className={`px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${
+                        isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'
+                      }`}
+                    >
+                      <div className="flex flex-col space-y-0.5">
+                        {classesInSlot.map((cls) => (
+                          <div
+                            key={cls.id}
+                            className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 whitespace-normal break-words min-h-[24px] flex flex-col justify-center"
+                            title={`${cls.subject} (${cls.description || 'Sin descripción'})`}
+                          >
+                            {/* Asignatura */}
+                            <div className="font-bold text-center leading-tight">
+                              {cls.subject}
+                            </div>
+                            {/* Horario */}
+                            <div className="text-[0.5rem] text-blue-700 dark:text-blue-300 text-center leading-tight">
+                              {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
 // --- Academic Task Manager Component ---
 const AcademicTaskManager = ({
   user
