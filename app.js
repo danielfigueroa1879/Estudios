@@ -2054,7 +2054,7 @@ const AcademicTaskManager = ({
           }, /*#__PURE__*/React.createElement(IconTrash, {
             width: "22",
             height: "22"
-          }))), " "), " "), " ");
+          }))), " "), " ");
         }), " ");
       case 'daily':
         return /*#__PURE__*/React.createElement(DailyTasksCardView, {
@@ -2243,9 +2243,10 @@ const AcademicTaskManager = ({
     width: "20",
     height: "20"
   }), " ", /*#__PURE__*/React.createElement("span", null, "Agregar nueva tarea"))))))), /*#__PURE__*/React.createElement("div", {
-    className: `w-full flex ${settings.view === 'weeklyCalendar' ? 'justify-center' : 'justify-center'} px-3 sm:px-6`
+    // Overall content wrapper: set to max-w-screen-2xl and mx-auto for centering and wider view
+    className: `w-full flex justify-center px-3 sm:px-6`
   }, /*#__PURE__*/React.createElement("div", {
-    className: `flex w-full max-w-7xl mx-auto ${settings.view === 'weeklyCalendar' ? 'justify-center' : ''}`
+    className: `flex w-full max-w-screen-2xl mx-auto ${settings.view === 'weeklyCalendar' ? 'justify-center' : ''}`
   }, /*#__PURE__*/React.createElement("main", {
     className: "w-full md:flex-1"
   }, /*#__PURE__*/React.createElement("div", {
@@ -2354,7 +2355,8 @@ const AcademicTaskManager = ({
   }, "Daniel Figueroa Chacama")), " ", /*#__PURE__*/React.createElement("p", {
     className: "text-xs text-gray-600 dark:text-gray-400 mt-0.5"
   }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), settings.view !== 'weeklyCalendar' && /*#__PURE__*/React.createElement("aside", {
-    className: "hidden md:block w-[45rem] flex-shrink-0 ml-6"
+    // Mini-calendar width adjustment
+    className: "hidden md:block w-[35rem] flex-shrink-0 ml-6"
   }, /*#__PURE__*/React.createElement("div", {
     className: "sticky top-24 overflow-x-auto pr-2"
   }, /*#__PURE__*/React.createElement(MiniWeeklyCalendar, {
