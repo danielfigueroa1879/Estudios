@@ -27,6 +27,11 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// Define time slots globally for easier modification
+// FIXED: This should only be declared once. Removed redundant declarations from modals.
+const WEEKLY_CALENDAR_TIME_SLOTS = ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '19:00', '20:00', '22:00' // 9 rows
+];
+
 // --- Iconos SVG ---
 const IconBook = ({
   width = "20",
@@ -1175,9 +1180,6 @@ const TaskModal = ({
   }), /*#__PURE__*/React.createElement("span", null, isEditMode ? 'Actualizar' : 'Agregar'))))));
 };
 
-// Define time slots globally for easier modification
-const WEEKLY_CALENDAR_TIME_SLOTS = ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '19:00', '20:00', '22:00' // 9 rows
-];
 
 // --- NEW: Class Modal Component ---
 const ClassModal = ({
@@ -1295,9 +1297,6 @@ const ClassModal = ({
   }), /*#__PURE__*/React.createElement("span", null, isEditMode ? 'Actualizar' : 'Agregar'))))));
 };
 
-// Define time slots globally for easier modification
-const WEEKLY_CALENDAR_TIME_SLOTS = ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '19:00', '20:00', '22:00'
-];
 
 // --- NEW: Weekly Calendar View Component ---
 const WeeklyCalendarView = ({
