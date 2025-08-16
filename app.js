@@ -2354,7 +2354,7 @@ const AcademicTaskManager = ({
   }, "Daniel Figueroa Chacama")), " ", /*#__PURE__*/React.createElement("p", {
     className: "text-xs text-gray-600 dark:text-gray-400 mt-0.5"
   }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), settings.view !== 'weeklyCalendar' && /*#__PURE__*/React.createElement("aside", {
-    className: "hidden md:block md:w-78 flex-shrink-0 md:ml-4" // ANCHO AJUSTADO: De 96 a 80 (320px) y margen reducido
+    className: "hidden md:block md:w-80 flex-shrink-0 md:ml-4" // ANCHO AJUSTADO: De 96 a 80 (320px) y margen reducido
   }, /*#__PURE__*/React.createElement("div", {
     className: "sticky top-24 overflow-x-auto pr-2"
   }, /*#__PURE__*/React.createElement(MiniWeeklyCalendar, {
