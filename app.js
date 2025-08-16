@@ -2114,7 +2114,7 @@ const AcademicTaskManager = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "max-w-screen-2xl md:ml-auto md:mr-8 px-3 sm:px-6" // Contenido de la cabecera centrado y limitado
+    className: "max-w-screen-xl md:ml-auto md:mr-8 px-3 sm:px-6" // Contenido de la cabecera centrado y limitado
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex items-center justify-between"
   }, /*#__PURE__*/React.createElement("div", {
