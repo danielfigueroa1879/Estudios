@@ -1180,8 +1180,8 @@ const AcademicTaskManager = ({ user }) => {
                 )}
             </div>
 {/* Main Content Layout */}
-<div className="w-full flex justify-end px-3 sm:px-6">
-    <div className={`flex w-full ${view === 'weeklyCalendar' ? 'max-w-5xl justify-center' : 'max-w-7xl'}`}>
+<div className={`w-full px-3 sm:px-6 ${view === 'weeklyCalendar' ? 'flex justify-center' : 'flex justify-end'}`}>
+    <div className={`flex w-full ${view === 'weeklyCalendar' ? 'max-w-5xl' : 'max-w-7xl'}`}>
         {/* Main Content Column */}
         <main className={`w-full ${view === 'weeklyCalendar' ? '' : 'md:flex-1'}`}>
             <div className="pb-24">
