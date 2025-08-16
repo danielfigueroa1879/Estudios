@@ -1785,7 +1785,7 @@ const AcademicTaskManager = ({
     checkNotifications();
     const interval = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(interval);
-  }, [tasks, currentTime]);
+  }, []);
   useEffect(() => {
     if (showAlerts && notifications.length > 0) {
       if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current);
@@ -2244,9 +2244,9 @@ const AcademicTaskManager = ({
     height: "20"
   }), " ", /*#__PURE__*/React.createElement("span", null, "Agregar nueva tarea"))))))), /*#__PURE__*/React.createElement("div", {
     // Contenedor principal del contenido y la barra lateral en PC
-    className: "w-full max-w-screen-xl mx-auto flex-grow flex md:flex-row flex-col px-3 sm:px-6 py-4"
+    className: "w-full max-w-screen-xl mx-auto flex-grow flex md:flex-row flex-col px-3 sm:px-6 py-4 justify-center" // Agregado justify-center
   }, /*#__PURE__*/React.createElement("main", {
-    className: "w-full md:flex-grow md:pr-6" // El contenido principal crece para llenar el espacio, con un padding a la derecha
+    className: "w-full max-w-2xl" // Ajustado para que el main ocupe todo el ancho disponible y se centre
   }, /*#__PURE__*/React.createElement("div", {
     className: "pb-24"
   }, notifications.length > 0 && showAlerts && /*#__PURE__*/React.createElement("div", {
@@ -2348,15 +2348,9 @@ const AcademicTaskManager = ({
     className: "font-semibold text-blue-600 dark:text-blue-400"
   }, "Daniel Figueroa Chacama")), " ", /*#__PURE__*/React.createElement("p", {
     className: "text-xs text-gray-600 dark:text-gray-400 mt-0.5"
-  }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), settings.view !== 'weeklyCalendar' && /*#__PURE__*/React.createElement("aside", {
-    className: "hidden md:block md:w-103 flex-shrink-0 md:ml-2" // Anchura ajustada para el calendario pequeño
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "sticky top-24 overflow-x-auto pr-2"
-  }, /*#__PURE__*/React.createElement(MiniWeeklyCalendar, {
-    classes: classes
-  })))), /*#__PURE__*/React.createElement("button", {
+  }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), /*#__PURE__*/React.createElement("button", {
     onClick: handleOpenNewTaskModal,
-    className: "fixed bottom-6 right-6 md:right-[26rem] bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40" // Posición del botón ajustada
+    className: "fixed bottom-6 right-6 bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40" // Adjusted position
   }, /*#__PURE__*/React.createElement(IconPlus, {
     width: "24",
     height: "24"
@@ -2369,7 +2363,9 @@ const AcademicTaskManager = ({
     isOpen: isConfirmDialogOpen,
     onConfirm: handleConfirmDialogConfirm,
     onCancel: handleConfirmDialogCancel
-  }), /*#__PURE__*/React.Children.toArray([/*#__PURE__*/React.createElement(TaskModal, {
+  }),
+  /* Eliminar React.Children.toArray aquí y renderizar los modales directamente */
+  /*#__PURE__*/React.createElement(TaskModal, {
     isOpen: isTaskModalOpen,
     onClose: () => setIsTaskModalOpen(false),
     onSave: handleSaveTask,
@@ -2384,7 +2380,7 @@ const AcademicTaskManager = ({
     classToEdit: editingClass,
     selectedDay: selectedDayForNewClass,
     selectedTime: selectedTimeForNewClass
-  })]));
+  }));
 };
 
 // --- NUEVO: Banner de Instalación ---
