@@ -1295,6 +1295,10 @@ const ClassModal = ({
   }), /*#__PURE__*/React.createElement("span", null, isEditMode ? 'Actualizar' : 'Agregar'))))));
 };
 
+// Define time slots globally for easier modification
+const WEEKLY_CALENDAR_TIME_SLOTS = ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '19:00', '20:00', '22:00' // 9 rows
+];
+
 // --- NEW: Weekly Calendar View Component ---
 const WeeklyCalendarView = ({
   classes,
@@ -1455,9 +1459,9 @@ const MiniWeeklyCalendar = ({
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
   };
   return /*#__PURE__*/React.createElement("div", {
-    className: "bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-full"
+    className: "bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-full p-1" // Reduced padding
   }, /*#__PURE__*/React.createElement("div", {
-    className: "p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg"
+    className: "p-1 bg-blue-600 dark:bg-gray-700 text-white text-center text-xs font-semibold rounded-t-lg" // Reduced padding and font size
   }, "Semana Actual"), /*#__PURE__*/React.createElement("div", {
     className: "overflow-x-auto"
   }, /*#__PURE__*/React.createElement("table", {
@@ -1465,20 +1469,20 @@ const MiniWeeklyCalendar = ({
   }, /*#__PURE__*/React.createElement("thead", {
     className: "bg-blue-500 dark:bg-gray-600 text-white"
   }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    className: "px-1 py-1 text-left text-xs font-medium uppercase tracking-wider"
+    className: "px-0.5 py-0.5 text-left text-[0.7rem] font-medium uppercase tracking-wider" // Reduced padding and font size
   }, "Hr"), daysOfWeek.map((day, index) => {
     const formattedDate = getFormattedDateForDay(index);
     const isToday = formattedDate === new Date().toISOString().split('T')[0];
     return /*#__PURE__*/React.createElement("th", {
       key: day,
-      className: `px-1 py-1 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''} whitespace-nowrap` // Added whitespace-nowrap here
+      className: `px-0.5 py-0.5 text-center text-[0.7rem] font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''} whitespace-nowrap` // Reduced padding and font size
     }, day);
   }))), /*#__PURE__*/React.createElement("tbody", {
     className: "bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
   }, WEEKLY_CALENDAR_TIME_SLOTS.map(fullTimeSlot => /*#__PURE__*/React.createElement("tr", {
     key: fullTimeSlot
   }, /*#__PURE__*/React.createElement("td", {
-    className: "px-1 py-1 whitespace-nowrap text-xs font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700"
+    className: "px-0.5 py-0.5 whitespace-nowrap text-[0.65rem] font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700" // Reduced padding and font size
   }, fullTimeSlot.substring(0, 2)), daysOfWeek.map((day, dayIndex) => {
     const dayName = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex];
     const classesInSlot = classesByDayAndFullTimeSlot[dayName] && classesByDayAndFullTimeSlot[dayName][fullTimeSlot] || [];
@@ -1486,17 +1490,17 @@ const MiniWeeklyCalendar = ({
     const isToday = formattedDate === new Date().toISOString().split('T')[0];
     return /*#__PURE__*/React.createElement("td", {
       key: `${day}-${fullTimeSlot}`,
-      className: `px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`
+      className: `px-0.5 py-0.5 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}` // Reduced padding
     }, /*#__PURE__*/React.createElement("div", {
       className: "flex flex-col space-y-0.5"
     }, classesInSlot.map(cls => /*#__PURE__*/React.createElement("div", {
       key: cls.id,
-      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 whitespace-normal break-words",
+      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.55rem] font-medium rounded-sm px-0.5 py-0.5 whitespace-normal break-words",
       title: `${cls.subject} (${cls.description})`
     }, /*#__PURE__*/React.createElement("p", { /* Added p tag for subject */
       className: "truncate"
     }, cls.subject), /*#__PURE__*/React.createElement("span", {
-      className: "text-[0.5rem] text-blue-700 dark:text-blue-300 block"
+      className: "text-[0.45rem] text-blue-700 dark:text-blue-300 block"
     }, cls.startTime, cls.endTime ? ` - ${cls.endTime}` : '')))));
   })))))));
 };
@@ -2349,14 +2353,14 @@ const AcademicTaskManager = ({
   }, "Daniel Figueroa Chacama")), " ", /*#__PURE__*/React.createElement("p", {
     className: "text-xs text-gray-600 dark:text-gray-400 mt-0.5"
   }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), settings.view !== 'weeklyCalendar' && /*#__PURE__*/React.createElement("aside", {
-    className: "hidden md:block md:w-103 flex-shrink-0 md:ml-2" // Anchura ajustada para el calendario pequeño
+    className: "hidden md:block md:w-72 flex-shrink-0 md:ml-2" // Anchura ajustada para el calendario pequeño
   }, /*#__PURE__*/React.createElement("div", {
     className: "sticky top-24 overflow-x-auto pr-2"
   }, /*#__PURE__*/React.createElement(MiniWeeklyCalendar, {
     classes: classes
   })))), /*#__PURE__*/React.createElement("button", {
     onClick: handleOpenNewTaskModal,
-    className: "fixed bottom-6 right-6 md:right-[26rem] bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40" // Posición del botón ajustada
+    className: "fixed bottom-6 right-6 md:right-80 bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40" // Posición del botón ajustada
   }, /*#__PURE__*/React.createElement(IconPlus, {
     width: "24",
     height: "24"
@@ -2369,7 +2373,7 @@ const AcademicTaskManager = ({
     isOpen: isConfirmDialogOpen,
     onConfirm: handleConfirmDialogConfirm,
     onCancel: handleConfirmDialogCancel
-  }), /*#__PURE__*/React.Children.toArray([/*#__PURE__*/React.createElement(TaskModal, {
+  }), /*#__PURE__*/React.createElement(TaskModal, {
     isOpen: isTaskModalOpen,
     onClose: () => setIsTaskModalOpen(false),
     onSave: handleSaveTask,
@@ -2384,7 +2388,7 @@ const AcademicTaskManager = ({
     classToEdit: editingClass,
     selectedDay: selectedDayForNewClass,
     selectedTime: selectedTimeForNewClass
-  })]));
+  }));
 };
 
 // --- NUEVO: Banner de Instalación ---
@@ -2500,7 +2504,22 @@ const App = () => {
   }), showInstallBanner && /*#__PURE__*/React.createElement(InstallBanner, {
     onInstall: handleInstallClick,
     onClose: () => setShowInstallBanner(false)
-  }));// Assuming AcademicTaskManager, LoginScreen, CustomAlertDialog, and InstallBanner are defined elsewhere
+  }), /*#__PURE__*/React.createElement(TaskModal, {
+    isOpen: isTaskModalOpen,
+    onClose: () => setIsTaskModalOpen(false),
+    onSave: handleSaveTask,
+    showAlert: showAlert,
+    taskToEdit: editingTask,
+    selectedDate: selectedDateForNewTask
+  }), /*#__PURE__*/React.createElement(ClassModal, {
+    isOpen: isClassModalOpen,
+    onClose: () => setIsClassModalOpen(false),
+    onSave: handleSaveClass,
+    showAlert: showAlert,
+    classToEdit: editingClass,
+    selectedDay: selectedDayForNewClass,
+    selectedTime: selectedTimeForNewClass
+  }));
 };
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
