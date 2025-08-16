@@ -1295,6 +1295,10 @@ const ClassModal = ({
   }), /*#__PURE__*/React.createElement("span", null, isEditMode ? 'Actualizar' : 'Agregar'))))));
 };
 
+// Define time slots globally for easier modification
+const WEEKLY_CALENDAR_TIME_SLOTS = ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '19:00', '20:00', '22:00' // 9 rows
+];
+
 // --- NEW: Weekly Calendar View Component ---
 const WeeklyCalendarView = ({
   classes,
@@ -1377,7 +1381,7 @@ const WeeklyCalendarView = ({
   }, timeSlots.map(time => /*#__PURE__*/React.createElement("tr", {
     key: time
   }, /*#__PURE__*/React.createElement("td", {
-    className: "px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700"
+    className: "px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700"
   }, time, " horas"), daysOfWeek.map((day, dayIndex) => {
     const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
     const formattedDate = getFormattedDateForDay(dayIndex);
@@ -1390,14 +1394,14 @@ const WeeklyCalendarView = ({
       className: "flex flex-col space-y-0.5"
     }, classesInSlot.map(cls => /*#__PURE__*/React.createElement("div", {
       key: cls.id,
-      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-1 py-0.5 relative group" /* Added relative, removed flex */
+      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-1 py-0.5 relative group"
     }, /*#__PURE__*/React.createElement("p", {
       className: "font-bold truncate",
       title: `${cls.subject} (${cls.description})`
     }, cls.subject), /*#__PURE__*/React.createElement("p", {
       className: "text-[0.6rem] text-blue-700 dark:text-blue-300 mt-0.5"
     }, cls.startTime, cls.endTime ? ` - ${cls.endTime}` : ''), /*#__PURE__*/React.createElement("div", {
-      className: "absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity" /* Absolute positioning for buttons */
+      className: "absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity"
     }, /*#__PURE__*/React.createElement("button", {
       onClick: () => onEditClass(cls),
       className: "text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100",
@@ -1438,7 +1442,7 @@ const MiniWeeklyCalendar = ({
     let closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[0];
     let minDiff = Math.abs(classHour - parseInt(closestFullSlot.split(':')[0]));
     for (let i = 1; i < WEEKLY_CALENDAR_TIME_SLOTS.length; i++) {
-      const slotHour = parseInt(WEEKLY_CALENDAR_TIME_SLOTS[i].split(':')[0]);
+      const slotHour = parseInt(timeSlots[i].split(':')[0]);
       const diff = Math.abs(classHour - slotHour);
       if (diff < minDiff) {
         minDiff = diff;
@@ -2243,9 +2247,9 @@ const AcademicTaskManager = ({
     width: "20",
     height: "20"
   }), " ", /*#__PURE__*/React.createElement("span", null, "Agregar nueva tarea"))))))), /*#__PURE__*/React.createElement("div", {
-    className: `w-full flex ${settings.view === 'weeklyCalendar' ? 'justify-center' : 'justify-start'} px-3 sm:px-6`
+    className: `w-full flex ${settings.view === 'weeklyCalendar' ? 'justify-center' : 'justify-center'} px-3 sm:px-6`
   }, /*#__PURE__*/React.createElement("div", {
-    className: `flex w-full max-w-7xl ${settings.view === 'weeklyCalendar' ? 'justify-center' : ''}`
+    className: `flex w-full max-w-7xl mx-auto ${settings.view === 'weeklyCalendar' ? 'justify-center' : ''}`
   }, /*#__PURE__*/React.createElement("main", {
     className: "w-full md:flex-1"
   }, /*#__PURE__*/React.createElement("div", {
@@ -2354,7 +2358,7 @@ const AcademicTaskManager = ({
   }, "Daniel Figueroa Chacama")), " ", /*#__PURE__*/React.createElement("p", {
     className: "text-xs text-gray-600 dark:text-gray-400 mt-0.5"
   }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), settings.view !== 'weeklyCalendar' && /*#__PURE__*/React.createElement("aside", {
-    className: "hidden md:block w-[30rem] flex-shrink-0 ml-6"
+    className: "hidden md:block w-[45rem] flex-shrink-0 ml-6"
   }, /*#__PURE__*/React.createElement("div", {
     className: "sticky top-24 overflow-x-auto pr-2"
   }, /*#__PURE__*/React.createElement(MiniWeeklyCalendar, {
