@@ -1245,9 +1245,9 @@ const AcademicTaskManager = ({ user }) => {
 </div>
 
 {/* FAB Button - También necesita ajustarse la posición */}
-<button onClick={handleOpenNewTaskModal} className={`fixed bottom-6 ${view === 'weeklyCalendar' ? 'right-6' : 'right-6 md:right-[32rem]'}  bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
-    <IconPlus width="24" height="24" />
-</button>
+<button onClick={handleOpenNewTaskModal} className={`fixed bottom-6 ${view === 'weeklyCalendar' ? 'right-6' : 'right-6 md:right-[32rem]'} bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
+                <IconPlus width="24" height="24" />
+        </button>
 
 
             {/* Custom Dialogs and Menus */}
