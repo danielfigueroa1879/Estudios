@@ -2243,7 +2243,7 @@ const AcademicTaskManager = ({
     width: "20",
     height: "20"
   }), " ", /*#__PURE__*/React.createElement("span", null, "Agregar nueva tarea"))))))), /*#__PURE__*/React.createElement("div", {
-    className: `w-full flex ${settings.view === 'weeklyCalendar' ? 'justify-center' : 'justify-end'} px-3 sm:px-6`
+    className: `w-full flex ${settings.view === 'weeklyCalendar' ? 'justify-center' : 'justify-start'} px-3 sm:px-6`
   }, /*#__PURE__*/React.createElement("div", {
     className: `flex w-full max-w-7xl ${settings.view === 'weeklyCalendar' ? 'justify-center' : ''}`
   }, /*#__PURE__*/React.createElement("main", {
