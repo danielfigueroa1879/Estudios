@@ -666,7 +666,7 @@ const LoginScreen = ({
     className: "mx-auto text-blue-600 sm:w-12 sm:h-12"
   }), /*#__PURE__*/React.createElement("h1", {
     className: "text-3xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mt-2 sm:mt-4"
-  }, "Gestor Acad\xE9mico"), /*#__PURE__*/React.createElement("p", {
+  }, "Gestor Acad\xC9mico"), /*#__PURE__*/React.createElement("p", {
     className: "text-lg sm:text-base text-gray-500 dark:text-gray-400"
   }, isRegister ? 'Crea una nueva cuenta' : 'Bienvenido de vuelta')), !isRegister && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "mb-4 sm:mb-6"
@@ -1298,9 +1298,6 @@ const ClassModal = ({
   }), /*#__PURE__*/React.createElement("span", null, isEditMode ? 'Actualizar' : 'Agregar'))))));
 };
 
-// Define time slots globally for easier modification
-const WEEKLY_CALENDAR_TIME_SLOTS = ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '19:00', '20:00', '22:00' // 9 rows
-];
 
 // --- NEW: Weekly Calendar View Component ---
 const WeeklyCalendarView = ({
