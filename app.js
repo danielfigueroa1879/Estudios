@@ -1461,24 +1461,24 @@ const MiniWeeklyCalendar = ({
   }, "Semana Actual"), /*#__PURE__*/React.createElement("div", {
     className: "overflow-x-auto"
   }, /*#__PURE__*/React.createElement("table", {
-    className: "min-w-full divide-y divide-gray-200 dark:divide-gray-700 table-fixed" // Added table-fixed
+    className: "min-w-full divide-y divide-gray-200 dark:divide-gray-700"
   }, /*#__PURE__*/React.createElement("thead", {
     className: "bg-blue-500 dark:bg-gray-600 text-white"
   }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    className: "w-1/8 px-1.5 py-0.5 text-left text-xs font-medium uppercase tracking-wider" // Adjusted padding
+    className: "px-1 py-1 text-left text-xs font-medium uppercase tracking-wider"
   }, "Hr"), daysOfWeek.map((day, index) => {
     const formattedDate = getFormattedDateForDay(index);
     const isToday = formattedDate === new Date().toISOString().split('T')[0];
     return /*#__PURE__*/React.createElement("th", {
       key: day,
-      className: `w-1/8 px-1.5 py-0.5 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''}` // Adjusted padding
+      className: `px-1 py-1 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''}`
     }, day);
   }))), /*#__PURE__*/React.createElement("tbody", {
     className: "bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
   }, WEEKLY_CALENDAR_TIME_SLOTS.map(fullTimeSlot => /*#__PURE__*/React.createElement("tr", {
     key: fullTimeSlot
   }, /*#__PURE__*/React.createElement("td", {
-    className: "px-1.5 py-0.5 whitespace-nowrap text-xs font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700" // Adjusted padding
+    className: "px-1 py-1 whitespace-nowrap text-xs font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700"
   }, fullTimeSlot.substring(0, 2)), daysOfWeek.map((day, dayIndex) => {
     const dayName = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex];
     const classesInSlot = classesByDayAndFullTimeSlot[dayName] && classesByDayAndFullTimeSlot[dayName][fullTimeSlot] || [];
@@ -1486,17 +1486,17 @@ const MiniWeeklyCalendar = ({
     const isToday = formattedDate === new Date().toISOString().split('T')[0];
     return /*#__PURE__*/React.createElement("td", {
       key: `${day}-${fullTimeSlot}`,
-      className: `px-1.5 py-0.5 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}` // Adjusted padding
+      className: `px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`
     }, /*#__PURE__*/React.createElement("div", {
       className: "flex flex-col space-y-0.5"
     }, classesInSlot.map(cls => /*#__PURE__*/React.createElement("div", {
       key: cls.id,
-      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.5rem] font-medium rounded-sm px-0.5 py-0.5 whitespace-normal break-words",
+      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 whitespace-normal break-words",
       title: `${cls.subject} (${cls.description})`
     }, /*#__PURE__*/React.createElement("p", { /* Added p tag for subject */
-      className: "truncate text-[0.5rem]" // Adjusted font size
+      className: "truncate"
     }, cls.subject), /*#__PURE__*/React.createElement("span", {
-      className: "text-[0.4rem] text-blue-700 dark:text-blue-300 block" // Adjusted font size
+      className: "text-[0.5rem] text-blue-700 dark:text-blue-300 block"
     }, cls.startTime, cls.endTime ? ` - ${cls.endTime}` : '')))));
   })))))));
 };
@@ -2243,8 +2243,7 @@ const AcademicTaskManager = ({
     width: "20",
     height: "20"
   }), " ", /*#__PURE__*/React.createElement("span", null, "Agregar nueva tarea"))))))), /*#__PURE__*/React.createElement("div", {
-    // MODIFICADO: Contenedor principal para centrar el contenido en PC
-    className: `w-full flex justify-center px-3 sm:px-6`
+    className: `w-full flex ${settings.view === 'weeklyCalendar' ? 'justify-center' : 'justify-end'} px-3 sm:px-6`
   }, /*#__PURE__*/React.createElement("div", {
     className: `flex w-full max-w-7xl ${settings.view === 'weeklyCalendar' ? 'justify-center' : ''}`
   }, /*#__PURE__*/React.createElement("main", {
@@ -2354,14 +2353,13 @@ const AcademicTaskManager = ({
     className: "font-semibold text-blue-600 dark:text-blue-400"
   }, "Daniel Figueroa Chacama")), " ", /*#__PURE__*/React.createElement("p", {
     className: "text-xs text-gray-600 dark:text-gray-400 mt-0.5"
-  }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), /*#__PURE__*/React.createElement("aside", {
-    // MODIFICADO: Ancho del calendario semanal en PC
-    className: "hidden md:block md:w-full md:max-w-4xl flex-shrink-0 ml-6"
+  }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), settings.view !== 'weeklyCalendar' && /*#__PURE__*/React.createElement("aside", {
+    className: "hidden md:block w-[30rem] flex-shrink-0 ml-6"
   }, /*#__PURE__*/React.createElement("div", {
     className: "sticky top-24 overflow-x-auto pr-2"
   }, /*#__PURE__*/React.createElement(MiniWeeklyCalendar, {
     classes: classes
-  })))), /*#__PURE__*/React.createElement("button", {
+  }))))), /*#__PURE__*/React.createElement("button", {
     onClick: handleOpenNewTaskModal,
     className: "fixed bottom-6 right-6 md:right-[32rem] bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40"
   }, /*#__PURE__*/React.createElement(IconPlus, {
@@ -2391,14 +2389,11 @@ const AcademicTaskManager = ({
     classToEdit: editingClass,
     selectedDay: selectedDayForNewClass,
     selectedTime: selectedTimeForNewClass
-  })]);
+  })]));
 };
 
 // --- NUEVO: Banner de Instalación ---
-const InstallBanner = ({
-  onInstall,
-  onClose
-}) => {
+const InstallBanner = ({ onInstall, onClose }) => {
   return /*#__PURE__*/React.createElement("div", {
     className: "fixed top-0 left-0 right-0 p-4 z-50"
   }, /*#__PURE__*/React.createElement("div", {
