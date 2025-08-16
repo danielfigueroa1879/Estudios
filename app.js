@@ -779,9 +779,9 @@ const DailyTasksCardView = ({
       width: "18",
       height: "18",
       className: "text-gray-600 dark:text-gray-300"
-    }), /*#__PURE__*/React.createElement("span", {
+    }), " ", /*#__PURE__*/React.createElement("span", {
       className: `text-xs sm:text-sm px-2 py-0.5 rounded-full ${cardStyle.bg} ${cardStyle.text} font-medium`
-    }, task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate))), /*#__PURE__*/React.createElement("button", {
+    }, task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate))), " ", /*#__PURE__*/React.createElement("button", {
       onClick: e => {
         e.stopPropagation();
         toggleTask(task.id, task.completed);
@@ -790,13 +790,13 @@ const DailyTasksCardView = ({
     }, task.completed && /*#__PURE__*/React.createElement(IconCheck, {
       width: "14",
       height: "14"
-    }))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    }))), " ", /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
       className: "font-medium text-sm sm:text-lg text-gray-800 dark:text-gray-100"
-    }, task.subject), /*#__PURE__*/React.createElement("p", {
+    }, task.subject), " ", /*#__PURE__*/React.createElement("p", {
       className: "text-xs sm:text-base text-gray-600 dark:text-gray-300 mt-0.5"
-    }, task.title), /*#__PURE__*/React.createElement("p", {
+    }, task.title), " ", /*#__PURE__*/React.createElement("p", {
       className: "text-xs text-gray-500 dark:text-gray-400 mt-1"
-    }, task.type)), /*#__PURE__*/React.createElement("div", {
+    }, task.type)), " ", /*#__PURE__*/React.createElement("div", {
       className: "flex justify-end mt-3 space-x-1"
     }, /*#__PURE__*/React.createElement("button", {
       onClick: e => {
@@ -808,7 +808,7 @@ const DailyTasksCardView = ({
     }, /*#__PURE__*/React.createElement(IconEdit, {
       width: "16",
       height: "16"
-    })), /*#__PURE__*/React.createElement("button", {
+    })), " ", /*#__PURE__*/React.createElement("button", {
       onClick: e => {
         e.stopPropagation();
         deleteTask(task.id);
@@ -821,1661 +821,855 @@ const DailyTasksCardView = ({
     }))));
   }))))));
 };
-const MonthlyCalendar = ({
-  tasks,
-  highlightedDate,
-  currentViewDate,
-  setCurrentViewDate,
-  todayGlobal,
-  getTaskStatus,
-  getTaskCardStyle,
-  chileanHolidays,
-  createLocalDate,
-  onDayDoubleClick
-}) => {
-  const year = currentViewDate.getFullYear();
-  const month = currentViewDate.getMonth();
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const daysInMonth = lastDay.getDate();
-  const startingDayOfWeek = firstDay.getDay();
-  const daysArray = [];
-  const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1; // Adjust to start Monday as 0
-  for (let i = 0; i < adjustedStartingDay; i++) {
-    daysArray.push(null);
-  }
-  for (let day = 1; day <= daysInMonth; day++) {
-    daysArray.push(day);
-  }
-  const tasksByDate = tasks.reduce((acc, task) => {
-    const taskDate = createLocalDate(task.dueDate);
-    if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
-      const day = taskDate.getDate();
-      if (!acc[day]) acc[day] = [];
-      acc[day].push(task);
-    }
-    return acc;
-  }, {});
-  const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-  const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-  const goToPreviousMonth = () => setCurrentViewDate(new Date(year, month - 1, 1));
-  const goToNextMonth = () => setCurrentViewDate(new Date(year, month + 1, 1));
-  const goToToday = () => setCurrentViewDate(todayGlobal);
-  return /*#__PURE__*/React.createElement("div", {
-    className: "relative"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "text-2xl sm:text-3xl font-bold text-red-600 dark:text-red-400 text-center mb-1 sm:mb-0 uppercase"
-  }, monthNames[month], " ", year), /*#__PURE__*/React.createElement("div", {
-    className: "flex justify-center space-x-1 sm:space-x-2 w-full mt-1 sm:mt-2 mb-4"
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: goToPreviousMonth,
-    className: "px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm"
-  }, "\u2190"), /*#__PURE__*/React.createElement("button", {
-    onClick: goToToday,
-    className: "px-3 py-1.5 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm"
-  }, "Hoy"), /*#__PURE__*/React.createElement("button", {
-    onClick: goToNextMonth,
-    className: "px-2 py-1 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm"
-  }, "\u2192")), /*#__PURE__*/React.createElement("div", {
-    className: "grid grid-cols-7 bg-blue-600 dark:bg-gray-700 text-white rounded-t-lg"
-  }, dayNames.map((day, index) => /*#__PURE__*/React.createElement("div", {
-    key: index,
-    className: "text-center font-semibold py-2 text-sm"
-  }, day))), /*#__PURE__*/React.createElement("div", {
-    className: "grid grid-cols-7 border-l border-t border-gray-200 dark:border-gray-700"
-  }, daysArray.map((day, index) => {
-    if (!day) return /*#__PURE__*/React.createElement("div", {
-      key: index,
-      className: "h-14 sm:h-20 lg:h-28 bg-gray-50 dark:bg-gray-800/50 border-r border-b border-gray-200 dark:border-gray-600"
-    });
-    const dayObj = new Date(year, month, day);
-    const isToday = todayGlobal.getDate() === dayObj.getDate() && todayGlobal.getMonth() === dayObj.getMonth() && todayGlobal.getFullYear() === dayObj.getFullYear();
-    const currentDayFormatted = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-    const isHoliday = chileanHolidays.includes(currentDayFormatted);
-    const highlightEntry = highlightedDate && highlightedDate.date === currentDayFormatted ? highlightedDate : null;
-    let dayClasses = `h-14 sm:h-20 lg:h-28 p-0.5 sm:p-1 transition-all duration-300 ease-in-out relative border-r border-b border-gray-200 dark:border-gray-600 ${isToday ? 'bg-blue-100 dark:bg-blue-800/80' : 'bg-white dark:bg-gray-700/90 hover:bg-gray-50 dark:hover:bg-gray-600/90'}`;
-    if (highlightEntry) {
-      dayClasses += ` ${highlightEntry.highlightBg} z-10`;
-      if (highlightEntry.isAnimating) {
-        dayClasses += ` highlight-animation`;
-      }
-    }
-    let dynamicStyle = {};
-    if (highlightEntry && highlightEntry.isAnimating) {
-      dynamicStyle = {
-        '--ring-color-rgb': highlightEntry.borderColorRgb
-      };
-    }
-    const dayTasks = tasksByDate[day] || [];
-    return /*#__PURE__*/React.createElement("div", {
-      key: currentDayFormatted,
-      style: dynamicStyle,
-      onDoubleClick: () => onDayDoubleClick(currentDayFormatted),
-      className: dayClasses
-    }, /*#__PURE__*/React.createElement("div", {
-      className: `text-xs sm:text-sm font-medium ${isToday ? 'text-blue-700 dark:text-blue-300' : isHoliday ? 'text-red-600 dark:text-red-400' : 'text-gray-800 dark:text-gray-300'}`
-    }, day), /*#__PURE__*/React.createElement("div", {
-      className: "absolute top-5 left-0.5 right-0.5 bottom-1 space-y-0.5 overflow-y-auto"
-    }, dayTasks.slice(0, 2).map(task => {
-      const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-      const cardStyle = getTaskCardStyle(status, task.completed);
-      let bgColorClass = status === 'completed' ? 'bg-gray-200 dark:bg-gray-600' : cardStyle.bg;
-      let textColorClass = status === 'completed' ? 'text-gray-500 dark:text-gray-400' : cardStyle.text;
-      return /*#__PURE__*/React.createElement("div", {
-        key: task.id,
-        className: `${bgColorClass} rounded-sm px-1 py-0.5`,
-        title: `${task.subject}: ${task.title}`
-      }, /*#__PURE__*/React.createElement("p", {
-        className: `text-[9px] font-bold ${textColorClass} truncate`
-      }, task.subject), /*#__PURE__*/React.createElement("p", {
-        className: `text-[8px] ${textColorClass} truncate`
-      }, task.title));
-    }), dayTasks.length > 2 && /*#__PURE__*/React.createElement("div", {
-      className: "text-center text-[9px] text-gray-500 dark:text-gray-400 mt-1"
-    }, "+", dayTasks.length - 2, " m\xE1s")));
-  })));
-};
-const CalendarView = ({
-  tasks,
-  highlightedDate,
-  currentViewDate,
-  setCurrentViewDate,
-  todayGlobal,
-  getTaskStatus,
-  getTaskCardStyle,
-  chileanHolidays,
-  createLocalDate,
-  onBackToList,
-  onDayDoubleClick
-}) => {
-  return /*#__PURE__*/React.createElement("div", {
-    className: "bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700",
-    id: "calendarSection"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center justify-between mb-6"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left"
-  }, "Calendario Mensual"), /*#__PURE__*/React.createElement(IconBackArrowhead, {
-    onClick: onBackToList,
-    className: "text-red-500 cursor-pointer hover:text-red-700 transition-colors",
-    title: "Volver a la lista"
-  })), /*#__PURE__*/React.createElement(MonthlyCalendar, {
-    tasks: tasks,
-    highlightedDate: highlightedDate,
-    currentViewDate: currentViewDate,
-    setCurrentViewDate: setCurrentViewDate,
-    todayGlobal: todayGlobal,
-    getTaskStatus: getTaskStatus,
-    getTaskCardStyle: getTaskCardStyle,
-    chileanHolidays: chileanHolidays,
-    createLocalDate: createLocalDate,
-    onBackToList: () => setView('list'),
-    onDayDoubleClick: onDayDoubleClick
-  }));
-};
-const HistoryView = ({
-  history,
-  permanentDeleteFromHistory,
-  formatTimestamp,
-  onBackToList
-}) => {
-  if (!history || history.length === 0) {
-    return /*#__PURE__*/React.createElement("div", {
-      id: "historySection",
-      className: "bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 mt-6 text-center relative"
-    }, /*#__PURE__*/React.createElement(IconBackArrowhead, {
-      onClick: onBackToList,
-      className: "absolute top-6 right-6 text-red-500 cursor-pointer hover:text-red-700 transition-colors",
-      title: "Volver a la lista"
-    }), /*#__PURE__*/React.createElement(IconHistory, {
-      width: "48",
-      height: "48",
-      className: "mx-auto text-gray-400 dark:text-gray-500 mb-4 mt-8"
-    }), /*#__PURE__*/React.createElement("h2", {
-      className: "2xl font-semibold text-blue-600 dark:text-blue-400 mb-2"
-    }, "Historial de Tareas"), /*#__PURE__*/React.createElement("p", {
-      className: "text-gray-500 dark:text-gray-400"
-    }, "A\xFAn no hay tareas completadas o eliminadas."));
-  }
-  return /*#__PURE__*/React.createElement("div", {
-    id: "historySection",
-    className: "bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-5 sm:mt-6 space-y-4 relative"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center justify-between mb-3 sm:mb-6"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left"
-  }, "Historial de Tareas"), /*#__PURE__*/React.createElement(IconBackArrowhead, {
-    onClick: onBackToList,
-    className: "text-red-500 cursor-pointer hover:text-red-700 transition-colors",
-    title: "Volver a la lista"
-  })), history.map(task => {
-    const isCompleted = task.status === 'completed';
-    const cardStyle = isCompleted ? 'bg-green-50 dark:bg-green-800/20 border-green-200 dark:border-green-800/50' : 'bg-red-50 dark:bg-red-800/20 border-red-200 dark:border-red-800/50';
-    const textStyle = isCompleted ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-400';
-    const icon = isCompleted ? /*#__PURE__*/React.createElement(IconCheck, {
-      width: "16",
-      height: "16"
-    }) : /*#__PURE__*/React.createElement(IconTrash, {
-      width: "16",
-      height: "16"
-    });
-    return /*#__PURE__*/React.createElement("div", {
-      key: task.id,
-      className: `rounded-xl border-l-8 p-4 transition-all duration-300 ${cardStyle}`
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "flex flex-col sm:flex-row sm:items-center justify-between"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "flex-1 min-w-0"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "flex items-center mb-2"
-    }, /*#__PURE__*/React.createElement("span", {
-      className: `font-bold text-sm px-3 py-1 rounded-full flex items-center space-x-2 ${textStyle} ${isCompleted ? 'bg-green-100 dark:bg-green-500/20' : 'bg-red-100 dark:bg-red-500/20'}`
-    }, icon, /*#__PURE__*/React.createElement("span", null, isCompleted ? 'Completada' : 'Eliminada'))), /*#__PURE__*/React.createElement("h3", {
-      className: "font-semibold text-lg text-gray-800 dark:text-gray-200 truncate"
-    }, task.subject, ": ", task.title), /*#__PURE__*/React.createElement("p", {
-      className: "text-sm text-gray-500 dark:text-gray-400 mt-1"
-    }, "Archivado: ", task.archivedAt ? formatTimestamp(task.archivedAt.toDate()) : 'Fecha no disponible')), /*#__PURE__*/React.createElement("div", {
-      className: "mt-3 sm:mt-0"
-    }, /*#__PURE__*/React.createElement("button", {
-      onClick: () => permanentDeleteFromHistory(task.id),
-      className: "text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 p-2 rounded-full transition-colors",
-      title: "Eliminar permanentemente"
-    }, /*#__PURE__*/React.createElement(IconTrash, {
-      width: "20",
-      height: "20"
-    })))));
-  }));
-};
-const TaskModal = ({
-  isOpen,
-  onClose,
-  onSave,
-  showAlert,
-  taskToEdit,
-  selectedDate
-}) => {
-  const [taskData, setTaskData] = useState({});
-  const isEditMode = !!taskToEdit;
-  useEffect(() => {
-    const initialData = {
-      subject: '',
-      title: '',
-      description: '',
-      dueDate: selectedDate || new Date().toISOString().split('T')[0],
-      dueTime: '',
-      type: 'Tarea'
-    };
-    setTaskData(isEditMode ? {
-      ...taskToEdit
-    } : initialData);
-  }, [isOpen, taskToEdit, selectedDate]);
-  const handleChange = e => {
-    const {
-      name,
-      value
-    } = e.target;
-    setTaskData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-  const handleSubmit = () => {
-    if (taskData.subject && taskData.title && taskData.dueDate) {
-      onSave(taskData);
-      onClose();
-    } else {
-      showAlert('Por favor, completa los campos de Asignatura, Título y Fecha de Vencimiento.');
-    }
-  };
-  if (!isOpen) return null;
-  return /*#__PURE__*/React.createElement("div", {
-    className: "fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "bg-white/60 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex justify-between items-center mb-6"
-  }, /*#__PURE__*/React.createElement("h3", {
-    className: "font-semibold text-white text-xl sm:text-2xl"
-  }, isEditMode ? 'Editar Tarea' : 'Agregar Nueva Tarea'), /*#__PURE__*/React.createElement("button", {
-    onClick: onClose,
-    className: "text-gray-200 hover:text-white p-1 rounded-full"
-  }, /*#__PURE__*/React.createElement(IconClose, {
-    className: "w-6 h-6"
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "space-y-4"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "grid grid-cols-1 sm:grid-cols-2 gap-4"
-  }, /*#__PURE__*/React.createElement("input", {
-    type: "text",
-    name: "subject",
-    placeholder: "Asignatura",
-    value: taskData.subject || '',
-    onChange: handleChange,
-    className: "w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-  }), /*#__PURE__*/React.createElement("input", {
-    type: "text",
-    name: "title",
-    placeholder: "T\xEDtulo de la tarea",
-    value: taskData.title || '',
-    onChange: handleChange,
-    className: "w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-  })), /*#__PURE__*/React.createElement("select", {
-    name: "type",
-    value: taskData.type || 'Tarea',
-    onChange: handleChange,
-    className: "w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-  }, /*#__PURE__*/React.createElement("option", {
-    value: "Tarea"
-  }, "Tarea"), /*#__PURE__*/React.createElement("option", {
-    value: "Examen"
-  }, "Examen"), /*#__PURE__*/React.createElement("option", {
-    value: "Recuperaci\xF3n de Clases"
-  }, "Recuperaci\xF3n de Clases"), /*#__PURE__*/React.createElement("option", {
-    value: "Proyecto"
-  }, "Proyecto"), /*#__PURE__*/React.createElement("option", {
-    value: "Monograf\xEDa"
-  }, "Monograf\xEDa"), /*#__PURE__*/React.createElement("option", {
-    value: "Informe"
-  }, "Informe")), /*#__PURE__*/React.createElement("div", {
-    className: "grid grid-cols-1 sm:grid-cols-2 gap-4"
-  }, /*#__PURE__*/React.createElement("input", {
-    type: "date",
-    name: "dueDate",
-    value: taskData.dueDate || '',
-    onChange: handleChange,
-    className: "w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-  }), /*#__PURE__*/React.createElement("input", {
-    type: "time",
-    name: "dueTime",
-    placeholder: "Hora (opcional)",
-    value: taskData.dueTime || '',
-    onChange: handleChange,
-    className: "w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-  })), /*#__PURE__*/React.createElement("textarea", {
-    name: "description",
-    placeholder: "Descripci\xF3n (opcional)",
-    value: taskData.description || '',
-    onChange: handleChange,
-    rows: "3",
-    className: "w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "flex justify-center w-full space-x-4 pt-2"
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: onClose,
-    className: "bg-gray-500/50 text-white rounded-xl px-5 py-2.5 hover:bg-gray-500/70 text-base font-medium"
-  }, "Cancelar"), /*#__PURE__*/React.createElement("button", {
-    onClick: handleSubmit,
-    className: "bg-blue-600 text-white rounded-xl px-5 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-2 text-base font-medium"
-  }, isEditMode ? /*#__PURE__*/React.createElement(IconCheck, {
-    width: "18",
-    height: "18"
-  }) : /*#__PURE__*/React.createElement(IconPlus, {
-    width: "18",
-    height: "18"
-  }), /*#__PURE__*/React.createElement("span", null, isEditMode ? 'Actualizar' : 'Agregar'))))));
-};
 
-// Define time slots globally for easier modification
-const WEEKLY_CALENDAR_TIME_SLOTS = ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '19:00', '20:00', '22:00' // 9 rows
-];
-
-// --- NEW: Class Modal Component ---
-const ClassModal = ({
-  isOpen,
-  onClose,
-  onSave,
-  showAlert,
-  classToEdit,
-  selectedDay,
-  selectedTime
-}) => {
-  const [classData, setClassData] = useState({});
-  const isEditMode = !!classToEdit;
-  useEffect(() => {
-    const initialData = {
-      subject: '',
-      dayOfWeek: selectedDay || 'Lunes',
-      startTime: selectedTime || '',
-      // Default to empty string for manual input
-      endTime: '',
-      // Optional
-      description: '' // Optional
-    };
-    setClassData(isEditMode ? {
-      ...classToEdit
-    } : initialData);
-  }, [isOpen, classToEdit, selectedDay, selectedTime]);
-  const handleChange = e => {
-    const {
-      name,
-      value
-    } = e.target;
-    setClassData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-  const handleSubmit = () => {
-    if (classData.subject && classData.dayOfWeek && classData.startTime) {
-      onSave(classData);
-      onClose();
-    } else {
-      showAlert('Por favor, completa los campos de Asignatura, Día y Hora de inicio.');
-    }
-  };
-  if (!isOpen) return null;
-  const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-  return /*#__PURE__*/React.createElement("div", {
-    className: "fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "bg-white/60 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 w-[99%] max-w-2xl mx-auto border border-white/20 dark:border-gray-700/50"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex justify-between items-center mb-6"
-  }, /*#__PURE__*/React.createElement("h3", {
-    className: "font-semibold text-white text-xl sm:text-2xl"
-  }, isEditMode ? 'Editar Clase' : 'Agregar Nueva Clase'), /*#__PURE__*/React.createElement("button", {
-    onClick: onClose,
-    className: "text-gray-200 hover:text-white p-1 rounded-full"
-  }, /*#__PURE__*/React.createElement(IconClose, {
-    className: "w-6 h-6"
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "space-y-4"
-  }, /*#__PURE__*/React.createElement("input", {
-    type: "text",
-    name: "subject",
-    placeholder: "Asignatura",
-    value: classData.subject || '',
-    onChange: handleChange,
-    className: "w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "grid grid-cols-1 sm:grid-cols-2 gap-4"
-  }, /*#__PURE__*/React.createElement("select", {
-    name: "dayOfWeek",
-    value: classData.dayOfWeek || 'Lunes',
-    onChange: handleChange,
-    className: "w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-  }, daysOfWeek.map(day => /*#__PURE__*/React.createElement("option", {
-    key: day,
-    value: day
-  }, day))), /*#__PURE__*/React.createElement("input", {
-    type: "time",
-    name: "startTime",
-    placeholder: "Hora de inicio",
-    value: classData.startTime || '',
-    onChange: handleChange,
-    className: "w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-  })), /*#__PURE__*/React.createElement("input", {
-    type: "time",
-    name: "endTime",
-    placeholder: "Hora de fin (opcional)",
-    value: classData.endTime || '',
-    onChange: handleChange,
-    className: "w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-  }), /*#__PURE__*/React.createElement("textarea", {
-    name: "description",
-    placeholder: "Descripci\xF3n (opcional)",
-    value: classData.description || '',
-    onChange: handleChange,
-    rows: "3",
-    className: "w-full bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-200 border border-gray-300/40 dark:border-gray-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "flex justify-center w-full space-x-4 pt-2"
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: onClose,
-    className: "bg-gray-500/50 text-white rounded-xl px-5 py-2.5 hover:bg-gray-500/70 text-base font-medium"
-  }, "Cancelar"), /*#__PURE__*/React.createElement("button", {
-    onClick: handleSubmit,
-    className: "bg-blue-600 text-white rounded-xl px-5 py-2.5 hover:bg-blue-700 flex items-center justify-center space-x-2 text-base font-medium"
-  }, isEditMode ? /*#__PURE__*/React.createElement(IconCheck, {
-    width: "18",
-    height: "18"
-  }) : /*#__PURE__*/React.createElement(IconPlus, {
-    width: "18",
-    height: "18"
-  }), /*#__PURE__*/React.createElement("span", null, isEditMode ? 'Actualizar' : 'Agregar'))))));
-};
-
-// Define time slots globally for easier modification
-const WEEKLY_CALENDAR_TIME_SLOTS = ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '19:00', '20:00', '22:00' // 9 rows
-];
-
-// --- NEW: Weekly Calendar View Component ---
-const WeeklyCalendarView = ({
-  classes,
-  chileanHolidays,
-  createLocalDate,
-  onBackToList,
-  onAddClass,
-  onEditClass,
-  onDeleteClass
-}) => {
-  const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-  // Using the globally defined time slots
-  const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS;
-
-  // Get the current week's dates
-  const today = new Date();
-  const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday
-  const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1; // Days to subtract to get to Monday
-  const mondayOfCurrentWeek = new Date(new Date().setDate(today.getDate() - diff));
-  mondayOfCurrentWeek.setHours(0, 0, 0, 0); // Normalize to start of day
-
-  const weekDates = [];
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(mondayOfCurrentWeek);
-    date.setDate(mondayOfCurrentWeek.getDate() + i);
-    weekDates.push(date);
-  }
-  const classesByDayAndTime = classes.reduce((acc, cls) => {
-    // Find the closest time slot for display
-    const classHour = parseInt(cls.startTime.split(':')[0]);
-    let closestSlot = timeSlots[0];
-    let minDiff = Math.abs(classHour - parseInt(closestSlot.split(':')[0]));
-    for (let i = 1; i < timeSlots.length; i++) {
-      const slotHour = parseInt(timeSlots[i].split(':')[0]);
-      const diff = Math.abs(classHour - slotHour);
-      if (diff < minDiff) {
-        minDiff = diff;
-        closestSlot = timeSlots[i];
-      }
-    }
-    if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
-    if (!acc[cls.dayOfWeek][closestSlot]) acc[cls.dayOfWeek][closestSlot] = [];
-    acc[cls.dayOfWeek][closestSlot].push(cls);
-    return acc;
-  }, {});
-  const getFormattedDateForDay = dayIndex => {
-    const date = weekDates[dayIndex];
-    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-  };
-  return /*#__PURE__*/React.createElement("div", {
-    className: "bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700",
-    id: "weeklyCalendarSection"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center justify-between mb-6"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left"
-  }, "Calendario Semanal"), /*#__PURE__*/React.createElement(IconBackArrowhead, {
-    onClick: onBackToList,
-    className: "text-red-500 cursor-pointer hover:text-red-700 transition-colors",
-    title: "Volver a la lista"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "overflow-x-auto"
-  }, /*#__PURE__*/React.createElement("table", {
-    className: "w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg"
-  }, /*#__PURE__*/React.createElement("thead", {
-    className: "bg-blue-600 dark:bg-gray-700 text-white"
-  }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    className: "px-2 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg"
-  }, "Hora"), daysOfWeek.map((day, index) => {
-    const formattedDate = getFormattedDateForDay(index);
-    const isToday = formattedDate === new Date().toISOString().split('T')[0];
-    return /*#__PURE__*/React.createElement("th", {
-      key: day,
-      className: `px-2 py-3 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-800' : ''} ${index === 6 ? 'rounded-tr-lg' : ''}`
-    }, day, " ", /*#__PURE__*/React.createElement("br", null), " ", /*#__PURE__*/React.createElement("span", {
-      className: "font-normal text-xs"
-    }, formattedDate.substring(5)));
-  }))), /*#__PURE__*/React.createElement("tbody", {
-    className: "bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
-  }, timeSlots.map(time => /*#__PURE__*/React.createElement("tr", {
-    key: time
-  }, /*#__PURE__*/React.createElement("td", {
-    className: "px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700"
-  }, time, " horas"), daysOfWeek.map((day, dayIndex) => {
-    const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
-    const formattedDate = getFormattedDateForDay(dayIndex);
-    const isToday = formattedDate === new Date().toISOString().split('T')[0];
-    return /*#__PURE__*/React.createElement("td", {
-      key: `${day}-${time}`,
-      className: `relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`,
-      onDoubleClick: () => onAddClass(day, time)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "flex flex-col space-y-0.5"
-    }, classesInSlot.map(cls => /*#__PURE__*/React.createElement("div", {
-      key: cls.id,
-      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-1 py-0.5 relative group" /* Added relative, removed flex */
-    }, /*#__PURE__*/React.createElement("p", {
-      className: "font-bold truncate",
-      title: `${cls.subject} (${cls.description})`
-    }, cls.subject), /*#__PURE__*/React.createElement("p", {
-      className: "text-[0.6rem] text-blue-700 dark:text-blue-300 mt-0.5"
-    }, cls.startTime, cls.endTime ? ` - ${cls.endTime}` : ''), /*#__PURE__*/React.createElement("div", {
-      className: "absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity" /* Absolute positioning for buttons */
-    }, /*#__PURE__*/React.createElement("button", {
-      onClick: () => onEditClass(cls),
-      className: "text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100",
-      title: "Editar clase"
-    }, /*#__PURE__*/React.createElement(IconEdit, {
-      width: "12",
-      height: "12"
-    })), /*#__PURE__*/React.createElement("button", {
-      onClick: () => onDeleteClass(cls.id),
-      className: "text-red-600 dark:text-red-300 hover:text-red-800 dark:hover:text-red-100",
-      title: "Eliminar clase"
-    }, /*#__PURE__*/React.createElement(IconTrash, {
-      width: "12",
-      height: "12"
-    })))))));
-  })))))));
-};
-
-// --- NEW: Mini Weekly Calendar Component ---
-const MiniWeeklyCalendar = ({
-  classes
-}) => {
-  const daysOfWeek = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-  const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS.map(time => time.substring(0, 2));
-  const today = new Date();
-  const currentDayOfWeek = today.getDay();
-  const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
-  const mondayOfCurrentWeek = new Date(new Date().setDate(today.getDate() - diff));
-  mondayOfCurrentWeek.setHours(0, 0, 0, 0);
-  const weekDates = [];
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(mondayOfCurrentWeek);
-    date.setDate(mondayOfCurrentWeek.getDate() + i);
-    weekDates.push(date);
-  }
-  const classesByDayAndFullTimeSlot = classes.reduce((acc, cls) => {
-    const classHour = parseInt(cls.startTime.split(':')[0]);
-    let closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[0];
-    let minDiff = Math.abs(classHour - parseInt(closestFullSlot.split(':')[0]));
-    for (let i = 1; i < WEEKLY_CALENDAR_TIME_SLOTS.length; i++) {
-      const slotHour = parseInt(timeSlots[i].split(':')[0]);
-      const diff = Math.abs(classHour - slotHour);
-      if (diff < minDiff) {
-        minDiff = diff;
-        closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[i];
-      }
-    }
-    if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
-    if (!acc[cls.dayOfWeek][closestFullSlot]) acc[cls.dayOfWeek][closestFullSlot] = [];
-    acc[cls.dayOfWeek][closestFullSlot].push(cls);
-    return acc;
-  }, {});
-  const getFormattedDateForDay = dayIndex => {
-    const date = weekDates[dayIndex];
-    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-  };
-  return /*#__PURE__*/React.createElement("div", {
-    className: "bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-full p-1" // Reduced padding
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "p-1 bg-blue-600 dark:bg-gray-700 text-white text-center text-xs font-semibold rounded-t-lg" // Reduced padding and font size
-  }, "Semana Actual"), /*#__PURE__*/React.createElement("div", {
-    className: "overflow-x-auto"
-  }, /*#__PURE__*/React.createElement("table", {
-    className: "min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-  }, /*#__PURE__*/React.createElement("thead", {
-    className: "bg-blue-500 dark:bg-gray-600 text-white"
-  }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    className: "px-0.5 py-0.5 text-left text-[0.7rem] font-medium uppercase tracking-wider" // Reduced padding and font size
-  }, "Hr"), daysOfWeek.map((day, index) => {
-    const formattedDate = getFormattedDateForDay(index);
-    const isToday = formattedDate === new Date().toISOString().split('T')[0];
-    return /*#__PURE__*/React.createElement("th", {
-      key: day,
-      className: `px-0.5 py-0.5 text-center text-[0.7rem] font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''} whitespace-nowrap` // Reduced padding and font size
-    }, day);
-  }))), /*#__PURE__*/React.createElement("tbody", {
-    className: "bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
-  }, WEEKLY_CALENDAR_TIME_SLOTS.map(fullTimeSlot => /*#__PURE__*/React.createElement("tr", {
-    key: fullTimeSlot
-  }, /*#__PURE__*/React.createElement("td", {
-    className: "px-0.5 py-0.5 whitespace-nowrap text-[0.65rem] font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700" // Reduced padding and font size
-  }, fullTimeSlot.substring(0, 2)), daysOfWeek.map((day, dayIndex) => {
-    const dayName = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex];
-    const classesInSlot = classesByDayAndFullTimeSlot[dayName] && classesByDayAndFullTimeSlot[dayName][fullTimeSlot] || [];
-    const formattedDate = getFormattedDateForDay(dayIndex);
-    const isToday = formattedDate === new Date().toISOString().split('T')[0];
-    return /*#__PURE__*/React.createElement("td", {
-      key: `${day}-${fullTimeSlot}`,
-      className: `px-0.5 py-0.5 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}` // Reduced padding
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "flex flex-col space-y-0.5"
-    }, classesInSlot.map(cls => /*#__PURE__*/React.createElement("div", {
-      key: cls.id,
-      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.55rem] font-medium rounded-sm px-0.5 py-0.5 whitespace-normal break-words",
-      title: `${cls.subject} (${cls.description})`
-    }, /*#__PURE__*/React.createElement("p", { /* Added p tag for subject */
-      className: "truncate"
-    }, cls.subject), /*#__PURE__*/React.createElement("span", {
-      className: "text-[0.45rem] text-blue-700 dark:text-blue-300 block"
-    }, cls.startTime, cls.endTime ? ` - ${cls.endTime}` : '')))));
-  })))))));
-};
-
-// --- Academic Task Manager Component ---
 const AcademicTaskManager = ({
   user
 }) => {
   const [tasks, setTasks] = useState([]);
-  const [classes, setClasses] = useState([]); // NEW: State for classes
-  const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [settings, setSettings] = useState({
-    view: 'list',
-    emailNotifications: false
-  });
-  const tasksCollectionRef = db.collection('users').doc(user.uid).collection('tasks');
-  const classesCollectionRef = db.collection('users').doc(user.uid).collection('classes'); // NEW: Classes collection ref
-  const historyCollectionRef = db.collection('users').doc(user.uid).collection('history');
-  const settingsDocRef = db.collection('users').doc(user.uid).collection('settings').doc('appSettings');
-  useEffect(() => {
-    setLoading(true);
-    const unsubscribeTasks = tasksCollectionRef.onSnapshot(snapshot => {
-      const tasksData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setTasks(tasksData);
-      setLoading(false);
-    }, error => {
-      console.error("Error fetching tasks:", error);
-      setLoading(false);
-    });
-
-    // NEW: Subscribe to classes collection
-    const unsubscribeClasses = classesCollectionRef.onSnapshot(snapshot => {
-      const classesData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setClasses(classesData);
-    }, error => console.error("Error fetching classes:", error));
-    const unsubscribeHistory = historyCollectionRef.orderBy('archivedAt', 'desc').onSnapshot(snapshot => {
-      const historyData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setHistory(historyData);
-    }, error => console.error("Error fetching history:", error));
-    const unsubscribeSettings = settingsDocRef.onSnapshot(doc => {
-      if (doc.exists) {
-        setSettings(doc.data());
-      }
-    }, error => {
-      console.error("Error fetching settings:", error);
-    });
-    return () => {
-      unsubscribeTasks();
-      unsubscribeClasses(); // NEW: Unsubscribe from classes
-      unsubscribeHistory();
-      unsubscribeSettings();
-    };
-  }, [user.uid]);
-  useEffect(() => {
-    if (settings.view !== 'list' || settings.emailNotifications !== false) {
-      settingsDocRef.set(settings, {
-        merge: true
-      }).catch(error => {
-        console.error("Error saving settings:", error);
-      });
-    }
-  }, [settings]);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
-  const [alertDialogMessage, setAlertDialogMessage] = useState("");
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [confirmDialogMessage, setConfirmDialogMessage] = useState("");
-  const confirmCallbackRef = useRef(null);
-  const chileanHolidays = ['2025-01-01', '2025-04-18', '2025-04-19', '2025-05-01', '2025-05-21', '2025-06-20', '2025-06-29', '2025-07-16', '2025-08-15', '2025-09-18', '2025-09-19', '2025-10-12', '2025-10-31', '2025-11-01', '2025-12-08', '2025-12-25'];
-  const showAlert = message => {
-    setAlertDialogMessage(message);
-    setIsAlertDialogOpen(true);
-  };
-  const showConfirm = (message, onConfirmCallback) => {
-    setConfirmDialogMessage(message);
-    confirmCallbackRef.current = onConfirmCallback;
-    setIsConfirmDialogOpen(true);
-  };
-  const handleAlertDialogClose = () => setIsAlertDialogOpen(false);
-  const handleConfirmDialogConfirm = () => {
-    if (confirmCallbackRef.current) confirmCallbackRef.current();
-    setIsConfirmDialogOpen(false);
-  };
-  const handleConfirmDialogCancel = () => setIsConfirmDialogOpen(false);
+  const [error, setError] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [selectedDateForNewTask, setSelectedDateForNewTask] = useState('');
-
-  // NEW: State for class modal
-  const [editingClass, setEditingClass] = useState(null);
-  const [isClassModalOpen, setIsClassModalOpen] = useState(false);
-  const [selectedDayForNewClass, setSelectedDayForNewClass] = useState('');
-  const [selectedTimeForNewClass, setSelectedTimeForNewClass] = useState('');
-  const {
-    view,
-    emailNotifications
-  } = settings;
-  const setView = newView => {
-    setSettings(prev => ({
-      ...prev,
-      view: newView
-    }));
-  };
-  const setEmailNotifications = enabled => setSettings(prev => ({
-    ...prev,
-    emailNotifications: enabled
-  }));
-  const [notifications, setNotifications] = useState([]);
-  const [showQuickAccess, setShowQuickAccess] = useState(false);
-  const [showAlerts, setShowAlerts] = useState(true);
+  const [currentView, setCurrentView] = useState('list'); // 'list' o 'calendar'
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
+  const [alertDialogMessage, setAlertDialogMessage] = useState('');
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [confirmDialogMessage, setConfirmDialogMessage] = useState('');
+  const [taskIdToDelete, setTaskIdToDelete] = useState(null);
+  const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
+  const [pwaInstallPrompt, setPwaInstallPrompt] = useState(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [highlightedDate, setHighlightedDate] = useState(null);
-  const [currentCalendarViewDate, setCurrentCalendarViewDate] = useState(new Date());
+  const [currentViewDate, setCurrentViewDate] = useState(todayGlobal);
+  const [chileanHolidays, setChileanHolidays] = useState([]);
+  const academicHistoryRef = useRef(null);
+  const profileMenuRef = useRef(null);
+  const hamburgerMenuRef = useRef(null);
   const todayGlobal = new Date();
-  const highlightTimeoutRef = useRef(null);
-  const alertHideTimeoutRef = useRef(null);
-  const [isViewsCollapsed, setIsViewsCollapsed] = useState(window.innerWidth < 640);
-  useEffect(() => {
-    const handleResize = () => {
-      const mobile = window.innerWidth < 640;
-      if (!mobile) {
-        setIsViewsCollapsed(false); // Always expand on desktop
-      } else {
-        setIsViewsCollapsed(true); // Collapse by default on mobile
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    handleResize(); // Initial check
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-  useEffect(() => {
-    const interval = setInterval(() => setCurrentTime(new Date()), 60000);
-    return () => clearInterval(interval);
-  }, []);
-  const createLocalDate = dateString => {
-    const parts = dateString.split('-').map(Number);
-    return new Date(parts[0], parts[1] - 1, parts[2]);
-  };
-  const getTaskStatus = (dueDate, dueTime, completed) => {
-    if (completed) return 'completed';
-    const now = new Date();
-    const todayMidnight = new Date(now);
-    todayMidnight.setHours(0, 0, 0, 0);
-    const dueMidnight = createLocalDate(dueDate);
-    let dueDateTime = dueMidnight;
-    if (dueTime) {
-      const [hours, minutes] = dueTime.split(':').map(Number);
-      dueDateTime = new Date(dueMidnight);
-      dueDateTime.setHours(hours, minutes, 0, 0);
-    } else {
-      dueDateTime = new Date(dueMidnight);
-      dueDateTime.setHours(23, 59, 59, 999);
-    }
-    if (dueDateTime < now) return 'overdue';
-    const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    if (diffDays === 0) return 'due-today';
-    if (diffDays === 1) return 'due-tomorrow';
-    if (diffDays <= 3) return 'due-soon';
-    return 'on-time';
-  };
-  const getTaskCardStyle = (status, completed) => {
-    let baseStyles = {},
-      highlightClass = '',
-      borderColorRgb = '0,0,0',
-      hoverClasses = '',
-      highlightBg = '';
-    if (completed) {
-      baseStyles = {
-        bg: 'bg-gray-50 dark:bg-gray-700/50',
-        border: 'border-gray-300 dark:border-gray-600',
-        text: 'text-gray-600 dark:text-gray-400'
-      };
-      highlightClass = 'border-gray-500 ring-2 ring-gray-500 shadow-md';
-      borderColorRgb = '107,114,128';
-      hoverClasses = 'hover:border-gray-400 dark:hover:border-gray-500 hover:ring-2 hover:ring-gray-400/50 dark:hover:ring-gray-500/50 hover:shadow-xl hover:shadow-gray-300/50 dark:hover:shadow-gray-900/50';
-      highlightBg = 'bg-gray-200 dark:bg-gray-600';
-    } else {
-      switch (status) {
-        case 'overdue':
-          baseStyles = {
-            bg: 'bg-gray-100 dark:bg-gray-800/80',
-            border: 'border-gray-500 dark:border-gray-600',
-            text: 'text-gray-800 dark:text-gray-300'
-          };
-          highlightClass = 'border-gray-600 ring-2 ring-gray-600 shadow-md';
-          borderColorRgb = '75,85,99';
-          hoverClasses = 'hover:border-gray-600 dark:hover:border-gray-400 hover:ring-2 hover:ring-gray-600/50 dark:hover:ring-gray-400/50 hover:shadow-xl hover:shadow-gray-400/50 dark:hover:shadow-black/50';
-          highlightBg = 'bg-gray-200 dark:bg-gray-600';
-          break;
-        case 'due-today':
-          baseStyles = {
-            bg: 'bg-red-50 dark:bg-red-800/70',
-            border: 'border-red-500 dark:border-red-600',
-            text: 'text-red-800 dark:text-red-200'
-          };
-          highlightClass = 'border-red-500 ring-2 ring-red-500 shadow-md';
-          borderColorRgb = '239,68,68';
-          hoverClasses = 'hover:border-red-600 dark:hover:border-red-500 hover:ring-2 hover:ring-red-600/50 dark:hover:ring-red-500/50 hover:shadow-xl hover:shadow-red-300/50 dark:hover:shadow-red-900/50';
-          highlightBg = 'bg-red-200 dark:bg-red-800/70';
-          break;
-        case 'due-tomorrow':
-          baseStyles = {
-            bg: 'bg-orange-50 dark:bg-orange-800/70',
-            border: 'border-orange-400 dark:border-orange-500',
-            text: 'text-orange-800 dark:text-orange-200'
-          };
-          highlightClass = 'border-orange-500 ring-2 ring-orange-500 shadow-md';
-          borderColorRgb = '249,115,22';
-          hoverClasses = 'hover:border-orange-500 dark:hover:border-orange-500 hover:ring-2 hover:ring-orange-500/50 dark:hover:ring-orange-500/50 hover:shadow-xl hover:shadow-orange-300/50 dark:hover:shadow-orange-900/50';
-          highlightBg = 'bg-orange-200 dark:bg-orange-800/70';
-          break;
-        case 'due-soon':
-          baseStyles = {
-            bg: 'bg-yellow-50 dark:bg-yellow-800/70',
-            border: 'border-yellow-400 dark:border-yellow-500',
-            text: 'text-yellow-800 dark:text-yellow-200'
-          };
-          highlightClass = 'border-yellow-500 ring-2 ring-yellow-500 shadow-md';
-          borderColorRgb = '245,158,11';
-          hoverClasses = 'hover:border-yellow-500 dark:hover:border-yellow-500 hover:ring-2 hover:ring-yellow-500/50 dark:hover:ring-yellow-500/50 hover:shadow-xl hover:shadow-yellow-300/50 dark:hover:shadow-yellow-900/50';
-          highlightBg = 'bg-yellow-200 dark:bg-yellow-800/70';
-          break;
-        default:
-          // 'on-time'
-          baseStyles = {
-            bg: 'bg-green-50 dark:bg-green-800/70',
-            border: 'border-green-400 dark:border-green-500',
-            text: 'text-green-800 dark:text-green-200'
-          };
-          highlightClass = 'border-green-500 ring-2 ring-green-500 shadow-md';
-          borderColorRgb = '34,197,94';
-          hoverClasses = 'hover:border-green-500 dark:hover:border-green-500 hover:ring-2 hover:ring-green-500/50 dark:hover:ring-green-500/50 hover:shadow-xl hover:shadow-green-300/50 dark:hover:shadow-green-900/50';
-          highlightBg = 'bg-green-200 dark:bg-green-800/70';
-          break;
-      }
-    }
-    return {
-      ...baseStyles,
-      highlightClass,
-      borderColorRgb,
-      hoverClasses,
-      highlightBg
-    };
-  };
-  useEffect(() => {
-    const checkNotifications = () => {
-      const newNotifications = [];
-      tasks.forEach(task => {
-        if (!task.completed) {
-          const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-          if (['due-today', 'due-tomorrow', 'overdue'].includes(status)) {
-            let label = '';
-            switch (status) {
-              case 'overdue':
-                label = 'Vencido';
-                break;
-              case 'due-today':
-                label = 'Vence hoy';
-                break;
-              case 'due-tomorrow':
-                label = 'Vence mañana';
-                break;
-            }
-            newNotifications.push({
-              id: task.id,
-              message: `${task.subject}: ${task.title} - ${label}`,
-              type: status,
-              dueDate: task.dueDate,
-              timestamp: new Date()
-            });
-          }
-        }
-      });
-      setNotifications(newNotifications);
-    };
-    checkNotifications();
-    const interval = setInterval(() => setCurrentTime(new Date()), 60000);
-    return () => clearInterval(interval);
-  }, [tasks, currentTime]);
-  useEffect(() => {
-    if (showAlerts && notifications.length > 0) {
-      if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current);
-      alertHideTimeoutRef.current = setTimeout(() => {
-        setShowAlerts(false);
-        alertHideTimeoutRef.current = null;
-      }, 25000);
-    } else if (!showAlerts && alertHideTimeoutRef.current) {
-      clearTimeout(alertHideTimeoutRef.current);
-      alertHideTimeoutRef.current = null;
-    }
-    return () => {
-      if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current);
-    };
-  }, [showAlerts, notifications.length]);
-  const handleSaveTask = taskData => {
-    if (taskData.id) {
-      // Update existing task
-      const {
-        id,
-        ...dataToUpdate
-      } = taskData;
-      tasksCollectionRef.doc(id).update(dataToUpdate).catch(error => showAlert("Error al actualizar la tarea: " + error.message));
-    } else {
-      // Add new task
-      tasksCollectionRef.add({
-        ...taskData,
-        completed: false,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }).catch(error => showAlert("Error al agregar la tarea: " + error.message));
-    }
-  };
-  const startEditing = task => {
-    setEditingTask(task);
-    setIsTaskModalOpen(true);
-  };
-  const toggleTask = async id => {
-    const taskRef = tasksCollectionRef.doc(id);
-    const taskDoc = await taskRef.get();
-    if (!taskDoc.exists) return;
-    const taskData = taskDoc.data();
-    await historyCollectionRef.add({
-      ...taskData,
-      status: 'completed',
-      archivedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    await taskRef.delete();
-  };
-  const deleteTask = id => {
-    showConfirm('¿Estás seguro de que quieres eliminar esta tarea? Se moverá al historial.', async () => {
-      const taskRef = tasksCollectionRef.doc(id);
-      const taskDoc = await taskRef.get();
-      if (!taskDoc.exists) {
-        showAlert("La tarea ya no existe.");
-        return;
-      }
-      const taskData = taskDoc.data();
-      await historyCollectionRef.add({
-        ...taskData,
-        status: 'deleted',
-        archivedAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      await taskRef.delete();
-      if (editingTask && editingTask.id === id) setEditingTask(null);
-    });
-  };
-  const handleDayDoubleClick = date => {
-    setEditingTask(null);
-    setSelectedDateForNewTask(date);
-    setIsTaskModalOpen(true);
-  };
-  const handleOpenNewTaskModal = () => {
-    setEditingTask(null);
-    setSelectedDateForNewTask(new Date().toISOString().split('T')[0]);
-    setIsTaskModalOpen(true);
-  };
-
-  // NEW: Class related functions
-  const handleSaveClass = classData => {
-    if (classData.id) {
-      // Update existing class
-      const {
-        id,
-        ...dataToUpdate
-      } = classData;
-      classesCollectionRef.doc(id).update(dataToUpdate).catch(error => showAlert("Error al actualizar la clase: " + error.message));
-    } else {
-      // Add new class
-      classesCollectionRef.add({
-        ...classData,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }).catch(error => showAlert("Error al agregar la clase: " + error.message));
-    }
-  };
-  const handleAddClass = (day, time) => {
-    setEditingClass(null);
-    setSelectedDayForNewClass(day);
-    setSelectedTimeForNewClass(time);
-    setIsClassModalOpen(true);
-  };
-  const handleEditClass = cls => {
-    setEditingClass(cls);
-    setIsClassModalOpen(true);
-  };
-  const handleDeleteClass = id => {
-    showConfirm('¿Estás seguro de que quieres eliminar esta clase?', () => {
-      classesCollectionRef.doc(id).delete().catch(error => showAlert("Error al eliminar la clase: " + error.message));
-    });
-  };
-  const permanentDeleteFromHistory = id => {
-    showConfirm('Esta acción es irreversible. ¿Seguro que quieres eliminar esta tarea permanentemente del historial?', () => {
-      historyCollectionRef.doc(id).delete().catch(error => showAlert("Error al eliminar la tarea del historial: " + error.message));
-    });
-  };
-  const formatDate = dateString => createLocalDate(dateString).toLocaleDateString('es-ES', {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-  const formatTimestamp = dateObj => {
-    if (!dateObj) return '';
-    return dateObj.toLocaleString('es-ES', {
+  todayGlobal.setHours(0, 0, 0, 0);
+  const isMobile = window.innerWidth <= 768;
+  const formatDate = dateString => {
+    const date = createLocalDate(dateString);
+    const options = {
+      weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric',
+      day: 'numeric'
+    };
+    return date.toLocaleDateString('es-CL', options);
+  };
+  const formatTime = timeString => {
+    if (!timeString) return '';
+    const [hours, minutes] = timeString.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours), parseInt(minutes));
+    return date.toLocaleTimeString('es-CL', {
       hour: '2-digit',
       minute: '2-digit'
     });
   };
   const getDaysUntilDue = dueDate => {
-    const todayMidnight = new Date();
-    todayMidnight.setHours(0, 0, 0, 0);
-    const dueMidnight = createLocalDate(dueDate);
-    const diffTime = dueMidnight.getTime() - todayMidnight.getTime();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const due = createLocalDate(dueDate);
+    const diffTime = due.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    if (diffDays < 0) return `${Math.abs(diffDays)} días atrasado`;
-    if (diffDays === 0) return 'Vence hoy';
-    if (diffDays === 1) return 'Vence mañana';
-    return `${diffDays} días restantes`;
+    if (diffDays === 0) return 'Hoy';
+    if (diffDays === 1) return 'Mañana';
+    if (diffDays > 1) return `En ${diffDays} días`;
+    if (diffDays === -1) return 'Ayer';
+    if (diffDays < -1) return `Hace ${Math.abs(diffDays)} días`;
+    return 'Sin fecha';
   };
-  const highlightCalendarDate = (dateString, highlightBg, borderColorRgb) => {
-    if (highlightTimeoutRef.current) {
-      clearTimeout(highlightTimeoutRef.current);
-    }
-    setHighlightedDate({
-      date: dateString,
-      highlightBg,
-      borderColorRgb,
-      isAnimating: true
-    });
-    highlightTimeoutRef.current = setTimeout(() => {
-      setHighlightedDate(prev => prev && prev.date === dateString ? {
-        ...prev,
-        isAnimating: false
-      } : prev);
-    }, 180000);
-  };
-  const handleTaskCardClick = task => {
-    setView('calendar');
-    setCurrentCalendarViewDate(createLocalDate(task.dueDate));
-    setTimeout(() => {
-      const calendarSection = document.getElementById('calendarSection');
-      if (calendarSection) {
-        calendarSection.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
+  const getTaskStatus = (dueDate, dueTime, completed) => {
+    if (completed) return 'completed';
+    if (!dueDate) return 'no-due-date';
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const due = createLocalDate(dueDate);
+    const now = new Date();
+    if (due.getTime() < today.getTime()) return 'overdue';
+    if (due.getTime() === today.getTime()) {
+      if (dueTime) {
+        const [dueHour, dueMinute] = dueTime.split(':').map(Number);
+        const dueDateTime = new Date();
+        dueDateTime.setHours(dueHour, dueMinute, 0, 0);
+        if (dueDateTime.getTime() < now.getTime()) return 'overdue';
+        const diffInMinutes = (dueDateTime.getTime() - now.getTime()) / (1000 * 60);
+        if (diffInMinutes <= 60) return 'due-soon';
       }
-      const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-      const cardStyle = getTaskCardStyle(status, task.completed);
-      highlightCalendarDate(task.dueDate, cardStyle.highlightBg, cardStyle.borderColorRgb);
-    }, 100);
+      return 'due-soon';
+    }
+    const diffDays = Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays <= 3) return 'upcoming';
+    return 'default';
   };
-  if (loading) {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center"
-    }, /*#__PURE__*/React.createElement(IconSpinner, null), " ", /*#__PURE__*/React.createElement("span", {
-      className: "text-xl ml-4 text-gray-600 dark:text-gray-300"
-    }, "Cargando datos del usuario..."));
-  }
-  const renderCurrentView = () => {
-    switch (view) {
-      case 'list':
-        return /*#__PURE__*/React.createElement("div", {
-          id: "taskListSection",
-          className: "bg-white dark:bg-gray-800/50 rounded-2xl shadow-lg p-2 sm:p-6 mb-3 sm:mb-6 mt-3 space-y-4"
-        }, " ", /*#__PURE__*/React.createElement("h2", {
-          className: "text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left mb-3 sm:mb-6"
-        }, "Lista de tareas"), " ", [...tasks].sort((a, b) => {
-          if (a.completed && !b.completed) return 1;
-          if (!a.completed && b.completed) return -1;
-          const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`);
-          const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`);
-          return dateA - dateB;
-        }).map(task => {
-          const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
-          const cardStyle = getTaskCardStyle(status, task.completed);
-          return /*#__PURE__*/React.createElement("div", {
-            key: task.id,
-            id: task.id,
-            onClick: () => handleTaskCardClick(task),
-            className: `rounded-xl shadow-lg border-l-8 p-2.5 sm:p-6 transition-all duration-300 ${cardStyle.bg} ${cardStyle.border} ${cardStyle.hoverClasses} cursor-pointer`
-          }, " ", /*#__PURE__*/React.createElement("div", {
-            className: "flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0"
-          }, " ", /*#__PURE__*/React.createElement("div", {
-            className: "flex items-start space-x-2.5 sm:space-x-4 flex-1"
-          }, " ", /*#__PURE__*/React.createElement("button", {
-            onClick: e => {
-              e.stopPropagation();
-              toggleTask(task.id);
-            },
-            className: `mt-0.5 w-6 h-6 sm:w-6.5 sm:h-6.5 rounded border-2 flex items-center justify-center flex-shrink-0 border-gray-300 dark:border-gray-500 hover:border-green-500 dark:hover:border-green-400 hover:bg-green-100 dark:hover:bg-green-900/30`
-          }), " ", /*#__PURE__*/React.createElement("div", {
-            className: "flex-1 min-w-0"
-          }, /*#__PURE__*/React.createElement("h3", {
-            className: `font-semibold text-sm sm:text-lg text-gray-900 dark:text-gray-100`
-          }, task.subject), /*#__PURE__*/React.createElement("p", {
-            className: `text-sm sm:text-base text-gray-800 dark:text-gray-300`
-          }, task.title, /*#__PURE__*/React.createElement("span", {
-            className: "text-xs sm:text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-0.5 rounded-md ml-2 align-middle"
-          }, task.type)), task.description && /*#__PURE__*/React.createElement("p", {
-            className: "text-xs sm:text-base text-gray-600 dark:text-gray-400 mt-1.5 mb-1.5"
-          }, task.description), /*#__PURE__*/React.createElement("div", {
-            className: "flex flex-row flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-base text-gray-500 dark:text-gray-400 mt-2"
-          }, /*#__PURE__*/React.createElement("span", {
-            className: "flex items-center"
-          }, "\uD83D\uDCC5", /*#__PURE__*/React.createElement("span", {
-            className: "ml-1.5"
-          }, formatDate(task.dueDate))), task.dueTime && /*#__PURE__*/React.createElement("span", {
-            className: "flex items-center"
-          }, "\uD83D\uDD52", /*#__PURE__*/React.createElement("span", {
-            className: "ml-1.5"
-          }, task.dueTime)), /*#__PURE__*/React.createElement("span", {
-            className: "flex items-center"
-          }, "\u23F0", /*#__PURE__*/React.createElement("span", {
-            className: "ml-1.5"
-          }, getDaysUntilDue(task.dueDate))))), " "), " ", /*#__PURE__*/React.createElement("div", {
-            className: "flex items-center space-x-2.5"
-          }, " ", /*#__PURE__*/React.createElement("div", {
-            className: "w-4.5 h-4.5 sm:w-6 sm:h-6 text-gray-600 dark:text-gray-400"
-          }, /*#__PURE__*/React.createElement(IconClock, {
-            width: "22",
-            height: "22"
-          })), " ", /*#__PURE__*/React.createElement("button", {
-            onClick: e => {
-              e.stopPropagation();
-              startEditing(task);
-            },
-            className: "text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/50 p-1.5 sm:p-3 rounded-xl transition-colors",
-            title: "Editar tarea"
-          }, /*#__PURE__*/React.createElement("div", {
-            className: "w-4.5 h-4.5 sm:w-6 sm:h-6"
-          }, /*#__PURE__*/React.createElement(IconEdit, {
-            width: "22",
-            height: "22"
-          }))), " ", /*#__PURE__*/React.createElement("button", {
-            onClick: e => {
-              e.stopPropagation();
-              deleteTask(task.id);
-            },
-            className: "text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 p-1.5 sm:p-3 rounded-xl transition-colors",
-            title: "Eliminar tarea"
-          }, /*#__PURE__*/React.createElement("div", {
-            className: "w-4.5 h-4.5 sm:w-6 sm:h-6"
-          }, /*#__PURE__*/React.createElement(IconTrash, {
-            width: "22",
-            height: "22"
-          }))), " "), " "), " ");
-        }), " ");
-      case 'daily':
-        return /*#__PURE__*/React.createElement(DailyTasksCardView, {
-          tasks: tasks,
-          formatDate: formatDate,
-          getTaskStatus: getTaskStatus,
-          getTaskCardStyle: getTaskCardStyle,
-          getDaysUntilDue: getDaysUntilDue,
-          toggleTask: toggleTask,
-          startEditing: startEditing,
-          deleteTask: deleteTask,
-          handleTaskCardClick: handleTaskCardClick,
-          onBackToList: () => setView('list')
-        });
-      case 'calendar':
-        return /*#__PURE__*/React.createElement(CalendarView, {
-          tasks: tasks,
-          highlightedDate: highlightedDate,
-          currentViewDate: currentCalendarViewDate,
-          setCurrentViewDate: setCurrentCalendarViewDate,
-          todayGlobal: todayGlobal,
-          getTaskStatus: getTaskStatus,
-          getTaskCardStyle: getTaskCardStyle,
-          chileanHolidays: chileanHolidays,
-          createLocalDate: createLocalDate,
-          onBackToList: () => setView('list'),
-          onDayDoubleClick: handleDayDoubleClick
-        });
-      case 'weeklyCalendar':
-        // NEW: Weekly calendar view
-        return /*#__PURE__*/React.createElement(WeeklyCalendarView, {
-          classes: classes,
-          chileanHolidays: chileanHolidays,
-          createLocalDate: createLocalDate,
-          onBackToList: () => setView('list'),
-          onAddClass: handleAddClass,
-          onEditClass: handleEditClass,
-          onDeleteClass: handleDeleteClass
-        });
-      case 'history':
-        return /*#__PURE__*/React.createElement(HistoryView, {
-          history: history,
-          permanentDeleteFromHistory: permanentDeleteFromHistory,
-          formatTimestamp: formatTimestamp,
-          onBackToList: () => setView('list')
-        });
+  const getTaskCardStyle = (status, completed) => {
+    if (completed) {
+      return {
+        bg: 'bg-green-50 dark:bg-green-900/30',
+        border: 'border-green-500',
+        text: 'text-green-700 dark:text-green-300',
+        hoverClasses: 'hover:bg-green-100 dark:hover:bg-green-900/50'
+      };
+    }
+    switch (status) {
+      case 'overdue':
+        return {
+          bg: 'bg-red-50 dark:bg-red-900/30',
+          border: 'border-red-500',
+          text: 'text-red-700 dark:text-red-300',
+          hoverClasses: 'hover:bg-red-100 dark:hover:bg-red-900/50'
+        };
+      case 'due-soon':
+        return {
+          bg: 'bg-yellow-50 dark:bg-yellow-900/30',
+          border: 'border-yellow-500',
+          text: 'text-yellow-700 dark:text-yellow-300',
+          hoverClasses: 'hover:bg-yellow-100 dark:hover:bg-yellow-900/50'
+        };
+      case 'upcoming':
+        return {
+          bg: 'bg-blue-50 dark:bg-blue-900/30',
+          border: 'border-blue-500',
+          text: 'text-blue-700 dark:text-blue-300',
+          hoverClasses: 'hover:bg-blue-100 dark:hover:bg-blue-900/50'
+        };
       default:
-        return null;
+        return {
+          bg: 'bg-gray-50 dark:bg-gray-700/50',
+          border: 'border-gray-300 dark:border-gray-600',
+          text: 'text-gray-700 dark:text-gray-300',
+          hoverClasses: 'hover:bg-gray-100 dark:hover:bg-gray-700'
+        };
     }
   };
-  const unselectedButtonClasses = "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-700 dark:hover:text-white";
-  const selectedButtonClasses = "bg-blue-600 text-white shadow-lg shadow-blue-300 dark:shadow-blue-800/50 ring-2 ring-blue-400 dark:ring-blue-500";
-  return /*#__PURE__*/React.createElement("div", {
-    className: "min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col items-center" // Centra todo el contenido en PC
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "sticky top-0 z-30 w-full" // La cabecera ocupa todo el ancho
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "max-w-screen-xl mx-auto px-3 sm:px-6" // Contenido de la cabecera centrado y limitado
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center justify-between"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center space-x-2"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "text-white"
-  }, /*#__PURE__*/React.createElement(IconBook, {
-    width: "26",
-    height: "26"
-  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h1", {
-    className: "text-sm sm:text-3xl font-bold text-white leading-tight"
-  }, "GESTOR ACAD\xC9MICO"), /*#__PURE__*/React.createElement("p", {
-    className: "text-[08px] sm:text-sm text-blue-200 mt-1"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "font-semibold text-white"
-  }, user.email)))), /*#__PURE__*/React.createElement("div", {
-    className: "flex-shrink-0 flex items-center space-x-1 sm:space-x-2"
-  }, notifications.length > 0 && /*#__PURE__*/React.createElement("button", {
-    onClick: () => setShowAlerts(!showAlerts),
-    className: "relative text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors",
-    title: showAlerts ? "Ocultar alertas" : "Mostrar alertas"
-  }, /*#__PURE__*/React.createElement(IconBell, {
-    width: "16",
-    height: "16",
-    className: "sm:w-8 sm:h-8"
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center"
-  }, notifications.length)), /*#__PURE__*/React.createElement("div", {
-    className: "hidden sm:flex items-center space-x-2 p-1 rounded-full hover:bg-blue-600 dark:hover:bg-gray-700 transition-colors"
-  }, /*#__PURE__*/React.createElement(IconMail, {
-    width: "16",
-    height: "16",
-    className: "text-white sm:w-4 sm:h-4"
-  }), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setEmailNotifications(!emailNotifications),
-    className: `w-10 h-5 rounded-full transition-colors flex items-center p-0.5 ${emailNotifications ? 'bg-blue-400' : 'bg-gray-500'}`
-  }, /*#__PURE__*/React.createElement("div", {
-    className: `w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${emailNotifications ? 'translate-x-5' : 'translate-x-0'}`
-  }))), /*#__PURE__*/React.createElement("button", {
-    onClick: () => auth.signOut(),
-    className: "text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors",
-    title: "Cerrar sesi\xF3n"
-  }, /*#__PURE__*/React.createElement(IconLogOut, {
-    width: "16",
-    height: "16",
-    className: "sm:w-8 sm:h-8"
-  })), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setShowQuickAccess(!showQuickAccess),
-    className: "text-white hover:bg-blue-600 dark:hover:bg-gray-700 p-2 rounded-full transition-colors md:hidden",
-    title: "Acceso R\xE1pido"
-  }, showQuickAccess ? /*#__PURE__*/React.createElement(IconClose, {
-    className: "w-6 h-6"
-  }) : /*#__PURE__*/React.createElement(IconHamburger, {
-    width: "26",
-    height: "26"
-  })))))), showQuickAccess && /*#__PURE__*/React.createElement("div", {
-    className: "absolute top-full left-0 right-0 w-full md:hidden"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "p-4 bg-black/10 dark:bg-black/30 backdrop-blur-2xl shadow-lg w-full md:w-auto md:max-w-xs rounded-b-2xl"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "max-w-5xl md:max-w-xs mx-auto"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "space-y-1"
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      setView('list');
-      setShowQuickAccess(false);
-    },
-    className: "w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3"
-  }, /*#__PURE__*/React.createElement(IconBook, {
-    width: "20",
-    height: "20"
-  }), " ", /*#__PURE__*/React.createElement("span", null, "Lista")), /*#__PURE__*/React.createElement("hr", {
-    className: "border-white/10"
-  }), /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      setView('daily');
-      setShowQuickAccess(false);
-    },
-    className: "w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3"
-  }, /*#__PURE__*/React.createElement(IconCalendar, {
-    width: "20",
-    height: "20"
-  }), " ", /*#__PURE__*/React.createElement("span", null, "Por D\xEDa")), /*#__PURE__*/React.createElement("hr", {
-    className: "border-white/10"
-  }), /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      setView('calendar');
-      setShowQuickAccess(false);
-    },
-    className: "w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3"
-  }, /*#__PURE__*/React.createElement(IconCalendar, {
-    width: "20",
-    height: "20"
-  }), " ", /*#__PURE__*/React.createElement("span", null, "Calendario Mensual")), /*#__PURE__*/React.createElement("hr", {
-    className: "border-white/10"
-  }), /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      setView('weeklyCalendar');
-      setShowQuickAccess(false);
-    },
-    className: "w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3"
-  }, /*#__PURE__*/React.createElement(IconCalendar, {
-    width: "20",
-    height: "20"
-  }), " ", /*#__PURE__*/React.createElement("span", null, "Calendario Semanal")), /*#__PURE__*/React.createElement("hr", {
-    className: "border-white/10"
-  }), /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      setView('history');
-      setShowQuickAccess(false);
-    },
-    className: "w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3"
-  }, /*#__PURE__*/React.createElement(IconHistory, {
-    width: "20",
-    height: "20"
-  }), " ", /*#__PURE__*/React.createElement("span", null, "Historial")), /*#__PURE__*/React.createElement("hr", {
-    className: "border-white/10"
-  }), /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      handleOpenNewTaskModal();
-      setShowQuickAccess(false);
-    },
-    className: "w-full text-left p-3 rounded-lg hover:bg-white/10 transition-colors text-blue-900 font-medium text-base flex items-center justify-center space-x-3"
-  }, /*#__PURE__*/React.createElement(IconPlus, {
-    width: "20",
-    height: "20"
-  }), " ", /*#__PURE__*/React.createElement("span", null, "Agregar nueva tarea"))))))), /*#__PURE__*/React.createElement("div", {
-    // Contenedor principal del contenido y la barra lateral en PC
-    className: "w-full max-w-screen-xl mx-auto flex-grow flex md:flex-row flex-col px-3 sm:px-6 py-4"
-  }, /*#__PURE__*/React.createElement("main", {
-    className: "w-full md:flex-grow md:pr-6" // El contenido principal crece para llenar el espacio, con un padding a la derecha
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "pb-24"
-  }, notifications.length > 0 && showAlerts && /*#__PURE__*/React.createElement("div", {
-    onClick: () => {
-      handleAlertsClick();
-      if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current);
-      alertHideTimeoutRef.current = null;
-    },
-    className: "bg-orange-100 dark:bg-orange-500/20 border border-orange-400 dark:border-orange-500/50 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out",
-    style: {
-      marginTop: '0.75rem'
-    }
-  }, " ", /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center justify-between mb-2"
-  }, " ", /*#__PURE__*/React.createElement("h3", {
-    className: "font-semibold text-orange-800 dark:text-orange-300 text-lg sm:text-xl text-left"
-  }, "Alertas activas"), " ", /*#__PURE__*/React.createElement("div", {
-    className: "text-orange-600 dark:text-orange-400"
-  }, /*#__PURE__*/React.createElement(IconAlert, {
-    width: "18",
-    height: "18"
-  })), " "), " ", /*#__PURE__*/React.createElement("div", {
-    className: "flex flex-col gap-0.5"
-  }, " ", notifications.slice(0, 3).map((notif, index) => /*#__PURE__*/React.createElement("p", {
-    key: notif.id || index,
-    className: "text-sm text-orange-700 dark:text-orange-300/90 w-full text-left"
-  }, "\u2022 ", notif.message)), " ", notifications.length > 3 && /*#__PURE__*/React.createElement("p", {
-    className: "text-sm text-orange-600 dark:text-orange-400 w-full text-left"
-  }, "... y ", notifications.length - 3, " alertas m\xE1s"), " "), " "), /*#__PURE__*/React.createElement("div", {
-    className: "relative bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-3 rounded-2xl"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "max-w-4xl mx-auto px-3 sm:px-6"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex justify-between items-center"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "text-lg sm:text-xl font-semibold text-blue-600 dark:text-blue-400 text-left"
-  }, "Vistas"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      setIsViewsCollapsed(!isViewsCollapsed);
-    },
-    className: "sm:hidden p-2"
-  }, isViewsCollapsed ? /*#__PURE__*/React.createElement(IconChevronDown, {
-    className: "text-red-500"
-  }) : /*#__PURE__*/React.createElement(IconChevronUp, {
-    className: "text-red-500"
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: `sm:block mt-4 sm:mt-5 ${isViewsCollapsed ? 'hidden' : ''}`
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3"
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => setView('list'),
-    className: `px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'list' ? selectedButtonClasses : unselectedButtonClasses}`
-  }, /*#__PURE__*/React.createElement(IconBook, {
-    width: "18",
-    height: "18"
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "font-medium text-center"
-  }, "Lista")), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setView('daily'),
-    className: `px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'daily' ? selectedButtonClasses : unselectedButtonClasses}`
-  }, /*#__PURE__*/React.createElement(IconCalendar, {
-    width: "18",
-    height: "18"
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "font-medium text-center"
-  }, "Por D\xEDa")), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setView('calendar'),
-    className: `px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`
-  }, /*#__PURE__*/React.createElement(IconCalendar, {
-    width: "20",
-    height: "20"
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "font-medium text-center"
-  }, "Calendario Mensual")), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setView('weeklyCalendar'),
-    className: `px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'weeklyCalendar' ? selectedButtonClasses : unselectedButtonClasses}`
-  }, /*#__PURE__*/React.createElement(IconCalendar, {
-    width: "20",
-    height: "20"
-  }), /*#__PURE__*/React.createElement("span", null, "Calendario Semanal")), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setView('history'),
-    className: `px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'history' ? selectedButtonClasses : unselectedButtonClasses}`
-  }, /*#__PURE__*/React.createElement(IconHistory, {
-    width: "20",
-    height: "20"
-  }), /*#__PURE__*/React.createElement("span", null, "Historial")))))), /*#__PURE__*/React.createElement("div", {
-    className: "border-t-4 border-gray-100 dark:border-gray-800 mb-2 sm:my-3"
-  }), renderCurrentView(), /*#__PURE__*/React.createElement("div", {
-    className: "mt-7 sm:mt-9 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5"
-  }, " ", /*#__PURE__*/React.createElement("div", {
-    className: "text-center text-gray-600 dark:text-gray-400 space-y-1.5"
-  }, " ", /*#__PURE__*/React.createElement("div", {
-    className: "border-b border-gray-200 dark:border-gray-700 pb-1.5"
-  }, " ", /*#__PURE__*/React.createElement("p", {
-    className: "text-sm font-semibold text-gray-800 dark:text-gray-200 mb-0.5"
-  }, "\xA9 Derechos Reservados"), " ", /*#__PURE__*/React.createElement("p", {
-    className: "text-xs text-gray-700 dark:text-gray-300"
-  }, "Creado por ", /*#__PURE__*/React.createElement("span", {
-    className: "font-semibold text-blue-600 dark:text-blue-400"
-  }, "Daniel Figueroa Chacama")), " ", /*#__PURE__*/React.createElement("p", {
-    className: "text-xs text-gray-600 dark:text-gray-400 mt-0.5"
-  }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), settings.view !== 'weeklyCalendar' && /*#__PURE__*/React.createElement("aside", {
-    className: "hidden md:block md:w-72 flex-shrink-0 md:ml-2" // Anchura ajustada para el calendario pequeño
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "sticky top-24 overflow-x-auto pr-2"
-  }, /*#__PURE__*/React.createElement(MiniWeeklyCalendar, {
-    classes: classes
-  })))), /*#__PURE__*/React.createElement("button", {
-    onClick: handleOpenNewTaskModal,
-    className: "fixed bottom-6 right-6 md:right-80 bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40" // Posición del botón ajustada
-  }, /*#__PURE__*/React.createElement(IconPlus, {
-    width: "24",
-    height: "24"
-  })), /*#__PURE__*/React.createElement(CustomAlertDialog, {
-    message: alertDialogMessage,
-    isOpen: isAlertDialogOpen,
-    onClose: handleAlertDialogClose
-  }), /*#__PURE__*/React.createElement(CustomConfirmDialog, {
-    message: confirmDialogMessage,
-    isOpen: isConfirmDialogOpen,
-    onConfirm: handleConfirmDialogConfirm,
-    onCancel: handleConfirmDialogCancel
-  }), /*#__PURE__*/React.createElement(TaskModal, {
-    isOpen: isTaskModalOpen,
-    onClose: () => setIsTaskModalOpen(false),
-    onSave: handleSaveTask,
-    showAlert: showAlert,
-    taskToEdit: editingTask,
-    selectedDate: selectedDateForNewTask
-  }), /*#__PURE__*/React.createElement(ClassModal, {
-    isOpen: isClassModalOpen,
-    onClose: () => setIsClassModalOpen(false),
-    onSave: handleSaveClass,
-    showAlert: showAlert,
-    classToEdit: editingClass,
-    selectedDay: selectedDayForNewClass,
-    selectedTime: selectedTimeForNewClass
-  }));
-};
-
-// --- NUEVO: Banner de Instalación ---
-const InstallBanner = ({
-  onInstall,
-  onClose
-}) => {
-  return /*#__PURE__*/React.createElement("div", {
-    className: "fixed top-0 left-0 right-0 p-4 z-50"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "bg-gray-800 bg-opacity-90 backdrop-blur-sm text-white rounded-2xl shadow-2xl max-w-lg mx-auto p-4 flex items-center justify-between transition-transform duration-500 transform animate-slide-down"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
-    className: "font-bold"
-  }, "Instalar Gestor Acad\xE9mico"))), /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center"
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: onInstall,
-    className: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex items-center transition-colors"
-  }, /*#__PURE__*/React.createElement(IconDownload, {
-    className: "w-5 h-5 mr-2"
-  }), "Instalar"), /*#__PURE__*/React.createElement("button", {
-    onClick: onClose,
-    className: "ml-2 text-gray-400 hover:text-white p-2 rounded-full"
-  }, /*#__PURE__*/React.createElement(IconClose, {
-    className: "w-5 h-5"
-  })))));
-};
-
-// --- Main App Component (Actualizado con lógica de instalación) ---
-const App = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
-  const [alertDialogMessage, setAlertDialogMessage] = useState("");
-  const [installPromptEvent, setInstallPromptEvent] = useState(null);
-  const [showInstallBanner, setShowInstallBanner] = useState(false);
-  useEffect(() => {
-    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const handleBeforeInstallPrompt = e => {
-      e.preventDefault();
-      if (isMobile) {
-        // Solo mostrar en dispositivos móviles
-        setInstallPromptEvent(e);
-        setShowInstallBanner(true);
-        setTimeout(() => {
-          setShowInstallBanner(false);
-        }, 15000);
-      }
-    };
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-  }, []);
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(currentUser => {
-      // Para el inicio de sesión con Google, no es necesario verificar el correo.
-      // Firebase lo considera verificado por defecto.
-      if (currentUser) {
-        // Si el proveedor es 'password', nos aseguramos de que el email esté verificado.
-        if (currentUser.providerData.some(provider => provider.providerId === 'password')) {
-          if (currentUser.emailVerified) {
-            setUser(currentUser);
-          } else {
-            setUser(null); // Si es con contraseña y no está verificado, no lo logueamos.
-          }
-        } else {
-          // Si es otro proveedor (como Google), lo logueamos directamente.
-          setUser(currentUser);
-        }
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
-  const showAlert = message => {
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Buenos días";
+    if (hour < 18) return "Buenas tardes";
+    return "Buenas noches";
+  };
+  const showAlert = (message) => {
     setAlertDialogMessage(message);
     setIsAlertDialogOpen(true);
   };
   const handleAlertDialogClose = () => {
     setIsAlertDialogOpen(false);
   };
+  const showConfirmDialog = (message, onConfirm) => {
+    setConfirmDialogMessage(message);
+    setConfirmAction(() => onConfirm);
+    setIsConfirmDialogOpen(true);
+  };
+  const handleConfirmDialogClose = () => {
+    setIsConfirmDialogOpen(false);
+    setConfirmAction(null);
+  };
+  const [confirmAction, setConfirmAction] = useState(null);
+  const handleConfirm = () => {
+    if (confirmAction) {
+      confirmAction();
+    }
+    handleConfirmDialogClose();
+  };
+  const fetchTasks = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+    setError(null);
+    setLoading(true);
+    try {
+      const tasksCollection = await db.collection('tasks').where('userId', '==', user.uid).orderBy('createdAt', 'desc').get();
+      const fetchedTasks = tasksCollection.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setTasks(fetchedTasks);
+    } catch (e) {
+      console.error("Error fetching tasks: ", e);
+      setError("No se pudieron cargar las tareas.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const addTask = async (taskData) => {
+    if (!user) return;
+    try {
+      await db.collection('tasks').add({
+        ...taskData,
+        userId: user.uid,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      fetchTasks();
+    } catch (e) {
+      console.error("Error adding document: ", e);
+      showAlert("No se pudo agregar la tarea.");
+    }
+  };
+  const updateTask = async (id, taskData) => {
+    try {
+      await db.collection('tasks').doc(id).update(taskData);
+      fetchTasks();
+    } catch (e) {
+      console.error("Error updating document: ", e);
+      showAlert("No se pudo actualizar la tarea.");
+    }
+  };
+  const toggleTask = async (id, completed) => {
+    try {
+      await db.collection('tasks').doc(id).update({
+        completed: !completed
+      });
+      fetchTasks();
+    } catch (e) {
+      console.error("Error toggling task status: ", e);
+      showAlert("No se pudo actualizar el estado de la tarea.");
+    }
+  };
+  const deleteTask = (id) => {
+    showConfirmDialog("¿Estás seguro de que quieres eliminar esta tarea?", () => {
+      const deleteTaskAction = async () => {
+        try {
+          await db.collection('tasks').doc(id).delete();
+          fetchTasks();
+        } catch (e) {
+          console.error("Error removing document: ", e);
+          showAlert("No se pudo eliminar la tarea.");
+        }
+      };
+      deleteTaskAction();
+    });
+  };
+  const logout = () => {
+    auth.signOut();
+  };
+  const startEditing = task => {
+    setEditingTask(task);
+    setIsFormOpen(true);
+  };
+  const handleFormClose = () => {
+    setIsFormOpen(false);
+    setEditingTask(null);
+  };
+  const handleTaskCardClick = (task) => {
+    setSelectedTask(task);
+  };
+  const handleTaskDetailClose = () => {
+    setSelectedTask(null);
+  };
+  const createLocalDate = dateString => {
+    const date = new Date(dateString);
+    date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+    return date;
+  };
+  const fetchChileanHolidays = async () => {
+    try {
+      const response = await fetch('https://apis.digital.gob.cl/fl/feriados/2025');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      const holidayDates = data.map(holiday => holiday.fecha);
+      setChileanHolidays(holidayDates);
+    } catch (error) {
+      console.error("Error fetching Chilean holidays:", error);
+    }
+  };
+  const isChileanHoliday = date => {
+    const formattedDate = date.toISOString().split('T')[0];
+    return chileanHolidays.includes(formattedDate);
+  };
+  const getDayClass = (day) => {
+    if (day === null) {
+      return "w-full aspect-square";
+    }
+    const date = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const isToday = date.getTime() === today.getTime();
+    const isHoliday = isChileanHoliday(date);
+    const hasTask = tasks.some(task => {
+      const taskDate = createLocalDate(task.dueDate);
+      return taskDate.getFullYear() === date.getFullYear() && taskDate.getMonth() === date.getMonth() && taskDate.getDate() === date.getDate();
+    });
+    const isHighlighted = highlightedDate && date.getDate() === highlightedDate.getDate() && date.getMonth() === highlightedDate.getMonth() && date.getFullYear() === highlightedDate.getFullYear();
+    let classes = `w-full aspect-square rounded-lg flex flex-col justify-between items-start text-xs sm:text-sm font-semibold p-1 sm:p-2 transition-all duration-200 cursor-pointer text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 relative`;
+    if (isHighlighted) {
+      classes += ' bg-blue-100 dark:bg-blue-800/50 scale-105';
+    } else if (isToday) {
+      classes += ' bg-blue-500 text-white shadow-md';
+    }
+    if (isHoliday) {
+      classes += ' font-bold text-red-500';
+    }
+    if (hasTask) {
+      classes += ' border border-dashed border-blue-500 dark:border-blue-400';
+    }
+    return classes;
+  };
+  const handleViewChange = newView => {
+    setCurrentView(newView);
+    if (newView === 'list') {
+      setHighlightedDate(null);
+      setCurrentViewDate(todayGlobal);
+    } else {
+      setHighlightedDate(null);
+      setCurrentViewDate(todayGlobal);
+    }
+  };
+  const handleDayDoubleClick = day => {
+    if (day) {
+      const selectedDate = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), day);
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const dayOfMonth = String(selectedDate.getDate()).padStart(2, '0');
+      setEditingTask({
+        dueDate: `${year}-${month}-${dayOfMonth}`
+      });
+      setIsFormOpen(true);
+    }
+  };
   const handleInstallClick = () => {
-    if (!installPromptEvent) return;
-    installPromptEvent.prompt();
+    if (!pwaInstallPrompt) return;
+    pwaInstallPrompt.prompt();
+    pwaInstallPrompt.userChoice.then(choiceResult => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      } else {
+        console.log('User dismissed the install prompt');
+      }
+      setPwaInstallPrompt(null);
+      setShowInstallBanner(false);
+    });
+  };
+  useEffect(() => {
+    if (!user) return;
+    fetchTasks();
+  }, [user]);
+  useEffect(() => {
+    const handleOutsideClick = event => {
+      if (isProfileMenuOpen && profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setIsProfileMenuOpen(false);
+      }
+      if (isHamburgerOpen && hamburgerMenuRef.current && !hamburgerMenuRef.current.contains(event.target)) {
+        setIsHamburgerOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [isProfileMenuOpen, isHamburgerOpen]);
+  useEffect(() => {
+    fetchChileanHolidays();
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      setPwaInstallPrompt(e);
+      setShowInstallBanner(true);
+    });
+  }, []);
+  const visibleTasks = tasks.filter(task => !task.completed);
+  const completedTasks = tasks.filter(task => task.completed).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const isTaskFormVisible = isFormOpen;
+  const isTaskDetailVisible = selectedTask !== null;
+  const isListVisible = currentView === 'list' && !isTaskFormVisible && !isTaskDetailVisible;
+  const isCalendarVisible = currentView === 'calendar' && !isTaskFormVisible && !isTaskDetailVisible;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bg-gray-100 dark:bg-gray-900 min-h-screen relative"
+  }, /*#__PURE__*/React.createElement("nav", {
+    className: "bg-white dark:bg-gray-800 shadow-md sticky top-0 z-40"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "container mx-auto px-4 sm:px-6 lg:px-8 py-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between items-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mr-4 sm:mr-6"
+  }, /*#__PURE__*/React.createElement(IconBook, {
+    width: "32",
+    height: "32",
+    className: "text-blue-600"
+  })), " ", /*#__PURE__*/React.createElement("div", {
+    className: "hidden sm:block"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => handleViewChange('list'),
+    className: `py-2 px-3 text-sm font-medium rounded-lg transition-colors ${isListVisible ? 'bg-blue-600 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'}`
+  }, "Lista de Tareas")), " ", isMobile && /*#__PURE__*/React.createElement("div", {
+    className: "sm:hidden relative"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setIsHamburgerOpen(!isHamburgerOpen),
+    className: "py-2 px-3 text-sm font-medium rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+  }, "Men\xFA"), " ", isHamburgerOpen && /*#__PURE__*/React.createElement("div", {
+    ref: hamburgerMenuRef,
+    className: "absolute left-0 mt-2 w-48 rounded-lg shadow-lg py-1 bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      handleViewChange('list');
+      setIsHamburgerOpen(false);
+    },
+    className: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
+  }, "Lista de Tareas"), " ", /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      handleViewChange('calendar');
+      setIsHamburgerOpen(false);
+    },
+    className: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
+  }, "Calendario"), " ", /*#__PURE__*/React.createElement("div", {
+    className: "border-t border-gray-200 dark:border-gray-700 my-1"
+  }), " ", /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      logout();
+      setIsHamburgerOpen(false);
+    },
+    className: "block px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/50 w-full text-left"
+  }, "Cerrar Sesi\xF3n")))), " ", /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-700 dark:text-gray-300 text-sm sm:text-base font-medium mr-2 hidden sm:block"
+  }, user.email), " ", /*#__PURE__*/React.createElement("div", {
+    className: "relative",
+    ref: profileMenuRef
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setIsProfileMenuOpen(!isProfileMenuOpen),
+    className: "w-8 h-8 rounded-full overflow-hidden border-2 border-blue-600 dark:border-blue-400 focus:outline-none focus:border-blue-700 transition"
+  }, user.photoURL ? /*#__PURE__*/React.createElement("img", {
+    src: user.photoURL,
+    alt: "Profile",
+    className: "w-full h-full object-cover"
+  }) : /*#__PURE__*/React.createElement("div", {
+    className: "w-full h-full bg-blue-600 flex items-center justify-center text-white"
+  }, user.email.charAt(0).toUpperCase())), " ", isProfileMenuOpen && /*#__PURE__*/React.createElement("div", {
+    className: "origin-top-right absolute right-0 mt-2 w-56 rounded-lg shadow-lg py-1 bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "px-4 py-2 text-sm text-gray-700 dark:text-gray-200"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold"
+  }, "Cuenta"), /*#__PURE__*/React.createElement("p", null, user.email)), " ", /*#__PURE__*/React.createElement("div", {
+    className: "border-t border-gray-200 dark:border-gray-700 my-1"
+  }), " ", /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      logout();
+      setIsProfileMenuOpen(false);
+    },
+    className: "block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/50"
+  }, /*#__PURE__*/React.createElement(IconLogOut, {
+    width: "18",
+    height: "18",
+    className: "inline-block mr-2"
+  }), " Cerrar Sesi\xF3n"))))))), /*#__PURE__*/React.createElement("main", {
+    className: "container mx-auto p-4 sm:p-6 lg:p-8"
+  }, error && /*#__PURE__*/React.createElement("div", {
+    className: "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "block sm:inline"
+  }, " ", error, " ")), " ", isListVisible && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between items-center mb-6"
+  }, /*#__PURE__*/React.createElement("h1", {
+    className: "text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100"
+  }, getGreeting()), " ", /*#__PURE__*/React.createElement("button", {
+    onClick: () => setIsFormOpen(true),
+    className: "bg-blue-600 text-white rounded-full p-2.5 shadow-lg hover:bg-blue-700 transition-colors"
+  }, /*#__PURE__*/React.createElement(IconPlus, {
+    width: "28",
+    height: "28",
+    className: "text-white"
+  }))), " ", visibleTasks.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4"
+  }, visibleTasks.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)).map(task => {
+    const status = getTaskStatus(task.dueDate, task.dueTime, task.completed);
+    const cardStyle = getTaskCardStyle(status, task.completed);
+    return /*#__PURE__*/React.createElement("div", {
+      key: task.id,
+      onClick: () => handleTaskCardClick(task),
+      className: `bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sm:p-6 cursor-pointer transform transition-all duration-200 ${cardStyle.hoverClasses} border-l-8 ${cardStyle.border}`
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between items-start mb-2"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex items-center space-x-2"
+    }, /*#__PURE__*/React.createElement(IconClock, {
+      className: "text-gray-500 dark:text-gray-400",
+      width: "20",
+      height: "20"
+    }), " ", /*#__PURE__*/React.createElement("span", {
+      className: `text-sm sm:text-base font-semibold ${cardStyle.text}`
+    }, task.dueTime ? `${getDaysUntilDue(task.dueDate)} - ${task.dueTime}` : getDaysUntilDue(task.dueDate))), " ", /*#__PURE__*/React.createElement("button", {
+      onClick: e => {
+        e.stopPropagation();
+        toggleTask(task.id, task.completed);
+      },
+      className: `w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center transition-colors ${task.completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-400 dark:border-gray-500'}`
+    }, task.completed && /*#__PURE__*/React.createElement(IconCheck, {
+      width: "18",
+      height: "18"
+    }))), " ", /*#__PURE__*/React.createElement("h2", {
+      className: "text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-100"
+    }, task.subject), " ", /*#__PURE__*/React.createElement("p", {
+      className: "text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1"
+    }, task.title), " ", /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-gray-500 dark:text-gray-400 mt-2"
+    }, task.type));
+  })), " ", visibleTasks.length === 0 && /*#__PURE__*/React.createElement("div", {
+    className: "bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 text-center"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-gray-500 dark:text-gray-400 text-lg"
+  }, "No tienes tareas pendientes."), " ", /*#__PURE__*/React.createElement("button", {
+    onClick: () => setIsFormOpen(true),
+    className: "mt-4 bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-700 transition-colors"
+  }, "Crear nueva tarea")), " ", completedTasks.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "mt-8"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between cursor-pointer",
+    onClick: () => academicHistoryRef.current.classList.toggle('hidden')
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-100"
+  }, "Historial (", completedTasks.length, ")"), " ", /*#__PURE__*/React.createElement("span", {
+    className: "text-gray-500 dark:text-gray-400 text-xs"
+  }, "Mostrar / Ocultar"), " ", /*#__PURE__*/React.createElement(IconHistory, {
+    className: "text-gray-500 dark:text-gray-400"
+  })), " ", /*#__PURE__*/React.createElement("div", {
+    ref: academicHistoryRef,
+    className: "hidden mt-4 space-y-4"
+  }, completedTasks.map(task => {
+    const cardStyle = getTaskCardStyle('completed', true);
+    return /*#__PURE__*/React.createElement("div", {
+      key: task.id,
+      onClick: () => handleTaskCardClick(task),
+      className: `bg-white dark:bg-gray-800 rounded-2xl shadow-md p-4 sm:p-6 cursor-pointer opacity-70 transition-all duration-200 ${cardStyle.hoverClasses} border-l-8 ${cardStyle.border}`
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-between items-start mb-2"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex items-center space-x-2"
+    }, /*#__PURE__*/React.createElement(IconCheck, {
+      className: "text-green-500",
+      width: "20",
+      height: "20"
+    }), " ", /*#__PURE__*/React.createElement("span", {
+      className: `text-sm sm:text-base font-semibold ${cardStyle.text}`
+    }, "Completada el", " ", formatDate(task.updatedAt ? task.updatedAt.toDate() : task.createdAt.toDate()))), " ", /*#__PURE__*/React.createElement("div", {
+      className: "flex items-center space-x-2"
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: e => {
+        e.stopPropagation();
+        toggleTask(task.id, task.completed);
+      },
+      className: `text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 p-1 rounded-xl transition-colors`,
+      title: "Marcar como incompleta"
+    }, /*#__PURE__*/React.createElement(IconClock, {
+      width: "18",
+      height: "18"
+    })), " ", /*#__PURE__*/React.createElement("button", {
+      onClick: e => {
+        e.stopPropagation();
+        deleteTask(task.id);
+      },
+      className: `text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 p-1 rounded-xl transition-colors`,
+      title: "Eliminar tarea"
+    }, /*#__PURE__*/React.createElement(IconTrash, {
+      width: "18",
+      height: "18"
+    })))), " ", /*#__PURE__*/React.createElement("h2", {
+      className: "text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-100"
+    }, task.subject), " ", /*#__PURE__*/React.createElement("p", {
+      className: "text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1"
+    }, task.title), " ", /*#__PURE__*/React.createElement("p", {
+      className: "text-xs text-gray-500 dark:text-gray-400 mt-2"
+    }, task.type));
+  })))), " ", isTaskFormVisible && /*#__PURE__*/React.createElement(TaskForm, {
+    taskToEdit: editingTask,
+    onClose: handleFormClose,
+    onSave: editingTask ? updateTask : addTask
+  }), " ", isTaskDetailVisible && /*#__PURE__*/React.createElement(TaskDetail, {
+    task: selectedTask,
+    onClose: handleTaskDetailClose,
+    onEdit: startEditing,
+    onDelete: deleteTask,
+    onToggle: toggleTask
+  })));
+};
+const TaskForm = ({
+  taskToEdit,
+  onClose,
+  onSave
+}) => {
+  const [subject, setSubject] = useState(taskToEdit?.subject || '');
+  const [title, setTitle] = useState(taskToEdit?.title || '');
+  const [type, setType] = useState(taskToEdit?.type || '');
+  const [description, setDescription] = useState(taskToEdit?.description || '');
+  const [dueDate, setDueDate] = useState(taskToEdit?.dueDate || '');
+  const [dueTime, setDueTime] = useState(taskToEdit?.dueTime || '');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const handleSave = async e => {
+    e.preventDefault();
+    if (!subject.trim() || !title.trim() || !type.trim()) {
+      setError("Materia, título y tipo son campos obligatorios.");
+      return;
+    }
+    setLoading(true);
+    await onSave(taskToEdit ? taskToEdit.id : null, {
+      subject,
+      title,
+      type,
+      description,
+      dueDate,
+      dueTime,
+      completed: taskToEdit?.completed || false,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    setLoading(false);
+    onClose();
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4"
+  }, " ", /*#__PURE__*/React.createElement("div", {
+    className: "bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 max-w-lg w-full relative"
+  }, " ", /*#__PURE__*/React.createElement("button", {
+    onClick: onClose,
+    className: "absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
+  }, /*#__PURE__*/React.createElement(IconClose, null)), " ", /*#__PURE__*/React.createElement("h2", {
+    className: "text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6"
+  }, taskToEdit ? 'Editar Tarea' : 'Nueva Tarea'), " ", error && /*#__PURE__*/React.createElement("div", {
+    className: "bg-red-100 border-l-4 border-red-500 text-red-700 p-3 mb-4 rounded-r-lg",
+    role: "alert"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm"
+  }, error)), " ", /*#__PURE__*/React.createElement("form", {
+    onSubmit: handleSave,
+    className: "space-y-4"
+  }, " ", /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
+    className: "block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2"
+  }, "Materia*"), " ", /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    value: subject,
+    onChange: e => setSubject(e.target.value),
+    placeholder: "Ej: Matem\xE1ticas",
+    className: "w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600",
+    required: true
+  })), " ", /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
+    className: "block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2"
+  }, "T\xEDtulo*"), " ", /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    value: title,
+    onChange: e => setTitle(e.target.value),
+    placeholder: "Ej: Entrega de informe",
+    className: "w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600",
+    required: true
+  })), " ", /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
+    className: "block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2"
+  }, "Tipo*"), " ", /*#__PURE__*/React.createElement("select", {
+    value: type,
+    onChange: e => setType(e.target.value),
+    className: "w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600",
+    required: true
+  }, /*#__PURE__*/React.createElement("option", {
+    value: ""
+  }, "Selecciona un tipo"), /*#__PURE__*/React.createElement("option", {
+    value: "Tarea"
+  }, "Tarea"), /*#__PURE__*/React.createElement("option", {
+    value: "Prueba"
+  }, "Prueba"), /*#__PURE__*/React.createElement("option", {
+    value: "Proyecto"
+  }, "Proyecto"), /*#__PURE__*/React.createElement("option", {
+    value: "Examen"
+  }, "Examen"), /*#__PURE__*/React.createElement("option", {
+    value: "Otro"
+  }, "Otro"))), " ", /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
+    className: "block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2"
+  }, "Descripci\xF3n (opcional)"), " ", /*#__PURE__*/React.createElement("textarea", {
+    value: description,
+    onChange: e => setDescription(e.target.value),
+    placeholder: "Detalles adicionales de la tarea...",
+    className: "w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600",
+    rows: "3"
+  })), " ", /*#__PURE__*/React.createElement("div", {
+    className: "flex space-x-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-1/2"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2"
+  }, "Fecha de entrega"), " ", /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    value: dueDate,
+    onChange: e => setDueDate(e.target.value),
+    className: "w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+  })), " ", /*#__PURE__*/React.createElement("div", {
+    className: "w-1/2"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2"
+  }, "Hora (opcional)"), " ", /*#__PURE__*/React.createElement("input", {
+    type: "time",
+    value: dueTime,
+    onChange: e => setDueTime(e.target.value),
+    className: "w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+  }))), " ", /*#__PURE__*/React.createElement("button", {
+    type: "submit",
+    disabled: loading,
+    className: "w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center disabled:bg-blue-400"
+  }, loading && /*#__PURE__*/React.createElement(IconSpinner, null), " ", " ", taskToEdit ? 'Guardar Cambios' : 'Crear Tarea'))));
+};
+const TaskDetail = ({
+  task,
+  onClose,
+  onEdit,
+  onDelete,
+  onToggle
+}) => {
+  if (!task) return null;
+  const formatDate = dateString => {
+    const date = new Date(dateString);
+    const options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    };
+    return date.toLocaleDateString('es-CL', options);
+  };
+  const formatTime = timeString => {
+    if (!timeString) return '';
+    const [hours, minutes] = timeString.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours), parseInt(minutes));
+    return date.toLocaleTimeString('es-CL', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4"
+  }, " ", /*#__PURE__*/React.createElement("div", {
+    className: "bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 max-w-lg w-full relative border-t-4 border-blue-500"
+  }, " ", /*#__PURE__*/React.createElement("button", {
+    onClick: onClose,
+    className: "absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
+  }, /*#__PURE__*/React.createElement(IconClose, null)), " ", /*#__PURE__*/React.createElement("div", {
+    className: "mb-6"
+  }, " ", /*#__PURE__*/React.createElement("span", {
+    className: `text-xs font-medium px-2 py-1 rounded-full ${task.completed ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'} dark:bg-gray-700 dark:text-gray-200`
+  }, task.type), " ", /*#__PURE__*/React.createElement("h2", {
+    className: "text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mt-2"
+  }, task.subject), " ", /*#__PURE__*/React.createElement("p", {
+    className: "text-lg sm:text-xl text-gray-600 dark:text-gray-300 mt-1"
+  }, task.title), " "), " ", /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4 text-gray-700 dark:text-gray-300"
+  }, " ", task.dueDate && /*#__PURE__*/React.createElement("p", {
+    className: "flex items-center"
+  }, /*#__PURE__*/React.createElement(IconCalendar, {
+    className: "mr-2 text-blue-500",
+    width: "20",
+    height: "20"
+  }), " ", /*#__PURE__*/React.createElement("span", {
+    className: "font-semibold"
+  }, "Fecha de entrega:"), " ", formatDate(task.dueDate)), " ", task.dueTime && /*#__PURE__*/React.createElement("p", {
+    className: "flex items-center"
+  }, /*#__PURE__*/React.createElement(IconClock, {
+    className: "mr-2 text-blue-500",
+    width: "20",
+    height: "20"
+  }), " ", /*#__PURE__*/React.createElement("span", {
+    className: "font-semibold"
+  }, "Hora:"), " ", formatTime(task.dueTime)), " ", task.description && /*#__PURE__*/React.createElement("p", {
+    className: "flex"
+  }, /*#__PURE__*/React.createElement(IconBook, {
+    className: "mr-2 mt-1 text-blue-500",
+    width: "20",
+    height: "20"
+  }), " ", /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    className: "font-semibold block mb-1"
+  }, "Descripci\xF3n:"), " ", /*#__PURE__*/React.createElement("span", {
+    className: "block text-sm sm:text-base"
+  }, task.description))), " ", /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-end space-x-2 mt-6"
+  }, " ", /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      onEdit(task);
+    },
+    className: "text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/50 p-2 rounded-xl transition-colors",
+    title: "Editar tarea"
+  }, /*#__PURE__*/React.createElement(IconEdit, {
+    width: "20",
+    height: "20"
+  })), " ", /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      onDelete(task.id);
+      onClose();
+    },
+    className: "text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 p-2 rounded-xl transition-colors",
+    title: "Eliminar tarea"
+  }, /*#__PURE__*/React.createElement(IconTrash, {
+    width: "20",
+    height: "20"
+  })), " ", /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      onToggle(task.id, task.completed);
+      onClose();
+    },
+    className: `py-2 px-4 rounded-xl font-semibold transition-colors ${task.completed ? 'bg-yellow-500 text-white hover:bg-yellow-600' : 'bg-green-500 text-white hover:bg-green-600'}`
+  }, task.completed ? 'Marcar como incompleta' : 'Marcar como completada'))));
+};
+const InstallBanner = ({
+  onInstall,
+  onClose
+}) => {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "fixed bottom-4 left-1/2 -translate-x-1/2 w-full max-w-sm bg-white dark:bg-gray-800 shadow-xl rounded-xl p-4 flex items-center justify-between z-50 animate-slideUp"
+  }, " ", /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center"
+  }, " ", /*#__PURE__*/React.createElement(IconDownload, {
+    className: "text-blue-500 mr-3"
+  }), " ", /*#__PURE__*/React.createElement("span", {
+    className: "text-sm font-medium text-gray-700 dark:text-gray-200"
+  }, "Instala la aplicaci\xF3n para acceso r\xE1pido.")), " ", /*#__PURE__*/React.createElement("div", {
+    className: "flex space-x-2"
+  }, " ", /*#__PURE__*/React.createElement("button", {
+    onClick: onClose,
+    className: "p-1 rounded-full text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+  }, /*#__PURE__*/React.createElement(IconClose, null)), " ", /*#__PURE__*/React.createElement("button", {
+    onClick: onInstall,
+    className: "bg-blue-500 text-white px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-blue-600 transition-colors"
+  }, "Instalar")));
+};
+const App = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
+  const [alertDialogMessage, setAlertDialogMessage] = useState('');
+  const [pwaInstallPrompt, setInstallPromptEvent] = useState(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const showAlert = (message) => {
+    setAlertDialogMessage(message);
+    setIsAlertDialogOpen(true);
+  };
+  const handleAlertDialogClose = () => {
+    setIsAlertDialogOpen(false);
+  };
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(firebaseUser => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
+  useEffect(() => {
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      setInstallPromptEvent(e);
+      setShowInstallBanner(true);
+    });
+  }, []);
+  const handleInstallClick = () => {
+    if (!pwaInstallPrompt) return;
+    pwaInstallPrompt.prompt();
     installPromptEvent.userChoice.then(choiceResult => {
       if (choiceResult.outcome === 'accepted') {
         console.log('User accepted the install prompt');
@@ -2493,9 +1687,11 @@ const App = () => {
       className: "text-xl ml-4 text-gray-600 dark:text-gray-300"
     }, "Cargando..."));
   }
-  return /*#__PURE__*/React.createElement("div", null, user ? /*#__PURE__*/React.createElement(AcademicTaskManager, {
+  return /*#__PURE__*/React.createElement("div", null, user ? /*#__PURE__*/React.createElement("div", {
+    className: "container mx-auto"
+  }, /*#__PURE__*/React.createElement(AcademicTaskManager, {
     user: user
-  }) : /*#__PURE__*/React.createElement(LoginScreen, {
+  })) : /*#__PURE__*/React.createElement(LoginScreen, {
     showAlert: showAlert
   }), /*#__PURE__*/React.createElement(CustomAlertDialog, {
     message: alertDialogMessage,
@@ -2504,23 +1700,8 @@ const App = () => {
   }), showInstallBanner && /*#__PURE__*/React.createElement(InstallBanner, {
     onInstall: handleInstallClick,
     onClose: () => setShowInstallBanner(false)
-  }), /*#__PURE__*/React.createElement(TaskModal, {
-    isOpen: isTaskModalOpen,
-    onClose: () => setIsTaskModalOpen(false),
-    onSave: handleSaveTask,
-    showAlert: showAlert,
-    taskToEdit: editingTask,
-    selectedDate: selectedDateForNewTask
-  }), /*#__PURE__*/React.createElement(ClassModal, {
-    isOpen: isClassModalOpen,
-    onClose: () => setIsClassModalOpen(false),
-    onSave: handleSaveClass,
-    showAlert: showAlert,
-    classToEdit: editingClass,
-    selectedDay: selectedDayForNewClass,
-    selectedTime: selectedTimeForNewClass
   }));
 };
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
-root.render(/*#__PURE__*/React.createElement(App, null));
+root.render( /*#__PURE__*/React.createElement(App, null));
