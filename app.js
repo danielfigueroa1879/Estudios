@@ -1497,7 +1497,7 @@ const MiniWeeklyCalendar = ({
       key: cls.id,
       className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 whitespace-normal break-words",
       title: `${cls.subject} (${cls.description})`
-    }, /*#__PURE__*/React.createElement("p", { /* Added p tag for subject */
+    }, /*#__PURE__*/React.createElement("p", {
       className: "truncate"
     }, cls.subject), /*#__PURE__*/React.createElement("span", {
       className: "text-[0.5rem] text-blue-700 dark:text-blue-300 block"
@@ -2257,7 +2257,7 @@ const AcademicTaskManager = ({
     className: "pb-24"
   }, notifications.length > 0 && showAlerts && /*#__PURE__*/React.createElement("div", {
     onClick: () => {
-      handleAlertsClick();
+      setShowAlerts(false); // Directly close alerts on click
       if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current);
       alertHideTimeoutRef.current = null;
     },
@@ -2332,7 +2332,7 @@ const AcademicTaskManager = ({
   }, /*#__PURE__*/React.createElement(IconCalendar, {
     width: "20",
     height: "20"
-  }), /*#__PURE__*/React.createElement("span", {
+  }), " ", /*#__PURE__*/React.createElement("span", {
     className: "font-medium text-center"
   }, "Calendario Semanal")), /*#__PURE__*/React.createElement("button", {
     onClick: () => setView('history'),
@@ -2411,7 +2411,7 @@ const InstallBanner = ({
     className: "flex items-center"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
     className: "font-bold"
-  }, "Instalar Gestor Acad\xE9mico"))), /*#__PURE__*/React.createElement("div", {
+  }, "Instalar Gestor Acad\xC9mico"))), /*#__PURE__*/React.createElement("div", {
     className: "flex items-center"
   }, /*#__PURE__*/React.createElement("button", {
     onClick: onInstall,
