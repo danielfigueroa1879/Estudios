@@ -375,26 +375,23 @@ const IconLogOut = ({
   x2: "9",
   y2: "12"
 }), " ");
-
-// Corrected and Cleaned IconSpinner
 const IconSpinner = () => /*#__PURE__*/React.createElement("svg", {
   className: "animate-spin -ml-1 mr-3 h-5 w-5 text-white",
   xmlns: "http://www.w3.org/2000/svg",
   fill: "none",
   viewBox: "0 0 24 24"
-}, /*#__PURE__*/React.createElement("circle", {
+}, " ", /*#__PURE__*/React.createElement("circle", {
   className: "opacity-25",
   cx: "12",
   cy: "12",
   r: "10",
   stroke: "currentColor",
   strokeWidth: "4"
-}), /*#__PURE__*/React.createElement("path", {
+}), " ", /*#__PURE__*/React.createElement("path", {
   className: "opacity-75",
   fill: "currentColor",
   d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-}));
-
+}), " ");
 const IconDownload = ({
   className
 }) => /*#__PURE__*/React.createElement("svg", {
@@ -666,7 +663,7 @@ const LoginScreen = ({
     className: "mx-auto text-blue-600 sm:w-12 sm:h-12"
   }), /*#__PURE__*/React.createElement("h1", {
     className: "text-3xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mt-2 sm:mt-4"
-  }, "Gestor Acad\xC9mico"), /*#__PURE__*/React.createElement("p", {
+  }, "Gestor Acad\xE9mico"), /*#__PURE__*/React.createElement("p", {
     className: "text-lg sm:text-base text-gray-500 dark:text-gray-400"
   }, isRegister ? 'Crea una nueva cuenta' : 'Bienvenido de vuelta')), !isRegister && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "mb-4 sm:mb-6"
@@ -1298,7 +1295,6 @@ const ClassModal = ({
   }), /*#__PURE__*/React.createElement("span", null, isEditMode ? 'Actualizar' : 'Agregar'))))));
 };
 
-
 // --- NEW: Weekly Calendar View Component ---
 const WeeklyCalendarView = ({
   classes,
@@ -1497,7 +1493,7 @@ const MiniWeeklyCalendar = ({
       key: cls.id,
       className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 whitespace-normal break-words",
       title: `${cls.subject} (${cls.description})`
-    }, /*#__PURE__*/React.createElement("p", {
+    }, /*#__PURE__*/React.createElement("p", { /* Added p tag for subject */
       className: "truncate"
     }, cls.subject), /*#__PURE__*/React.createElement("span", {
       className: "text-[0.5rem] text-blue-700 dark:text-blue-300 block"
@@ -2058,7 +2054,7 @@ const AcademicTaskManager = ({
           }, /*#__PURE__*/React.createElement(IconTrash, {
             width: "22",
             height: "22"
-          }))), " ");
+          }))), " "), " ");
         }), " ");
       case 'daily':
         return /*#__PURE__*/React.createElement(DailyTasksCardView, {
@@ -2257,7 +2253,7 @@ const AcademicTaskManager = ({
     className: "pb-24"
   }, notifications.length > 0 && showAlerts && /*#__PURE__*/React.createElement("div", {
     onClick: () => {
-      setShowAlerts(false); // Directly close alerts on click
+      handleAlertsClick();
       if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current);
       alertHideTimeoutRef.current = null;
     },
@@ -2308,31 +2304,41 @@ const AcademicTaskManager = ({
   }, /*#__PURE__*/React.createElement(IconBook, {
     width: "18",
     height: "18"
-  }), /*#__PURE__*/React.createElement("span", null, "Lista")), /*#__PURE__*/React.createElement("button", {
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "font-medium text-center"
+  }, "Lista")), /*#__PURE__*/React.createElement("button", {
     onClick: () => setView('daily'),
     className: `px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'daily' ? selectedButtonClasses : unselectedButtonClasses}`
   }, /*#__PURE__*/React.createElement(IconCalendar, {
     width: "18",
     height: "18"
-  }), /*#__PURE__*/React.createElement("span", null, "Por D\xEDa")), /*#__PURE__*/React.createElement("button", {
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "font-medium text-center"
+  }, "Por D\xEDa")), /*#__PURE__*/React.createElement("button", {
     onClick: () => setView('calendar'),
     className: `px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`
   }, /*#__PURE__*/React.createElement(IconCalendar, {
     width: "20",
     height: "20"
-  }), /*#__PURE__*/React.createElement("span", null, "Calendario Mensual")), /*#__PURE__*/React.createElement("button", {
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "font-medium text-center"
+  }, "Calendario Mensual")), /*#__PURE__*/React.createElement("button", {
     onClick: () => setView('weeklyCalendar'),
     className: `px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'weeklyCalendar' ? selectedButtonClasses : unselectedButtonClasses}`
   }, /*#__PURE__*/React.createElement(IconCalendar, {
     width: "20",
     height: "20"
-  }), " ", /*#__PURE__*/React.createElement("span", null, "Calendario Semanal")), /*#__PURE__*/React.createElement("button", {
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "font-medium text-center"
+  }, "Calendario Semanal")), /*#__PURE__*/React.createElement("button", {
     onClick: () => setView('history'),
     className: `px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'history' ? selectedButtonClasses : unselectedButtonClasses}`
   }, /*#__PURE__*/React.createElement(IconHistory, {
     width: "20",
     height: "20"
-  }), /*#__PURE__*/React.createElement("span", null, "Historial")))))), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "font-medium text-center"
+  }, "Historial")))))), /*#__PURE__*/React.createElement("div", {
     className: "border-t-4 border-gray-100 dark:border-gray-800 mb-2 sm:my-3"
   }), renderCurrentView(), /*#__PURE__*/React.createElement("div", {
     className: "mt-7 sm:mt-9 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5"
@@ -2401,7 +2407,7 @@ const InstallBanner = ({
     className: "flex items-center"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
     className: "font-bold"
-  }, "Instalar Gestor Acad\xC9mico"))), /*#__PURE__*/React.createElement("div", {
+  }, "Instalar Gestor Acad\xE9mico"))), /*#__PURE__*/React.createElement("div", {
     className: "flex items-center"
   }, /*#__PURE__*/React.createElement("button", {
     onClick: onInstall,
