@@ -1210,7 +1210,7 @@ const ClassModal = ({
       name,
       value
     } = e.target;
-    setClassData(prev => ({
+    setTaskData(prev => ({
       ...prev,
       [name]: value
     }));
@@ -2247,9 +2247,9 @@ const AcademicTaskManager = ({
     width: "20",
     height: "20"
   }), " ", /*#__PURE__*/React.createElement("span", null, "Agregar nueva tarea"))))))), /*#__PURE__*/React.createElement("div", {
-    className: `w-full flex ${settings.view === 'weeklyCalendar' ? 'justify-center' : 'justify-center'} px-3 sm:px-6`
+    className: `w-full flex ${settings.view === 'weeklyCalendar' ? 'justify-center' : 'justify-start'} px-3 sm:px-6`
   }, /*#__PURE__*/React.createElement("div", {
-    className: `flex w-full max-w-7xl mx-auto ${settings.view === 'weeklyCalendar' ? 'justify-center' : ''}`
+    className: `flex w-full max-w-7xl ${settings.view === 'weeklyCalendar' ? 'justify-center' : ''}`
   }, /*#__PURE__*/React.createElement("main", {
     className: "w-full md:flex-1"
   }, /*#__PURE__*/React.createElement("div", {
@@ -2358,7 +2358,7 @@ const AcademicTaskManager = ({
   }, "Daniel Figueroa Chacama")), " ", /*#__PURE__*/React.createElement("p", {
     className: "text-xs text-gray-600 dark:text-gray-400 mt-0.5"
   }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), settings.view !== 'weeklyCalendar' && /*#__PURE__*/React.createElement("aside", {
-    className: "hidden md:block w-[45rem] flex-shrink-0 ml-6"
+    className: "hidden md:block w-[30rem] flex-shrink-0 ml-6"
   }, /*#__PURE__*/React.createElement("div", {
     className: "sticky top-24 overflow-x-auto pr-2"
   }, /*#__PURE__*/React.createElement(MiniWeeklyCalendar, {
