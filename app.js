@@ -2059,8 +2059,7 @@ const AcademicTaskManager = ({
           }, /*#__PURE__*/React.createElement(IconTrash, {
             width: "22",
             height: "22"
-          }))), " "), " ");
-        }), " ");
+          }))), " ");        }), " ");
       case 'daily':
         return /*#__PURE__*/React.createElement(DailyTasksCardView, {
           tasks: tasks,
@@ -2393,7 +2392,10 @@ const AcademicTaskManager = ({
 };
 
 // --- NUEVO: Banner de Instalación ---
-const InstallBanner = ({ onInstall, onClose }) => {
+const InstallBanner = ({
+  onInstall,
+  onClose
+}) => {
   return /*#__PURE__*/React.createElement("div", {
     className: "fixed top-0 left-0 right-0 p-4 z-50"
   }, /*#__PURE__*/React.createElement("div", {
@@ -2507,3 +2509,4 @@ const App = () => {
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 root.render(/*#__PURE__*/React.createElement(App, null));
+  
