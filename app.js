@@ -1294,125 +1294,71 @@ const ClassModal = ({
     height: "18"
   }), /*#__PURE__*/React.createElement("span", null, isEditMode ? 'Actualizar' : 'Agregar'))))));
 };
-
-// --- NEW: Weekly Calendar View Component ---
-const WeeklyCalendarView = ({
-  classes,
-  chileanHolidays,
-  createLocalDate,
-  onBackToList,
-  onAddClass,
-  onEditClass,
-  onDeleteClass
+// --- Weekly Calendar Component ---
+const WeeklyCalendar = ({
+  tasks
 }) => {
-  const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-  // Using the globally defined time slots
-  const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS;
-
-  // Get the current week's dates
-  const today = new Date();
-  const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday
-  const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1; // Days to subtract to get to Monday
-  const mondayOfCurrentWeek = new Date(new Date().setDate(today.getDate() - diff));
-  mondayOfCurrentWeek.setHours(0, 0, 0, 0); // Normalize to start of day
-
-  const weekDates = [];
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(mondayOfCurrentWeek);
-    date.setDate(mondayOfCurrentWeek.getDate() + i);
-    weekDates.push(date);
-  }
-  const classesByDayAndTime = classes.reduce((acc, cls) => {
-    // Find the closest time slot for display
-    const classHour = parseInt(cls.startTime.split(':')[0]);
-    let closestSlot = timeSlots[0];
-    let minDiff = Math.abs(classHour - parseInt(closestSlot.split(':')[0]));
-    for (let i = 1; i < timeSlots.length; i++) {
-      const slotHour = parseInt(timeSlots[i].split(':')[0]);
-      const diff = Math.abs(classHour - slotHour);
-      if (diff < minDiff) {
-        minDiff = diff;
-        closestSlot = timeSlots[i];
-      }
+  const getWeeklySchedule = () => {
+    const today = new Date();
+    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+    const weeklySchedule = [];
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(startOfWeek);
+      day.setDate(startOfWeek.getDate() + i);
+      const dayTasks = tasks.filter(task => {
+        const taskDate = new Date(task.date);
+        return taskDate.toDateString() === day.toDateString() && task.subject;
+      }).sort((a, b) => {
+        const timeA = a.time.split(':').map(Number);
+        const timeB = b.time.split(':').map(Number);
+        if (timeA[0] !== timeB[0]) {
+          return timeA[0] - timeB[0];
+        }
+        return timeA[1] - timeB[1];
+      });
+      weeklySchedule.push({
+        day: day.toLocaleString('es-ES', {
+          weekday: 'long'
+        }),
+        date: day.getDate(),
+        tasks: dayTasks
+      });
     }
-    if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
-    if (!acc[cls.dayOfWeek][closestSlot]) acc[cls.dayOfWeek][closestSlot] = [];
-    acc[cls.dayOfWeek][closestSlot].push(cls);
-    return acc;
-  }, {});
-  const getFormattedDateForDay = dayIndex => {
-    const date = weekDates[dayIndex];
-    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    return weeklySchedule;
   };
+  const weeklySchedule = getWeeklySchedule();
   return /*#__PURE__*/React.createElement("div", {
-    className: "bg-white dark:bg-gray-800/50 rounded-3xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 relative border-4 border-blue-200 dark:border-gray-700",
-    id: "weeklyCalendarSection"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center justify-between mb-6"
+    className: "bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-6"
   }, /*#__PURE__*/React.createElement("h2", {
-    className: "text-xl sm:text-2xl font-semibold text-blue-600 dark:text-blue-400 text-left"
-  }, "Calendario Semanal"), /*#__PURE__*/React.createElement(IconBackArrowhead, {
-    onClick: onBackToList,
-    className: "text-red-500 cursor-pointer hover:text-red-700 transition-colors",
-    title: "Volver a la lista"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "overflow-x-auto"
-  }, /*#__PURE__*/React.createElement("table", {
-    className: "w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg"
-  }, /*#__PURE__*/React.createElement("thead", {
-    className: "bg-blue-600 dark:bg-gray-700 text-white"
-  }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    className: "px-2 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg"
-  }, "Hora"), daysOfWeek.map((day, index) => {
-    const formattedDate = getFormattedDateForDay(index);
-    const isToday = formattedDate === new Date().toISOString().split('T')[0];
-    return /*#__PURE__*/React.createElement("th", {
-      key: day,
-      className: `px-2 py-3 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-800' : ''} ${index === 6 ? 'rounded-tr-lg' : ''}`
-    }, day, " ", /*#__PURE__*/React.createElement("br", null), " ", /*#__PURE__*/React.createElement("span", {
-      className: "font-normal text-xs"
-    }, formattedDate.substring(5)));
-  }))), /*#__PURE__*/React.createElement("tbody", {
-    className: "bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
-  }, timeSlots.map(time => /*#__PURE__*/React.createElement("tr", {
-    key: time
-  }, /*#__PURE__*/React.createElement("td", {
-    className: "px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-gray-200 dark:border-gray-700"
-  }, time, " horas"), daysOfWeek.map((day, dayIndex) => {
-    const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
-    const formattedDate = getFormattedDateForDay(dayIndex);
-    const isToday = formattedDate === new Date().toISOString().split('T')[0];
-    return /*#__PURE__*/React.createElement("td", {
-      key: `${day}-${time}`,
-      className: `relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`,
-      onDoubleClick: () => onAddClass(day, time)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "flex flex-col space-y-1"
-    }, classesInSlot.map(cls => /*#__PURE__*/React.createElement("div", {
-      key: cls.id,
-      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-md px-1 py-0.5 truncate flex items-center justify-between group"
-    }, /*#__PURE__*/React.createElement("span", {
-      title: `${cls.subject} (${cls.description})`
-    }, cls.subject), /*#__PURE__*/React.createElement("span", {
-      className: "text-[0.6rem] text-blue-700 dark:text-blue-300"
-    }, cls.startTime, cls.endTime ? ` - ${cls.endTime}` : ''), /*#__PURE__*/React.createElement("div", {
-      className: "flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity"
-    }, /*#__PURE__*/React.createElement("button", {
-      onClick: () => onEditClass(cls),
-      className: "text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100",
-      title: "Editar clase"
-    }, /*#__PURE__*/React.createElement(IconEdit, {
-      width: "12",
-      height: "12"
-    })), /*#__PURE__*/React.createElement("button", {
-      onClick: () => onDeleteClass(cls.id),
-      className: "text-red-600 dark:text-red-300 hover:text-red-800 dark:hover:text-red-100",
-      title: "Eliminar clase"
-    }, /*#__PURE__*/React.createElement(IconTrash, {
-      width: "12",
-      height: "12"
-    })))))));
-  })))))));
+    className: "text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4"
+  }, "Calendario Semanal"), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-7 gap-1 sm:gap-4"
+  }, " ", weeklySchedule.map((day, index) => /*#__PURE__*/React.createElement("div", {
+    key: index,
+    className: "p-2 sm:p-4 rounded-xl bg-gray-100 dark:bg-gray-700 hover:shadow-lg transition-shadow duration-300"
+  }, " ", /*#__PURE__*/React.createElement("h3", {
+    className: "text-sm sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 capitalize"
+  }, day.day, " ", /*#__PURE__*/React.createElement("span", {
+    className: "text-xs text-gray-500 dark:text-gray-400 font-normal"
+  }, day.date)), " ", day.tasks.length === 0 ? /*#__PURE__*/React.createElement("p", {
+    className: "text-xs sm:text-sm text-gray-400 dark:text-gray-500 italic"
+  }, "No hay eventos") : /*#__PURE__*/React.createElement("div", {
+    className: "space-y-2"
+  }, " ", day.tasks.map((task, taskIndex) => /*#__PURE__*/React.createElement("div", {
+    key: taskIndex,
+    className: `p-2 rounded-lg ${task.color} text-white text-xs sm:text-sm shadow-md`
+  }, " ", /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-col"
+  }, " ", /*#__PURE__*/React.createElement("span", {
+    className: "font-bold text-base sm:text-sm"
+  }, task.subject), " ", /*#__PURE__*/React.createElement("div", {
+    className: "mt-1 text-xs"
+  }, /*#__PURE__*/React.createElement(IconClock, {
+    width: "14",
+    height: "14"
+  }), " ", /*#__PURE__*/React.createElement("span", {
+    className: "ml-1"
+  }, task.time))), " ")), " "), " ")), " "));
 };
 
 // --- NEW: Mini Weekly Calendar Component ---
