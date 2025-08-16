@@ -1295,6 +1295,10 @@ const ClassModal = ({
   }), /*#__PURE__*/React.createElement("span", null, isEditMode ? 'Actualizar' : 'Agregar'))))));
 };
 
+// Define time slots globally for easier modification
+const WEEKLY_CALENDAR_TIME_SLOTS = ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '19:00', '20:00', '22:00' // 9 rows
+];
+
 // --- NEW: Weekly Calendar View Component ---
 const WeeklyCalendarView = ({
   classes,
@@ -1365,7 +1369,7 @@ const WeeklyCalendarView = ({
     className: "px-2 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg"
   }, "Hora"), daysOfWeek.map((day, index) => {
     const formattedDate = getFormattedDateForDay(index);
-    const isToday = formattedDate === new Date().toISOString().split('T')[0];
+    const isToday = new Date(formattedDate).toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
     return /*#__PURE__*/React.createElement("th", {
       key: day,
       className: `px-2 py-3 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-800' : ''} ${index === 6 ? 'rounded-tr-lg' : ''}`
@@ -1381,7 +1385,7 @@ const WeeklyCalendarView = ({
   }, time, " horas"), daysOfWeek.map((day, dayIndex) => {
     const classesInSlot = classesByDayAndTime[day] && classesByDayAndTime[day][time] ? classesByDayAndTime[day][time] : [];
     const formattedDate = getFormattedDateForDay(dayIndex);
-    const isToday = formattedDate === new Date().toISOString().split('T')[0];
+    const isToday = new Date(formattedDate).toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
     return /*#__PURE__*/React.createElement("td", {
       key: `${day}-${time}`,
       className: `relative px-2 py-2 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`,
@@ -1457,7 +1461,7 @@ const MiniWeeklyCalendar = ({
   return /*#__PURE__*/React.createElement("div", {
     className: "bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-full"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg"
+    className: "p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-xs font-semibold rounded-t-lg"
   }, "Semana Actual"), /*#__PURE__*/React.createElement("div", {
     className: "overflow-x-auto"
   }, /*#__PURE__*/React.createElement("table", {
@@ -1465,38 +1469,38 @@ const MiniWeeklyCalendar = ({
   }, /*#__PURE__*/React.createElement("thead", {
     className: "bg-blue-500 dark:bg-gray-600 text-white"
   }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    className: "px-1 py-1 text-left text-xs font-medium uppercase tracking-wider"
+    className: "px-0.5 py-1 text-left text-[0.65rem] font-medium uppercase tracking-wider"
   }, "Hr"), daysOfWeek.map((day, index) => {
     const formattedDate = getFormattedDateForDay(index);
-    const isToday = formattedDate === new Date().toISOString().split('T')[0];
+    const isToday = new Date(formattedDate).toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
     return /*#__PURE__*/React.createElement("th", {
       key: day,
-      className: `px-1 py-1 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''} whitespace-nowrap` // Added whitespace-nowrap here
+      className: `px-0.5 py-1 text-center text-[0.65rem] font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''} whitespace-nowrap` // Added whitespace-nowrap here
     }, day);
   }))), /*#__PURE__*/React.createElement("tbody", {
     className: "bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
   }, WEEKLY_CALENDAR_TIME_SLOTS.map(fullTimeSlot => /*#__PURE__*/React.createElement("tr", {
     key: fullTimeSlot
   }, /*#__PURE__*/React.createElement("td", {
-    className: "px-1 py-1 whitespace-nowrap text-xs font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700"
+    className: "px-0.5 py-0.5 whitespace-nowrap text-[0.65rem] font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700"
   }, fullTimeSlot.substring(0, 2)), daysOfWeek.map((day, dayIndex) => {
     const dayName = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex];
     const classesInSlot = classesByDayAndFullTimeSlot[dayName] && classesByDayAndFullTimeSlot[dayName][fullTimeSlot] || [];
     const formattedDate = getFormattedDateForDay(dayIndex);
-    const isToday = formattedDate === new Date().toISOString().split('T')[0];
+    const isToday = new Date(formattedDate).toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
     return /*#__PURE__*/React.createElement("td", {
       key: `${day}-${fullTimeSlot}`,
-      className: `px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`
+      className: `px-0.5 py-0.5 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`
     }, /*#__PURE__*/React.createElement("div", {
       className: "flex flex-col space-y-0.5"
     }, classesInSlot.map(cls => /*#__PURE__*/React.createElement("div", {
       key: cls.id,
-      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 whitespace-normal break-words",
+      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.55rem] font-medium rounded-sm px-0.5 py-0 whitespace-normal break-words",
       title: `${cls.subject} (${cls.description})`
     }, /*#__PURE__*/React.createElement("p", { /* Added p tag for subject */
       className: "truncate"
     }, cls.subject), /*#__PURE__*/React.createElement("span", {
-      className: "text-[0.5rem] text-blue-700 dark:text-blue-300 block"
+      className: "text-[0.45rem] text-blue-700 dark:text-blue-300 block"
     }, cls.startTime, cls.endTime ? ` - ${cls.endTime}` : '')))));
   })))))));
 };
@@ -2054,7 +2058,7 @@ const AcademicTaskManager = ({
           }, /*#__PURE__*/React.createElement(IconTrash, {
             width: "22",
             height: "22"
-          }))), " "), " "), " ");
+          }))), " "), " ");
         }), " ");
       case 'daily':
         return /*#__PURE__*/React.createElement(DailyTasksCardView, {
@@ -2349,7 +2353,7 @@ const AcademicTaskManager = ({
   }, "Daniel Figueroa Chacama")), " ", /*#__PURE__*/React.createElement("p", {
     className: "text-xs text-gray-600 dark:text-gray-400 mt-0.5"
   }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), settings.view !== 'weeklyCalendar' && /*#__PURE__*/React.createElement("aside", {
-    className: "hidden md:block md:w-96 flex-shrink-0 md:ml-2" // Anchura ajustada para el calendario pequeño
+    className: "hidden md:block md:w-[360px] flex-shrink-0 md:ml-6" // Anchura ajustada para el calendario pequeño
   }, /*#__PURE__*/React.createElement("div", {
     className: "sticky top-24 overflow-x-auto pr-2"
   }, /*#__PURE__*/React.createElement(MiniWeeklyCalendar, {
