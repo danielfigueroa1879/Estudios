@@ -1471,7 +1471,7 @@ const MiniWeeklyCalendar = ({
     const isToday = formattedDate === new Date().toISOString().split('T')[0];
     return /*#__PURE__*/React.createElement("th", {
       key: day,
-      className: `px-1 py-1 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''}`
+      className: `px-1 py-1 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''} whitespace-nowrap` // Added whitespace-nowrap here
     }, day);
   }))), /*#__PURE__*/React.createElement("tbody", {
     className: "bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
@@ -2108,13 +2108,13 @@ const AcademicTaskManager = ({
   const unselectedButtonClasses = "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-700 dark:hover:text-white";
   const selectedButtonClasses = "bg-blue-600 text-white shadow-lg shadow-blue-300 dark:shadow-blue-800/50 ring-2 ring-blue-400 dark:ring-blue-500";
   return /*#__PURE__*/React.createElement("div", {
-    className: "min-h-screen bg-gray-100 dark:bg-gray-900"
+    className: "min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col items-center" // Centra todo el contenido en PC
   }, /*#__PURE__*/React.createElement("div", {
-    className: "sticky top-0 z-30"
+    className: "sticky top-0 z-30 w-full" // La cabecera ocupa todo el ancho
   }, /*#__PURE__*/React.createElement("div", {
     className: "bg-blue-700 dark:bg-gray-800 shadow-lg w-full py-4 sm:py-4"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "max-w-7xl mx-auto px-3 sm:px-6"
+    className: "max-w-screen-2xl mx-auto px-3 sm:px-6" // Contenido de la cabecera centrado y limitado
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex items-center justify-between"
   }, /*#__PURE__*/React.createElement("div", {
@@ -2243,11 +2243,10 @@ const AcademicTaskManager = ({
     width: "20",
     height: "20"
   }), " ", /*#__PURE__*/React.createElement("span", null, "Agregar nueva tarea"))))))), /*#__PURE__*/React.createElement("div", {
-    className: `w-full flex ${settings.view === 'weeklyCalendar' ? 'justify-center' : 'justify-end'} px-3 sm:px-6`
-  }, /*#__PURE__*/React.createElement("div", {
-    className: `flex w-full max-w-7xl ${settings.view === 'weeklyCalendar' ? 'justify-center' : ''}`
+    // Contenedor principal del contenido y la barra lateral en PC
+    className: "w-full max-w-screen-2xl mx-auto flex-grow flex md:flex-row flex-col px-3 sm:px-6 py-4"
   }, /*#__PURE__*/React.createElement("main", {
-    className: "w-full md:flex-1"
+    className: "w-full md:flex-grow md:pr-6" // El contenido principal crece para llenar el espacio, con un padding a la derecha
   }, /*#__PURE__*/React.createElement("div", {
     className: "pb-24"
   }, notifications.length > 0 && showAlerts && /*#__PURE__*/React.createElement("div", {
@@ -2335,9 +2334,7 @@ const AcademicTaskManager = ({
   }, /*#__PURE__*/React.createElement(IconHistory, {
     width: "20",
     height: "20"
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "font-medium text-center"
-  }, "Historial")))))), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("span", null, "Historial")))))), /*#__PURE__*/React.createElement("div", {
     className: "border-t-4 border-gray-100 dark:border-gray-800 mb-2 sm:my-3"
   }), renderCurrentView(), /*#__PURE__*/React.createElement("div", {
     className: "mt-7 sm:mt-9 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5"
@@ -2354,14 +2351,14 @@ const AcademicTaskManager = ({
   }, "Daniel Figueroa Chacama")), " ", /*#__PURE__*/React.createElement("p", {
     className: "text-xs text-gray-600 dark:text-gray-400 mt-0.5"
   }, "Ingeniero en Inform\xE1tica"), " "), " "), " "))), settings.view !== 'weeklyCalendar' && /*#__PURE__*/React.createElement("aside", {
-    className: "hidden md:block w-[30rem] flex-shrink-0 ml-6"
+    className: "hidden md:block md:w-96 flex-shrink-0 md:ml-6" // Anchura ajustada para el calendario pequeño
   }, /*#__PURE__*/React.createElement("div", {
     className: "sticky top-24 overflow-x-auto pr-2"
   }, /*#__PURE__*/React.createElement(MiniWeeklyCalendar, {
     classes: classes
-  }))))), /*#__PURE__*/React.createElement("button", {
+  })))), /*#__PURE__*/React.createElement("button", {
     onClick: handleOpenNewTaskModal,
-    className: "fixed bottom-6 right-6 md:right-[32rem] bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40"
+    className: "fixed bottom-6 right-6 md:right-[27rem] bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40" // Posición del botón ajustada
   }, /*#__PURE__*/React.createElement(IconPlus, {
     width: "24",
     height: "24"
@@ -2393,7 +2390,10 @@ const AcademicTaskManager = ({
 };
 
 // --- NUEVO: Banner de Instalación ---
-const InstallBanner = ({ onInstall, onClose }) => {
+const InstallBanner = ({
+  onInstall,
+  onClose
+}) => {
   return /*#__PURE__*/React.createElement("div", {
     className: "fixed top-0 left-0 right-0 p-4 z-50"
   }, /*#__PURE__*/React.createElement("div", {
