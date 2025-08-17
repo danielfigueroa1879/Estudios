@@ -654,107 +654,7 @@ const WeeklyCalendarView = ({ classes, chileanHolidays, createLocalDate, onBackT
     );
 };
 
-// --- NEW: Mini Weekly Calendar Component ---
-const MiniWeeklyCalendar = ({ classes }) => {
-    const daysOfWeek = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-    const timeSlots = WEEKLY_CALENDAR_TIME_SLOTS.map(time => time.substring(0, 2));
 
-    const today = new Date();
-    const currentDayOfWeek = today.getDay();
-    const diff = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
-    const mondayOfCurrentWeek = new Date(new Date().setDate(today.getDate() - diff));
-    mondayOfCurrentWeek.setHours(0, 0, 0, 0);
-
-    const weekDates = [];
-    for (let i = 0; i < 7; i++) {
-        const date = new Date(mondayOfCurrentWeek);
-        date.setDate(mondayOfCurrentWeek.getDate() + i);
-        weekDates.push(date);
-    }
-
-    const classesByDayAndFullTimeSlot = classes.reduce((acc, cls) => {
-        const classHour = parseInt(cls.startTime.split(':')[0]);
-        let closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[0];
-        let minDiff = Math.abs(classHour - parseInt(closestFullSlot.split(':')[0]));
-
-        for (let i = 1; i < WEEKLY_CALENDAR_TIME_SLOTS.length; i++) {
-            const slotHour = parseInt(WEEKLY_CALENDAR_TIME_SLOTS[i].split(':')[0]);
-            const diff = Math.abs(classHour - slotHour);
-            if (diff < minDiff) {
-                minDiff = diff;
-                closestFullSlot = WEEKLY_CALENDAR_TIME_SLOTS[i];
-            }
-        }
-
-        if (!acc[cls.dayOfWeek]) acc[cls.dayOfWeek] = {};
-        if (!acc[cls.dayOfWeek][closestFullSlot]) acc[cls.dayOfWeek][closestFullSlot] = [];
-        acc[cls.dayOfWeek][closestFullSlot].push(cls);
-        return acc;
-    }, {});
-
-    const getFormattedDateForDay = (dayIndex) => {
-        const date = weekDates[dayIndex];
-        return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-    };
-
-    return (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden w-full">
-            <div className="p-2 bg-blue-600 dark:bg-gray-700 text-white text-center text-sm font-semibold rounded-t-lg">
-                Semana Actual
-            </div>
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-blue-500 dark:bg-gray-600 text-white">
-                        <tr>
-                            <th className="px-1 py-1 text-left text-xs font-medium uppercase tracking-wider">Hr</th>
-                            {daysOfWeek.map((day, index) => {
-                                const formattedDate = getFormattedDateForDay(index);
-                                const isToday = formattedDate === new Date().toISOString().split('T')[0];
-                                return (
-                                    <th key={day} className={`px-1 py-1 text-center text-xs font-medium uppercase tracking-wider ${isToday ? 'bg-blue-700' : ''}`}>
-                                        {day}
-                                    </th>
-                                );
-                            })}
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        {WEEKLY_CALENDAR_TIME_SLOTS.map(fullTimeSlot => (
-                            <tr key={fullTimeSlot}>
-                                <td className="px-1 py-1 whitespace-nowrap text-xs font-medium text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50 border-r border-b border-gray-200 dark:border-gray-700">
-                                    {fullTimeSlot.substring(0, 2)}
-                                </td>
-                                {daysOfWeek.map((day, dayIndex) => {
-                                    const dayName = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dayIndex];
-                                    const classesInSlot = (classesByDayAndFullTimeSlot[dayName] && classesByDayAndFullTimeSlot[dayName][fullTimeSlot]) || [];
-                                    const formattedDate = getFormattedDateForDay(dayIndex);
-                                    const isToday = formattedDate === new Date().toISOString().split('T')[0];
-
-                                    return (
-                                        <td key={`${day}-${fullTimeSlot}`}
-                                            className={`px-1 py-1 border-r border-b border-gray-200 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-800/50' : 'bg-white dark:bg-gray-800'}`}
-                                        >
-                                            <div className="flex flex-col space-y-0.5">
-                                                {classesInSlot.map(cls => (
-                                                    <div key={cls.id} className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-[0.6rem] font-medium rounded-sm px-0.5 py-0.5 truncate" title={`${cls.subject} (${cls.description})`}>
-                                                        {cls.subject}
-                                                        <span className="text-[0.5rem] text-blue-700 dark:text-blue-300 block">
-                                                            {cls.startTime}{cls.endTime ? ` - ${cls.endTime}` : ''}
-                                                        </span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
-};
 
 
 // --- Academic Task Manager Component ---
@@ -1179,75 +1079,48 @@ const AcademicTaskManager = ({ user }) => {
                     </div>
                 )}
             </div>
-{/* Main Content Layout */}
-<div className={`w-full px-3 sm:px-6 ${view === 'weeklyCalendar' ? 'flex justify-center' : 'flex justify-end'}`}>
-    <div className={`flex w-full ${view === 'weeklyCalendar' ? 'max-w-5xl' : 'max-w-7xl'}`}>
-        {/* Main Content Column */}
-        <main className={`w-full ${view === 'weeklyCalendar' ? '' : 'md:flex-1'}`}>
-            <div className="pb-24">
-                {/* ... resto del contenido permanece igual ... */}
-                {notifications.length > 0 && showAlerts && ( 
-                    <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-100 dark:bg-orange-500/20 border border-orange-400 dark:border-orange-500/50 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > 
-                        <div className="flex items-center justify-between mb-2"> 
-                            <h3 className="font-semibold text-orange-800 dark:text-orange-300 text-lg sm:text-xl text-left">Alertas activas</h3> 
-                            <div className="text-orange-600 dark:text-orange-400"><IconAlert width="18" height="18" /></div> 
-                        </div> 
-                        <div className="flex flex-col gap-0.5"> 
-                            {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 dark:text-orange-300/90 w-full text-left">• {notif.message}</p>)} 
-                            {notifications.length > 3 && <p className="text-sm text-orange-600 dark:text-orange-400 w-full text-left">... y {notifications.length - 3} alertas más</p>} 
-                        </div> 
-                    </div> 
-                )}
 
-                <div className="relative bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-3 rounded-2xl">
-                    <div className="max-w-4xl mx-auto px-3 sm:px-6">
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-lg sm:text-xl font-semibold text-blue-600 dark:text-blue-400 text-left">Vistas</h2>
-                            <button onClick={() => { setIsViewsCollapsed(!isViewsCollapsed); }} className="sm:hidden p-2">
-                                {isViewsCollapsed ? <IconChevronDown className="text-red-500" /> : <IconChevronUp className="text-red-500" />}
-                            </button>
-                        </div>
-                        <div className={`sm:block mt-4 sm:mt-5 ${isViewsCollapsed ? 'hidden' : ''}`}>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-                                <button onClick={() => setView('list')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'list' ? selectedButtonClasses : unselectedButtonClasses}`}><IconBook width="18" height="18" /><span className="font-medium text-center">Lista</span></button>
-                                <button onClick={() => setView('daily')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'daily' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center">Por Día</span></button>
-                                <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Mensual</span></button>
-                                <button onClick={() => setView('weeklyCalendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'weeklyCalendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Semanal</span></button>
-                                <button onClick={() => setView('history')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'history' ? selectedButtonClasses : unselectedButtonClasses}`}><IconHistory width="20" height="20" /><span className="font-medium text-center">Historial</span></button>
+            {/* Main Content Layout */}
+            <div className="w-full flex justify-center px-3 sm:px-6">
+                <div className="flex w-full max-w-7xl">
+                    {/* Main Content Column */}
+                    <main className="w-full md:flex-1">
+                        <div className="pb-24">
+                            {notifications.length > 0 && showAlerts && ( <div onClick={() => { handleAlertsClick(); if (alertHideTimeoutRef.current) clearTimeout(alertHideTimeoutRef.current); alertHideTimeoutRef.current = null; }} className="bg-orange-100 dark:bg-orange-500/20 border border-orange-400 dark:border-orange-500/50 rounded-xl shadow-lg shadow-red-200 p-2 sm:p-4 mb-3 sm:mb-4 cursor-pointer transition-all duration-300 ease-in-out" style={{marginTop: '0.75rem'}} > <div className="flex items-center justify-between mb-2"> <h3 className="font-semibold text-orange-800 dark:text-orange-300 text-lg sm:text-xl text-left">Alertas activas</h3> <div className="text-orange-600 dark:text-orange-400"><IconAlert width="18" height="18" /></div> </div> <div className="flex flex-col gap-0.5"> {notifications.slice(0, 3).map((notif, index) => <p key={notif.id || index} className="text-sm text-orange-700 dark:text-orange-300/90 w-full text-left">• {notif.message}</p>)} {notifications.length > 3 && <p className="text-sm text-orange-600 dark:text-orange-400 w-full text-left">... y {notifications.length - 3} alertas más</p>} </div> </div> )}
+
+                            <div className="relative bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 w-full py-2.5 sm:py-3.5 mt-5 mb-3 rounded-2xl">
+                                <div className="max-w-4xl mx-auto px-3 sm:px-6">
+                                    <div className="flex justify-between items-center">
+                                        <h2 className="text-lg sm:text-xl font-semibold text-blue-600 dark:text-blue-400 text-left">Vistas</h2>
+                                        <button onClick={() => { setIsViewsCollapsed(!isViewsCollapsed); }} className="sm:hidden p-2">
+                                            {isViewsCollapsed ? <IconChevronDown className="text-red-500" /> : <IconChevronUp className="text-red-500" />}
+                                        </button>
+                                    </div>
+                                    <div className={`sm:block mt-4 sm:mt-5 ${isViewsCollapsed ? 'hidden' : ''}`}>
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                                            <button onClick={() => setView('list')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'list' ? selectedButtonClasses : unselectedButtonClasses}`}><IconBook width="18" height="18" /><span className="font-medium text-center">Lista</span></button>
+                                            <button onClick={() => setView('daily')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'daily' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="18" height="18" /><span className="font-medium text-center">Por Día</span></button>
+                                            <button onClick={() => setView('calendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'calendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Mensual</span></button>
+                                            <button onClick={() => setView('weeklyCalendar')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'weeklyCalendar' ? selectedButtonClasses : unselectedButtonClasses}`}><IconCalendar width="20" height="20" /><span className="font-medium text-center">Calendario Semanal</span></button>
+                                            <button onClick={() => setView('history')} className={`px-2 py-2 sm:px-5 sm:py-3 rounded-xl flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm transition-all duration-300 transform hover:scale-105 ${view === 'history' ? selectedButtonClasses : unselectedButtonClasses}`}><IconHistory width="20" height="20" /><span className="font-medium text-center">Historial</span></button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div className="border-t-4 border-gray-100 dark:border-gray-800 mb-2 sm:my-3"></div>
-                {renderCurrentView()}
-                <div className="mt-7 sm:mt-9 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5"> 
-                    <div className="text-center text-gray-600 dark:text-gray-400 space-y-1.5"> 
-                        <div className="border-b border-gray-200 dark:border-gray-700 pb-1.5"> 
-                            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-0.5">© Derechos Reservados</p> 
-                            <p className="text-xs text-gray-700 dark:text-gray-300">Creado por <span className="font-semibold text-blue-600 dark:text-blue-400">Daniel Figueroa Chacama</span></p> 
-                            <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Ingeniero en Informática</p> 
-                        </div> 
-                    </div> 
+                            <div className="border-t-4 border-gray-100 dark:border-gray-800 mb-2 sm:my-3"></div>
+                            {renderCurrentView()}
+                            <div className="mt-7 sm:mt-9 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5"> <div className="text-center text-gray-600 dark:text-gray-400 space-y-1.5"> <div className="border-b border-gray-200 dark:border-gray-700 pb-1.5"> <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-0.5">© Derechos Reservados</p> <p className="text-xs text-gray-700 dark:text-gray-300">Creado por <span className="font-semibold text-blue-600 dark:text-blue-400">Daniel Figueroa Chacama</span></p> <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Ingeniero en Informática</p> </div> </div> </div>
+                        </div>
+                    </main>
                 </div>
             </div>
-        </main>
 
-        {/* Sidebar Column for Mini Calendar - Solo se muestra cuando NO es calendario semanal */}
-        {view !== 'weeklyCalendar' && (
-            <aside className="hidden md:block w-[30rem] flex-shrink-0 ml-6">
-                <div className="sticky top-24">
-                    <MiniWeeklyCalendar classes={classes} />
-                </div>
-            </aside>
-        )}
-    </div>
-</div>
 
-{/* FAB Button - También necesita ajustarse la posición */}
-<button onClick={handleOpenNewTaskModal} className={`fixed bottom-6 ${view === 'weeklyCalendar' ? 'right-6' : 'right-6 md:right-[32rem]'} bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40`}>
-    <IconPlus width="24" height="24" />
-</button>
+            {/* FAB Button */}
+            <button onClick={handleOpenNewTaskModal} className="fixed bottom-6 right-6 bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
+                <IconPlus width="24" height="24" />
+            </button>
 
 
             {/* Custom Dialogs and Menus */}
