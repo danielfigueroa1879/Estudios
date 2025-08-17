@@ -1119,9 +1119,11 @@ const AcademicTaskManager = ({ user }) => {
 
 
             {/* FAB Button */}
-            <button onClick={handleOpenNewTaskModal} className="absolute bottom-6 right-6 bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
-                <IconPlus width="24" height="24" />
-            </button>
+            <div className="fixed bottom-6 inset-x-0 max-w-5xl mx-auto flex justify-end pointer-events-none px-6 z-40">
+                <button onClick={handleOpenNewTaskModal} className="pointer-events-auto bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110">
+                    <IconPlus width="24" height="24" />
+                </button>
+            </div>
 
 
             {/* Custom Dialogs and Menus */}
@@ -1280,6 +1282,4 @@ const App = () => {
     );
 };
 
-const container = document.getElementById('root');
-const root = ReactDOM.createRoot(container);
-root.render(<App />);
+const container = doc
