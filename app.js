@@ -1119,7 +1119,7 @@ const AcademicTaskManager = ({ user }) => {
 
 
             {/* FAB Button */}
-            <button onClick={handleOpenNewTaskModal} className="absolute bottom-6 right-6 xl:right-40 2xl:right-80 bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
+            <button onClick={handleOpenNewTaskModal} className="absolute bottom-6 left-6 bg-red-600/90 backdrop-blur-sm text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-all transform hover:scale-110 z-40">
                 <IconPlus width="24" height="24" />
             </button>
 
